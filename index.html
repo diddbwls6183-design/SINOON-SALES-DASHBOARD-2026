@@ -200,12 +200,13 @@ body{-webkit-text-size-adjust:100%;}
 </div>
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab(0)">&#128202; 개요</button>
-  <button class="tab-btn" onclick="switchTab(1)">&#127919; 매출목표</button>
+  <button class="tab-btn" onclick="switchTab(1)">&#127919; 매출목표&실적</button>
   <button class="tab-btn" onclick="switchTab(2)">&#127978; 채널분석</button>
   <button class="tab-btn" onclick="switchTab(3)">&#128248; 상품분석</button>
   <button class="tab-btn" onclick="switchTab(4)">&#128200; 트렌드</button>
   <button class="tab-btn" onclick="switchTab(5)">&#127881; 프로모션 리뷰</button>
   <button class="tab-btn" onclick="switchTab(6)">📣 MKT</button>
+  <button class="tab-btn" onclick="switchTab(7)">🔐 SCM</button>
 </div>
 <div id="tab0" class="tab-content active"></div>
 <div id="tab1" class="tab-content"></div>
@@ -214,6 +215,7 @@ body{-webkit-text-size-adjust:100%;}
 <div id="tab4" class="tab-content"></div>
 <div id="tab5" class="tab-content"></div>
 <div id="tab6" class="tab-content"></div>
+<div id="tab7" class="tab-content"></div>
 
 <script>
 
@@ -223,7 +225,8 @@ var _jbSaveTimer=null;
 var _fbLastHash='';
 var JB_KEYS=['sinoon_promo_memos','sinoon_promo_data','sinoon_s4_sparse_edits',
   'sinoon_mkt_budget','sinoon_mkt_spend','sinoon_mkt_target','sinoon_mkt_spend_total',
-  'sinoon_mkt_weekly','sinoon_mkt_review','sinoon_mkt_daily_report','sinoon_mkt_daily_table'];
+  'sinoon_mkt_weekly','sinoon_mkt_review','sinoon_mkt_daily_report','sinoon_mkt_daily_table',
+  'sinoon_scm_edits'];
 
 function _fbGetHash(){
   var s='';
@@ -328,6 +331,7 @@ function switchTab(idx){
   if(idx===4)renderTab3();
   if(idx===5)renderTab4();
   if(idx===6)renderTabMkt();
+  if(idx===7)renderTabScm();
 }
 
 // HEADER
@@ -375,10 +379,28 @@ function s0_rightTab(tab){
   if(tab==='달성률') buildAchGraph();
   else buildYoY();
 }
+function toggleTgtDays(){
+  window.tgtShowDays=!window.tgtShowDays;
+  var rows=document.querySelectorAll('.tgt-day-row');
+  rows.forEach(function(r){r.style.display=window.tgtShowDays?'':'none';});
+  var btn=document.getElementById('tgt-day-toggle-btn');
+  if(btn) btn.textContent=window.tgtShowDays?'📅 일자별 상세 숨기기 ▲':'📅 일자별 상세 보기 ▼';
+  // 주차 셀의 텍스트도 갱신
+  renderDailyTgtWkLabels();
+}
+function renderDailyTgtWkLabels(){
+  // 주차 셀 내 ▼/▲ 텍스트 갱신
+  var txt=window.tgtShowDays?'▲ 접기':'▼ 펼치기';
+  document.querySelectorAll('[data-wk-label]').forEach(function(el){
+    var sp=el.querySelector('.wk-toggle-hint');
+    if(sp) sp.textContent=txt;
+  });
+}
 function renderTabTarget(){
   const el=document.getElementById('tab1');if(!el)return;
   const ALL_CH=['자사몰','29CM','무신사','카카오톡','자사몰_해외','무신사글로벌','NUGU_일본'];
   if(!window.tgtSt)window.tgtSt={mon:CUR_MON};
+  if(window.tgtShowDays===undefined)window.tgtShowDays=false;
 
   function wm(v){if(!v)return'';const m=Math.round(v/10000);return m.toLocaleString()+'만';}
 
@@ -557,7 +579,8 @@ function renderTabTarget(){
         const dateFc=noTgt?'color:#FF0000':'';
         const opac=!hasAct?'opacity:0.6;':'';
 
-        let tgtRow=`<tr style="${opac}">
+        const dayDisp=window.tgtShowDays?'':'none';
+        let tgtRow=`<tr class="tgt-day-row" style="${opac}display:${dayDisp};">
           <td style="${CS(BG_TGT,'font-weight:400;'+dateFc)}" rowspan="3">${dp}</td>
           <td style="${CS(BG_TGT,'font-weight:400;'+dateFc)}" rowspan="3">${day}</td>
           <td style="${CS(BG_TGT,'font-weight:400')}">목표</td>`;
@@ -569,7 +592,7 @@ function renderTabTarget(){
         const rTotT=DISP_CH.reduce((a,ch)=>a+(tgt[ch]||0),0);
         tgtRow+=`<td style="${CS(BG_TGT,'')}">${fmt(rTotT)||'0'}</td></tr>`;
 
-        let actRow=`<tr style="${opac}">
+        let actRow=`<tr class="tgt-day-row" style="${opac}display:${dayDisp};">
           <td style="${CS(BG_ACT,'font-weight:400')}">달성</td>`;
         DISP_CH.forEach(ch=>{
           const s=(act[ch]?.s||0)-(act[ch]?.r||0);
@@ -581,7 +604,7 @@ function renderTabTarget(){
         const rTotFc=rTotA<0?'color:#FF0000':'';
         actRow+=`<td style="${CS(BG_ACT,rTotFc)}">${hasAct?fmt(rTotA):''}</td></tr>`;
 
-        let pctRow=`<tr style="${opac}">
+        let pctRow=`<tr class="tgt-day-row" style="${opac}display:${dayDisp};">
           <td style="${CS(BG_PCT,'font-weight:700')}">달성율</td>`;
         DISP_CH.forEach(ch=>{
           const t=tgt[ch]||0,s=(act[ch]?.s||0)-(act[ch]?.r||0);
@@ -596,8 +619,9 @@ function renderTabTarget(){
       });
 
       /* 주차 합계 - wkN(rowspan=3) + 합(rowspan=3) 분리 */
+      const wkDayDisp=window.tgtShowDays?'▲ 접기':'▼ 펼치기';
       let wkTgtRow=`<tr>
-        <td style="${CS(BG_WK_TGT,'font-weight:700')}" rowspan="3">${wkN}</td>
+        <td data-wk-label="1" style="${CS(BG_WK_TGT,'font-weight:700;cursor:pointer;')}" rowspan="3" onclick="toggleTgtDays()" title="일자별 행 보기/숨기기">${wkN}<br><span class="wk-toggle-hint" style="font-size:9px;color:#555;">${wkDayDisp}</span></td>
         <td style="${CS(BG_WK_TGT,'font-weight:700')}" rowspan="3">합</td>
         <td style="${CS(BG_WK_TGT,'font-weight:700')}">목표</td>`;
       DISP_CH.forEach(ch=>{
@@ -681,7 +705,10 @@ function renderTabTarget(){
 
   <div class="card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
-      <div class="card-title">📋 일별 매출 목표 · 실적 <span style="font-size:11px;color:#999;font-weight:400">(단위: 만원)</span></div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div class="card-title" style="margin:0;">📋 일별 매출 목표 · 실적 <span style="font-size:11px;color:#999;font-weight:400">(단위: 만원)</span></div>
+        <button id="tgt-day-toggle-btn" onclick="toggleTgtDays()" style="font-size:11px;padding:3px 10px;border:1px solid #8b6f5e;border-radius:5px;background:#8b6f5e;color:#fff;cursor:pointer;white-space:nowrap;">📅 일자별 상세 보기 ▼</button>
+      </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         ${availMons.map(m=>`<button class="pill ${window.tgtSt.mon===m?'active':''}" onclick="window.tgtSt.mon='${m}';renderTabTarget()">${m}</button>`).join('')}
       </div>
@@ -2317,9 +2344,38 @@ function s4SaveCell(el){
   } else if(key==='tgt_raw'){
     const num=parseInt(clean.replace(/[^0-9]/g,''));
     PROMO_DATA[idx].tgt=isNaN(num)?null:num;
+    // ── 목표 변경 시에도 달성률 자동 재계산 ──
+    if(!isNaN(num)&&num>0&&PROMO_DATA[idx].sales!=null){
+      const autoAch=Math.round((PROMO_DATA[idx].sales/num)*1000)/10;
+      PROMO_DATA[idx].ach=autoAch;
+      s4TrackEdit(idx,'ach',autoAch);
+      const achCell=document.querySelector('[data-idx="'+idx+'"][data-key="ach"]');
+      if(achCell){
+        achCell.textContent=autoAch+'%';
+        const ac=autoAch>=100?'#1e7a4a':autoAch>=70?'#d4830a':'#c0392b';
+        achCell.style.color=ac;achCell.style.fontWeight='700';
+      }
+    }
   } else if(key==='sales_raw'){
     const num=parseInt(clean.replace(/[^0-9]/g,''));
     PROMO_DATA[idx].sales=isNaN(num)?null:num;
+    // ── 판매금액 입력 시 달성률 자동 계산 ──
+    if(!isNaN(num)&&PROMO_DATA[idx].tgt&&PROMO_DATA[idx].tgt>0){
+      const autoAch=Math.round((num/PROMO_DATA[idx].tgt)*1000)/10;
+      PROMO_DATA[idx].ach=autoAch;
+      s4TrackEdit(idx,'ach',autoAch);
+      const achCell=document.querySelector('[data-idx="'+idx+'"][data-key="ach"]');
+      if(achCell){
+        achCell.textContent=autoAch+'%';
+        const ac=autoAch>=100?'#1e7a4a':autoAch>=70?'#d4830a':'#c0392b';
+        achCell.style.color=ac;achCell.style.fontWeight='700';
+      }
+    } else if(!isNaN(num)&&num===0){
+      PROMO_DATA[idx].ach=0;
+      s4TrackEdit(idx,'ach',0);
+      const achCell=document.querySelector('[data-idx="'+idx+'"][data-key="ach"]');
+      if(achCell){achCell.textContent='—';achCell.style.color='#999';achCell.style.fontWeight='700';}
+    }
   } else {
     PROMO_DATA[idx][key]=el.innerHTML;
   }
@@ -2429,7 +2485,7 @@ function s4Render(){
         <td style="${cellStyle}font-size:11px;color:#1a1a1a;background:#ffffff;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="period" onblur="s4SaveCell(this)">${p.period||''}</td>
         <td style="${cellStyle}${YEL_BG}color:#c0392b;font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="qty_raw" onblur="s4SaveCell(this)">${(p.qty!=null&&p.qty!==0)?p.qty.toLocaleString():'—'}</td>
         <td style="${cellStyle}${YEL_BG}color:#c0392b;font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="sales_raw" onblur="s4SaveCell(this)">${p.sales?p.sales.toLocaleString():'—'}</td>
-        <td style="${cellStyle}${YEL_BG}color:${achColor};font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" onblur="s4SaveAch(this)">${(p.ach!==null&&p.ach!==undefined&&p.ach!==0)?p.ach+'%':'—'}</td>
+        <td style="${cellStyle}${YEL_BG}color:${achColor};font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="ach" onblur="s4SaveAch(this)">${(p.ach!==null&&p.ach!==undefined&&p.ach!==0)?p.ach+'%':'—'}</td>
         <td style="${cellStyle}background:#ffffff;"><div style="font-size:11px;color:#1a1a1a;line-height:1.8;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;text-align:center;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="scheme_h" onblur="s4SaveCell(this)">${p.scheme_h||''}</div></td>
         <td style="${cellStyle}background:#ffffff;"><div style="${subStyle}cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="ad_h" onblur="s4SaveCell(this)">${p.ad_h||''}</div></td>
         <td style="${cellStyle}${YEL_BG}vertical-align:middle;">
@@ -3201,6 +3257,244 @@ document.addEventListener('click',function(e){
   var pal=document.getElementById('mkt-color-palette');
   if(pal&&!pal.contains(e.target)&&e.target.id!=='mkt-color-btn')pal.style.display='none';
 });
+
+// ── SCM 탭 ──────────────────────────────────────────────────────────
+var SCM_PW='1111';
+var scmAuthenticated=false;
+var scmUnlocked=false;
+
+// SCM 원본 데이터 (구분, 업체명, ID, PW, URL, 고객센터)
+var SCM_DATA=[
+  {cat:'온라인', name:'자사몰 (CAFE24)', id:'sinoonlab', pw:'sn141126!@@', url:'https://eclogin.cafe24.com/Shop/', cs:''},
+  {cat:'', name:'자사몰 (CAFE24)_부계정', id:'sinoonlab2', pw:'sn141126!@@', url:'', cs:''},
+  {cat:'', name:'자사몰 (CAFE24)_크림웨이브', id:'creamwave', pw:'sn141126!!@', url:'', cs:''},
+  {cat:'', name:'무신사,29cm 파트너 통합계정', id:'creamwave', pw:'s@n141984T35!!!', url:'', cs:''},
+  {cat:'', name:'무신사,29cm 파트너 통합계정_양유진', id:'sinoon777', pw:'Sinoon141126!', url:'', cs:''},
+  {cat:'', name:'무신사(무신사글로벌)', id:'sinoon', pw:'s@n141984T35!!', url:'무신사 파트너', cs:'1544-7199'},
+  {cat:'', name:'무신사 샵 스태프', id:'stf_sinoon', pw:'sinoon58', url:'', cs:''},
+  {cat:'', name:'29CM', id:'sinoon', pw:'Sssn141126!@', url:'29CM Admin', cs:''},
+  {cat:'', name:'NUGU(누구)', id:'sinoon', pw:'Sssn141126!@', url:'https://admin.nugu.jp/admin/po/login?partner=PKJKLHUU', cs:''},
+  {cat:'', name:'네이버페이센터', id:'sinoonlab', pw:'Sn141126@@@!', url:'https://admin.pay.naver.com/o/n/sale/delivery?summaryInfoType=DELIVERY_READY', cs:'판매자 계정: 판매확인 및 CS확인 계정'},
+  {cat:'', name:'네이버페이센터 (크림웨이브) / 정보확인', id:'creamwavelab', pw:'sn141126!', url:'', cs:'운영자 계정: 배송지 변경 및 관리자 운영 계정'},
+  {cat:'', name:'카카오쇼핑 (선물하기)', id:'sinoonlab@naver.com', pw:'Sn141126!!', url:'https://comm-auth-web.kakao.com/', cs:''},
+  {cat:'', name:'토탈브레인', id:'creamwave', pw:'si1588801946', url:'https://hana-korea.com/vender/', cs:''},
+  {cat:'', name:'티몰', id:'sinoon海外旗舰店', pw:'sinoon!01', url:'https://web.scm.tmall.com/login', cs:''},
+  {cat:'', name:'티몰 판매자사이트', id:'sinoon海外旗舰店', pw:'', url:'https://sycm.taobao.com/', cs:''},
+  {cat:'APPLE', name:'애플', id:'sinoonlab@naver.com', pw:'Sn141126!@@', url:'', cs:''},
+  {cat:'셀러툴', name:'셀릭 (sellic)', id:'sinoon', pw:'sinoon141126', url:'세원 SELLIC', cs:"카카오톡 채널 '셀릭'"},
+  {cat:'ERP', name:'세원아토스 인증코드', id:'', pw:'', url:'A915807759', cs:''},
+  {cat:'', name:'세원아토스 공식 홈페이지', id:'', pw:'', url:'세원아토스', cs:''},
+  {cat:'', name:'세원아토스 원격', id:'', pw:'', url:'882.co.kr', cs:''},
+  {cat:'', name:'세원아토스 AS', id:'Snsinoon', pw:'sn141126!', url:'http://as.sewoneds.co.kr/', cs:''},
+  {cat:'', name:'ERP 사용문의', id:"카카오톡 채널 '세원아토스'", pw:'', url:'', cs:''},
+  {cat:'', name:'세원아토스 ERP', id:'SN007', pw:'SN007', url:'ADMIN', cs:''},
+  {cat:'상표권', name:'마크비전', id:'info@sinoon.kr', pw:'sn141126!@@', url:'https://brand.marqvision.com/login', cs:''},
+  {cat:'', name:'마크폴리오', id:'info@sinoon.kr', pw:'sn141126!!', url:'http://wcjs.sbj.cnipa.gov.cn/txnT01.do', cs:''},
+  {cat:'', name:'해움특허법인 (무신사 시눈 해외법인)', id:'ip3@hupat.com', pw:'', url:'', cs:''},
+  {cat:'', name:'해외 상표권 관리 협력사', id:'sinoonlab', pw:'sinoonsn1231', url:'http://www.ccbrand.kr/', cs:''},
+  {cat:'', name:'FedEx', id:'sinoonlab', pw:'sn141126!', url:'http://ipp.11st.co.kr/', cs:''},
+  {cat:'', name:'KOPIA (해외K브랜드 보호센터)', id:'creamwavelab', pw:'sn141126!@', url:'http://www.ip-navi.or.kr/', cs:''},
+  {cat:'SNS', name:'채널톡', id:'sinoonlab@naver.com', pw:'sinoonsn1231', url:'https://desk.channel.io/#/signin', cs:''},
+  {cat:'', name:'카톡 플러스 친구', id:'sinoonlab@naver.com', pw:'Sn141126!!', url:'', cs:''},
+  {cat:'', name:'인스타그램_공식 (시눈)', id:'sinoon.official', pw:'tlsnstlsns0516!!', url:'https://www.instagram.com/sinoon.official/', cs:''},
+  {cat:'', name:'인스타그램_마케팅 (시눈)', id:'mkt_sinoon', pw:'tlsnstlsns0516$$', url:'https://www.instagram.com/mkt_sinoon/', cs:''},
+  {cat:'', name:'틱톡 (시눈)', id:'sinoon.official', pw:'sn141126!', url:'https://www.tiktok.com/@sinoon.official', cs:''},
+  {cat:'', name:'핀터레스트', id:'sinoonlab@gmail.com', pw:'sn141126!@', url:'https://www.pinterest.co.kr/', cs:''},
+  {cat:'', name:'텀블러', id:'sinoonlab@gmail.com', pw:'tlsns141126!!', url:'https://www.tumblr.com/', cs:''},
+  {cat:'', name:'오늘룩', id:'sinoon', pw:'0', url:'http://brand.nmodelin.com/', cs:''},
+  {cat:'', name:'네이버 블로그 (시눈)', id:'sinoonlab', pw:'Sn141126@@@!', url:'https://blog.naver.com/sinoonlab', cs:''},
+  {cat:'', name:'네이버 광고주 센터', id:'sinoonlab', pw:'ssn1123!!!@', url:'https://manage.searchad.naver.com/', cs:''},
+  {cat:'', name:'페이스북 (시눈)', id:'', pw:'', url:'https://www.facebook.com/sinoonlab', cs:''},
+  {cat:'', name:'샤오홍슈', id:'010-7318-1946', pw:'sinoon0730', url:'https://www.xiaohongshu.com/', cs:''},
+  {cat:'', name:'웨이보', id:'', pw:'', url:'https://weibo.com/u/7927952093', cs:''},
+  {cat:'Developers', name:'구글', id:'sinoonlab@gmail.com', pw:'sn141126!!', url:'https://console.developers.google.com/', cs:''},
+  {cat:'', name:'구글 (오프라인용)', id:'sinoonoffline@gmail.com', pw:'sn141126!@', url:'', cs:''},
+  {cat:'', name:'다우오피스 (INFO)', id:'info@sinoon.kr', pw:'Ssn8410!@!@', url:'', cs:''},
+  {cat:'시스템구축', name:'다우오피스 (그룹웨어)', id:'admin', pw:'Ssn8410!@!@', url:'https://sinoon.daouoffice.com/login', cs:'1577-3019'},
+  {cat:'', name:'다우오피스 (온라인교육)', id:'', pw:'', url:'https://daouoffice.com/edu_online.jsp', cs:''},
+  {cat:'물류', name:'SLK WMS', id:'3200', pw:'5555_손강현', url:'http://download.slogis.co.kr:8888/download/Trabbit_V4_Setup_2506.zip', cs:''},
+  {cat:'', name:'', id:'3201', pw:'5555_김민희', url:'', cs:''},
+  {cat:'', name:'', id:'3202', pw:'5555_정혜은', url:'', cs:''},
+  {cat:'', name:'', id:'3203', pw:'5555_김예지', url:'', cs:''},
+  {cat:'', name:'', id:'3204', pw:'5555_황서현', url:'', cs:''},
+  {cat:'', name:'스타트투데이 (WMS)', id:'sinoon01', pw:'SINOON01', url:'http://www.sttd.cloud/sttd-login.html', cs:''},
+  {cat:'', name:'스타트투데이 (WMS) 2', id:'sinoon01', pw:'SINOON01', url:'https://www.ebut3pl.co.kr/main', cs:''},
+  {cat:'', name:'스타트투데이 리얼패킹', id:'statoday', pw:'statoday1', url:'https://www.realpacking.com/login.php', cs:''},
+  {cat:'', name:'STOO (국내해외 어드민)', id:'sinoon', pw:'sn141126!', url:'https://cbt.sttd.kr/Account/Login', cs:''},
+  {cat:'', name:'대한통운 택배 (성수)', id:'sn141126', pw:'Ssn84100!!!@@!', url:'https://loisparcelp.cjlogistics.com/', cs:'김재환 기사님 / 010-2562-8582'},
+  {cat:'', name:'LOIS PARCEL (신용택배 접수)', id:'sn141126', pw:'Ssn8410!!!', url:'2차 인증 info@sinoon.kr', cs:''},
+  {cat:'', name:'(주)디와이컴퍼니 (신용 택배 수탁점)', id:'기혁민', pw:'010-8716-0343', url:'', cs:''},
+  {cat:'', name:'윙고', id:'info@sinoon.kr', pw:'Ssn8410!', url:'https://www.winggo.kr/', cs:''},
+  {cat:'부자재', name:'맞춤박스', id:'sinoon', pw:'sinoon141126', url:'http://www.mcbox.co.kr/', cs:''},
+  {cat:'', name:'박스봉투', id:'네이버SNS 연동', pw:'', url:'http://www.boxbong.com/', cs:''},
+  {cat:'', name:'미투박스', id:'sinoon', pw:'sinoon141126', url:'http://www.me2box.com/', cs:''},
+  {cat:'', name:'슈퍼팩 (TOF지퍼백)', id:'sinoonlab', pw:'sinoon141126', url:'https://superpack.co.kr/', cs:''},
+  {cat:'', name:'YD박스몰', id:'sinoonlab', pw:'sinoon141126', url:'https://www.ydboxmall.com/', cs:''},
+  {cat:'', name:'성원애드피아', id:'sinoonlab2', pw:'sinoon141126', url:'', cs:''},
+  {cat:'', name:'혜림봉투', id:'sinoonlab', pw:'sn141126!', url:'https://www.hrbongtoo.com/', cs:''},
+  {cat:'전자계약', name:'CS BILL', id:'creamwave', pw:'sinoon141126', url:'https://www.csbill.co.kr', cs:''},
+  {cat:'', name:'SBA', id:'creamwave', pw:'sn141126!', url:'https://new.sba.kr/', cs:''},
+  {cat:'', name:'나이스다큐', id:'creamwave', pw:'sn141126!', url:'https://www.nicedocu.com/', cs:''},
+  {cat:'', name:'Taxbill365', id:'sinoonlab', pw:'sn141126!', url:'https://hancollection.taxbill365.com/', cs:''},
+  {cat:'', name:'신세계 전자계약', id:'creamwave', pw:'sinoon141126!!!', url:'https://www.ecdocu.co.kr', cs:''},
+  {cat:'etc', name:'크몽', id:'sinoonlab@naver.com', pw:'Sn141126!', url:'https://kmong.com/', cs:''},
+  {cat:'', name:'오피스디포 (비품구매)', id:'creamwave1', pw:'sn141126!', url:'', cs:''},
+  {cat:'', name:'쿠팡 (비품구매)_사업자회원', id:'info@sinoon.kr', pw:'Ssn8410!', url:'', cs:''},
+  {cat:'', name:'사무실 WIFI', id:'sinoon_5G', pw:'sinoon141126!', url:'', cs:''},
+  {cat:'', name:'회의실 WIFI', id:'KT_GIGA_5G_Wave2_D8DA', pw:'7dfh35ef95', url:'', cs:''},
+  {cat:'', name:'PG사 모빌리언스', id:'L0344491', pw:'', url:'', cs:''},
+  {cat:'', name:'KT텔레캅', id:'', pw:'', url:'', cs:'1588-0112'},
+  {cat:'', name:'자사몰 직원구매', id:'snstaff', pw:'Ssn141126!!', url:'', cs:''},
+  {cat:'', name:'카페24 뱅크다', id:'info@sinoon.kr', pw:'sn141126!@@', url:'https://a.bankda.com/dashboard', cs:'매치작업에서 입금내역 확인'},
+  {cat:'', name:'다우 CS계정', id:'cs@sinoon.kr', pw:'sn14126^!^', url:'', cs:''},
+  {cat:'', name:'유니포스트', id:'sinoon', pw:'sn141126!!', url:'https://unipost.co.kr/portal/', cs:''},
+  {cat:'오프라인', name:'현대백화점', id:'creamwave', pw:'Ssn141126!', url:'https://partners.ehyundai.com', cs:'031-5170-3284'},
+  {cat:'', name:'스타필드 웹하드 - 인테리어/물량 관련', id:'sfsuwon', pw:'sw1234', url:'https://only.webhard.co.kr/', cs:''},
+  {cat:'', name:'스타필드 웹하드 - 프로모션 관련', id:'star9', pw:'1q2w3e4r@', url:'', cs:''},
+  {cat:'', name:'스타필드 터넨트', id:'1588801946', pw:'1q2w3e4r@', url:'https://tenant.starfield.co.kr/', cs:''},
+  {cat:'티몰', name:'TP자료 업로드 계정', id:'gtog.sinoon@gmail.com', pw:'sinoon1028!@', url:'구글 드라이브', cs:''},
+  {cat:'', name:'지투지 법인폰', id:'010-7318-1946', pw:'', url:'갤럭시 A15', cs:''},
+  {cat:'해외결제', name:'페이팔', id:'hboh@sinoon.kr', pw:'Sn141126!', url:'https://www.paypal.com/', cs:''},
+  {cat:'', name:'', id:'creamwave', pw:'Sn141126!', url:'', cs:''},
+  {cat:'', name:'알리페이', id:'info@sinoon.kr', pw:'sn141126!@!@', url:'https://globalprod.alipay.com/', cs:'알리페이 지불관련 비밀번호 (!@!@@!@) / sinoon141126'},
+  {cat:'해외 배송', name:'FedEx', id:'creamwave', pw:'Ssn141126!', url:'https://www.fedex.com/', cs:''},
+  {cat:'', name:'패스트박스(디허브/호미어)', id:'homure', pw:'homure@001', url:'https://dhub.fastbox.co.kr/', cs:''},
+  {cat:'', name:'패스트박스(디허브/시눈)', id:'sinoon', pw:'Ssn141126!', url:'https://dhub.fastbox.co.kr/', cs:''},
+  {cat:'', name:'DHL', id:'info@sinoon.kr', pw:'Sn141126!@!@', url:'https://mydhl.express.dhl/', cs:'수출 고객번호 : 596499059 / 수입 고객번호 : 593435856 / 저장명 : CREAMWAVE'}
+];
+
+function scmLoadEdits(){
+  try{return JSON.parse(localStorage.getItem('sinoon_scm_edits')||'{}');}catch(e){return {};}
+}
+function scmSaveEdits(edits){
+  try{localStorage.setItem('sinoon_scm_edits',JSON.stringify(edits));}catch(e){}
+}
+
+function scmAuthenticate(){
+  var pw=prompt('SCM 탭 비밀번호를 입력하세요:','');
+  if(pw===SCM_PW){
+    scmAuthenticated=true;
+    renderTabScm();
+  } else if(pw!==null){
+    alert('비밀번호가 올바르지 않습니다.');
+  }
+}
+
+function scmToggleLock(){
+  scmUnlocked=!scmUnlocked;
+  scmApplyLockState();
+}
+
+function scmApplyLockState(){
+  document.querySelectorAll('.scm-editable').forEach(function(el){
+    el.contentEditable=scmUnlocked?'true':'false';
+    el.style.cursor=scmUnlocked?'text':'default';
+  });
+  var lockBtn=document.getElementById('scm-lock-btn');
+  var saveBtn=document.getElementById('scm-save-btn');
+  var lockBadge=document.getElementById('scm-lock-badge');
+  var editBadge=document.getElementById('scm-edit-badge');
+  if(lockBtn){
+    lockBtn.textContent=scmUnlocked?'🔒 편집 잠금':'🔓 편집 잠금 해제';
+    lockBtn.style.background=scmUnlocked?'#c0392b':'#8b6f5e';
+    lockBtn.style.borderColor=scmUnlocked?'#c0392b':'#8b6f5e';
+  }
+  if(saveBtn) saveBtn.style.display=scmUnlocked?'inline-block':'none';
+  if(lockBadge) lockBadge.style.display=scmUnlocked?'none':'inline-block';
+  if(editBadge) editBadge.style.display=scmUnlocked?'inline-block':'none';
+}
+
+function scmCellSave(el){
+  var idx=el.dataset.idx;
+  var field=el.dataset.field;
+  var val=el.innerText.trim();
+  var edits=scmLoadEdits();
+  if(!edits[idx]) edits[idx]={};
+  edits[idx][field]=val;
+  scmSaveEdits(edits);
+}
+
+function scmSaveAll(){
+  document.querySelectorAll('.scm-editable').forEach(function(el){scmCellSave(el);});
+  _jbPutAll(function(){
+    var nb=document.getElementById('jb-sync-notice');
+    if(nb){nb.style.opacity='1';nb.textContent='✅ 저장 완료 (전직원 동기화됨)';setTimeout(function(){nb.style.opacity='0';},3000);}
+  },function(err){
+    var nb=document.getElementById('jb-sync-notice');
+    if(nb){nb.style.opacity='1';nb.style.background='#c0392b';nb.textContent='⚠️ 로컬만 저장됨 (동기화 오류: '+err+')';setTimeout(function(){nb.style.opacity='0';nb.style.background='#1565c0';},4000);}
+  });
+}
+
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderTabScm(){
+  var el=document.getElementById('tab7');
+  if(!el) return;
+  if(!scmAuthenticated){
+    el.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;gap:20px;">'
+      +'<div style="font-size:48px;">🔐</div>'
+      +'<div style="font-size:18px;font-weight:700;color:#1a1a2e;">SCM 접근 제한</div>'
+      +'<div style="font-size:13px;color:#888;text-align:center;">이 탭은 보안 문서입니다.<br>비밀번호를 입력해야 내용을 확인할 수 있습니다.</div>'
+      +'<button onclick="scmAuthenticate()" style="padding:10px 28px;background:#1a1a2e;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">🔑 비밀번호 입력</button>'
+      +'</div>';
+    return;
+  }
+  var edits=scmLoadEdits();
+  var COLS=['name','id','pw','url','cs'];
+  var catColors={
+    '온라인':'#1a1a2e','APPLE':'#555','셀러툴':'#7b5ea7','ERP':'#2d6a4f',
+    '상표권':'#b5451b','SNS':'#0077b6','Developers':'#333','시스템구축':'#5a5a00',
+    '물류':'#1b4965','부자재':'#6d4c41','전자계약':'#3d405b','etc':'#607d8b',
+    '오프라인':'#4a4e69','티몰':'#c0392b','해외결제':'#1565c0','해외 배송':'#2e7d32'
+  };
+  var html='<div style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">'
+    +'<h2 style="margin:0;font-size:18px;font-weight:700;color:#1a1a2e;">🔐 SCM 계정 관리</h2>'
+    +'<span id="scm-lock-badge" style="background:#eee;border:1px solid #ccc;border-radius:4px;padding:2px 7px;font-size:10px;color:#999;font-weight:600;">🔒 보기 전용</span>'
+    +'<span id="scm-edit-badge" style="display:none;background:#d4a52022;border:1px solid #d4a520;border-radius:4px;padding:2px 7px;font-size:10px;color:#d4a520;font-weight:600;">✏️ 편집 모드</span>'
+    +'<button id="scm-lock-btn" onclick="scmToggleLock()" style="font-size:11px;padding:4px 12px;border:1px solid #8b6f5e;border-radius:6px;background:#8b6f5e;color:#fff;cursor:pointer;">🔓 편집 잠금 해제</button>'
+    +'<button id="scm-save-btn" onclick="scmSaveAll()" style="display:none;font-size:11px;padding:4px 14px;border:none;border-radius:6px;background:#2d6a4f;color:#fff;font-weight:700;cursor:pointer;">💾 저장</button>'
+    +'</div>';
+  html+='<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:12px;">';
+  html+='<thead><tr style="background:#1a1a2e;color:#fff;">'
+    +'<th style="padding:9px 10px;font-weight:600;border:1px solid #444;text-align:center;width:90px;">구분</th>'
+    +'<th style="padding:9px 10px;font-weight:600;border:1px solid #444;text-align:center;width:200px;">업체명</th>'
+    +'<th style="padding:9px 10px;font-weight:600;border:1px solid #444;text-align:center;width:160px;">ID</th>'
+    +'<th style="padding:9px 10px;font-weight:600;border:1px solid #444;text-align:center;width:150px;">PW</th>'
+    +'<th style="padding:9px 10px;font-weight:600;border:1px solid #444;text-align:center;width:280px;">URL</th>'
+    +'<th style="padding:9px 10px;font-weight:600;border:1px solid #444;text-align:center;width:220px;">고객센터</th>'
+    +'</tr></thead><tbody>';
+  var catInfo=[];var ci=-1;
+  SCM_DATA.forEach(function(row,i){
+    if(row.cat){catInfo.push({startIdx:i,cat:row.cat,span:1});ci++;}
+    else if(ci>=0){catInfo[ci].span++;}
+  });
+  var catInfoMap={};catInfo.forEach(function(c){catInfoMap[c.startIdx]=c;});
+  SCM_DATA.forEach(function(row,i){
+    var edit=edits[i]||{};
+    var bg=(i%2===0)?'#fff':'#fafafa';
+    html+='<tr style="background:'+bg+';">';
+    if(catInfoMap[i]){
+      var c=catInfoMap[i];var cc=catColors[c.cat]||'#555';
+      html+='<td rowspan="'+c.span+'" style="padding:8px 6px;border:1px solid #e0e0e0;background:'+cc+';color:#fff;font-weight:700;font-size:11px;text-align:center;vertical-align:middle;">'+escHtml(c.cat)+'</td>';
+    }
+    COLS.forEach(function(field){
+      var val=edit[field]!==undefined?edit[field]:row[field];
+      html+='<td style="padding:0;border:1px solid #e0e0e0;">'
+        +'<div class="scm-editable" contenteditable="false" data-idx="'+i+'" data-field="'+field+'"'
+        +' onblur="scmCellSave(this)"'
+        +' style="padding:7px 10px;min-height:28px;outline:none;cursor:default;word-break:break-all;line-height:1.4;text-align:center;">'
+        +escHtml(String(val||''))+'</div></td>';
+    });
+    html+='</tr>';
+  });
+  html+='</tbody></table></div>';
+  el.innerHTML=html;
+  scmApplyLockState();
+}
+// ── SCM 탭 끝 ────────────────────────────────────────────────────────
+
 document.addEventListener('focusin',function(e){
   var cell=e.target.closest&&e.target.closest('.mkt-editable');
   if(cell){mktActiveCell=cell;}
@@ -3210,7 +3504,6 @@ document.addEventListener('selectionchange',function(){
 });
 
 (function(){
-  // sync 알림 배지 생성
   var nb=document.createElement('div');
   nb.id='jb-sync-notice';
   nb.style.cssText='position:fixed;bottom:20px;right:20px;background:#1565c0;color:#fff;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;z-index:9999;pointer-events:none;transition:opacity 0.5s;opacity:0;box-shadow:0 2px 10px #0003;';
@@ -3218,11 +3511,10 @@ document.addEventListener('selectionchange',function(){
 
   jsonbinLoad(function(){
     try{
-        s4LoadFullPromo();
+      s4LoadFullPromo();
       mktLoad();
       renderHeader();
       switchTab(0);
-      // 30초마다 JSONBin 체크 → 변경 감지 시 자동 갱신
       setInterval(_jbPoll,30000);
     }catch(e){
       console.error('초기화 오류:', e);
@@ -3232,4 +3524,3 @@ document.addEventListener('selectionchange',function(){
 
 </script>
 </body>
-</html>
