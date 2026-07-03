@@ -2322,6 +2322,18 @@ function s4Focus(el){
   el.style.outline='2px solid #d4a520';
   el.style.background='#fffef7';
 }
+function s4NumFocus(el){
+  // 포커스 시 쉼표 제거해서 순수 숫자만 편집 가능하게
+  const raw=el.textContent.replace(/[^0-9]/g,'');
+  el.textContent=raw||'';
+  // 커서를 텍스트 끝으로 이동
+  const range=document.createRange();
+  const sel=window.getSelection();
+  range.selectNodeContents(el);
+  range.collapse(false);
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
 function s4SaveCell(el){
   el.style.outline='';
   const idx=parseInt(el.dataset.idx);
@@ -2341,9 +2353,11 @@ function s4SaveCell(el){
   if(key==='qty_raw'){
     const num=parseInt(clean.replace(/[^0-9]/g,''));
     PROMO_DATA[idx].qty=isNaN(num)?null:num;
+    el.textContent=(!isNaN(num)&&num!==null)?num.toLocaleString():'—';
   } else if(key==='tgt_raw'){
     const num=parseInt(clean.replace(/[^0-9]/g,''));
     PROMO_DATA[idx].tgt=isNaN(num)?null:num;
+    el.textContent=(!isNaN(num)&&num!==null)?num.toLocaleString():'—';
     // ── 목표 변경 시에도 달성률 자동 재계산 ──
     if(!isNaN(num)&&num>0&&PROMO_DATA[idx].sales!=null){
       const autoAch=Math.round((PROMO_DATA[idx].sales/num)*1000)/10;
@@ -2359,6 +2373,7 @@ function s4SaveCell(el){
   } else if(key==='sales_raw'){
     const num=parseInt(clean.replace(/[^0-9]/g,''));
     PROMO_DATA[idx].sales=isNaN(num)?null:num;
+    el.textContent=(!isNaN(num)&&num!==null)?num.toLocaleString():'—';
     // ── 판매금액 입력 시 달성률 자동 계산 ──
     if(!isNaN(num)&&PROMO_DATA[idx].tgt&&PROMO_DATA[idx].tgt>0){
       const autoAch=Math.round((num/PROMO_DATA[idx].tgt)*1000)/10;
@@ -2481,10 +2496,10 @@ function s4Render(){
       const ceCursor=s4Unlocked?'text':'default';
       html+=`<tr style="border-bottom:1px solid #ede8e1;" onmouseover="this.style.background='#faf8f5'" onmouseout="this.style.background=''" >
         <td style="${cellStyle}font-weight:600;color:#2d2926;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;cursor:${ceCursor};${p.highlight?'background:#fffbea;':''}" contenteditable="${ce}" data-idx="${gi}" data-key="name" onblur="s4SaveCell(this)">${p.name}</td>
-        <td style="${cellStyle}background:#ffffff;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="tgt_raw" onblur="s4SaveCell(this)">${p.tgt?p.tgt.toLocaleString():'—'}</td>
+        <td style="${cellStyle}background:#ffffff;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="tgt_raw" onfocus="s4NumFocus(this)" onblur="s4SaveCell(this)">${p.tgt?p.tgt.toLocaleString():'—'}</td>
         <td style="${cellStyle}font-size:11px;color:#1a1a1a;background:#ffffff;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="period" onblur="s4SaveCell(this)">${p.period||''}</td>
-        <td style="${cellStyle}${YEL_BG}color:#c0392b;font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="qty_raw" onblur="s4SaveCell(this)">${(p.qty!=null&&p.qty!==0)?p.qty.toLocaleString():'—'}</td>
-        <td style="${cellStyle}${YEL_BG}color:#c0392b;font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="sales_raw" onblur="s4SaveCell(this)">${p.sales?p.sales.toLocaleString():'—'}</td>
+        <td style="${cellStyle}${YEL_BG}color:#c0392b;font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="qty_raw" onfocus="s4NumFocus(this)" onblur="s4SaveCell(this)">${(p.qty!=null&&p.qty!==0)?p.qty.toLocaleString():'—'}</td>
+        <td style="${cellStyle}${YEL_BG}color:#c0392b;font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="sales_raw" onfocus="s4NumFocus(this)" onblur="s4SaveCell(this)">${p.sales?p.sales.toLocaleString():'—'}</td>
         <td style="${cellStyle}${YEL_BG}color:${achColor};font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="ach" onblur="s4SaveAch(this)">${(p.ach!==null&&p.ach!==undefined&&p.ach!==0)?p.ach+'%':'—'}</td>
         <td style="${cellStyle}background:#ffffff;"><div style="font-size:11px;color:#1a1a1a;line-height:1.8;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;text-align:center;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="scheme_h" onblur="s4SaveCell(this)">${p.scheme_h||''}</div></td>
         <td style="${cellStyle}background:#ffffff;"><div style="${subStyle}cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="ad_h" onblur="s4SaveCell(this)">${p.ad_h||''}</div></td>
