@@ -221,23 +221,63 @@ const JSONBIN_BIN_ID='6a462cecf5f4af5e2952d47c';
 const JSONBIN_API_KEY='$2a$10$0MkDEYG86yUaP5SteJ6bM.etckjJ08GTqlMVZXS8I11gcGyq8ohbi';
 const JSONBIN_URL='https://api.jsonbin.io/v3/b/'+JSONBIN_BIN_ID;
 var _jbSaveTimer=null;
+var _jbLastHash='';
+var JB_KEYS=['sinoon_promo_memos','sinoon_promo_data','sinoon_s4_sparse_edits',
+  'sinoon_mkt_budget','sinoon_mkt_spend','sinoon_mkt_target','sinoon_mkt_spend_total',
+  'sinoon_mkt_weekly','sinoon_mkt_review','sinoon_mkt_daily_report','sinoon_mkt_daily_table'];
 
+// 현재 localStorage 상태 해시 (변경 감지용)
+function _jbGetHash(){
+  var s='';
+  JB_KEYS.forEach(function(k){var v=localStorage.getItem(k);if(v)s+=v.length+',';});
+  return s;
+}
+
+// JSONBin에 PUT (공통)
+function _jbPutAll(onOk,onErr){
+  var d={};
+  JB_KEYS.forEach(function(k){var v=localStorage.getItem(k);if(v)d[k]=v;});
+  fetch(JSONBIN_URL,{
+    method:'PUT',
+    headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY,'X-Bin-Versioning':'false'},
+    body:JSON.stringify(d)
+  }).then(function(r){
+    if(r.ok){if(onOk)onOk();}
+    else{if(onErr)onErr(r.status);}
+  }).catch(function(e){if(onErr)onErr(e);});
+}
+
+// 기존 호환용 (프로모션 리뷰 저장에서 아직 사용 가능)
 function jsonbinSave(){
   clearTimeout(_jbSaveTimer);
-  _jbSaveTimer=setTimeout(function(){
-    var keys=['sinoon_promo_memos','sinoon_promo_data','sinoon_s4_sparse_edits',
-      'sinoon_mkt_budget','sinoon_mkt_spend','sinoon_mkt_target','sinoon_mkt_spend_total',
-      'sinoon_mkt_weekly','sinoon_mkt_review','sinoon_mkt_daily_report','sinoon_mkt_daily_table'];
-    var d={};
-    keys.forEach(function(k){var v=localStorage.getItem(k);if(v)d[k]=v;});
-    fetch(JSONBIN_URL,{
-      method:'PUT',
-      headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY,'X-Bin-Versioning':'false'},
-      body:JSON.stringify(d)
-    }).then(function(r){
-      if(!r.ok)console.warn('JSONBin 저장 실패:',r.status);
-    }).catch(function(e){console.warn('JSONBin 저장 오류:',e);});
-  },800);
+  _jbSaveTimer=setTimeout(function(){_jbPutAll(null,function(e){console.warn('JSONBin 오류:',e);});},800);
+}
+
+// JSONBin에서 가져온 데이터를 localStorage + 화면에 적용
+function _jbApplyData(d){
+  JB_KEYS.forEach(function(k){if(d[k])localStorage.setItem(k,d[k]);});
+  _jbLastHash=_jbGetHash();
+  try{s4LoadFullPromo();}catch(e){}
+  try{mktLoad();}catch(e){}
+  var btns=[...document.querySelectorAll('.tab-btn')];
+  var ai=btns.indexOf(document.querySelector('.tab-btn.active'));
+  if(ai===5)try{renderTab4();}catch(e){}
+  if(ai===6)try{renderTabMkt();}catch(e){}
+  var n=document.getElementById('jb-sync-notice');
+  if(n){n.textContent='🔄 새 데이터 업데이트됨';n.style.opacity='1';
+    setTimeout(function(){n.style.opacity='0';},2500);}
+}
+
+// 30초마다 변경 감지 폴링
+function _jbPoll(){
+  fetch(JSONBIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_API_KEY}})
+  .then(function(r){return r.json();})
+  .then(function(res){
+    var d=res.record;if(!d||typeof d!=='object')return;
+    var newHash='';
+    JB_KEYS.forEach(function(k){if(d[k])newHash+=d[k].length+',';});
+    if(newHash&&newHash!==_jbLastHash){_jbApplyData(d);}
+  }).catch(function(){});
 }
 
 function jsonbinLoad(callback){
@@ -2336,10 +2376,18 @@ function s4LoadEdits(){
 function s4SaveAll(){
   s4SaveEdits();
   s4SaveFullPromo();
-  jsonbinSave();
   var t=document.getElementById('s4-save-toast');
-  if(t){t.style.opacity='1';t.style.transform='translateY(0)';
-    setTimeout(function(){t.style.opacity='0';t.style.transform='translateY(-8px)';},2000);}
+  if(t){t.textContent='⏳ 클라우드 동기화 중...';t.style.background='#5a6a7a';t.style.opacity='1';t.style.transform='translateY(0)';}
+  _jbPutAll(function(){
+    if(t){t.textContent='✅ 저장 완료 (전직원 동기화됨)';t.style.background='#2d6a4f';
+      setTimeout(function(){t.style.opacity='0';t.style.transform='translateY(-8px)';
+        setTimeout(function(){t.textContent='✅ 저장 완료 (전직원 동기화됨)';t.style.background='#2d6a4f';},400);},2500);}
+    _jbLastHash=_jbGetHash();
+  },function(e){
+    if(t){t.textContent='⚠️ 클라우드 오류 (로컬만 저장됨)';t.style.background='#c0392b';
+      setTimeout(function(){t.style.opacity='0';t.style.transform='translateY(-8px)';},2500);}
+    console.warn('JSONBin 저장 오류:',e);
+  });
 }
 function s4LocalSave(){s4SaveEdits();}
 function s4LocalLoad(){s4LoadEdits();}
@@ -2572,6 +2620,10 @@ function mktLoad(){
 }
 
 function mktSaveAll(){
+  // DOM에서 최신 내용 먼저 수집
+  mktSaveReview();
+  mktSaveDailyReport();
+  // localStorage 저장
   localStorage.setItem('sinoon_mkt_budget',JSON.stringify(MKT_BUDGET));
   localStorage.setItem('sinoon_mkt_spend',JSON.stringify(MKT_SPEND));
   localStorage.setItem('sinoon_mkt_target',JSON.stringify(MKT_TARGET));
@@ -2580,9 +2632,36 @@ function mktSaveAll(){
   localStorage.setItem('sinoon_mkt_review',JSON.stringify(MKT_REVIEW));
   localStorage.setItem('sinoon_mkt_daily_report',JSON.stringify(MKT_DAILY_REPORT));
   localStorage.setItem('sinoon_mkt_daily_table',JSON.stringify(MKT_DAILY_TABLE));
-  jsonbinSave();
+  // 토스트: 저장 중 표시
   var t=document.getElementById('mkt-save-toast');
-  if(t){t.style.opacity='1';t.style.display='';setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.style.display='none';},400);},1800);}
+  if(t){t.textContent='⏳ 클라우드 동기화 중...';t.style.background='#5a6a7a';t.style.opacity='1';t.style.display='';}
+  // JSONBin 클라우드 동기화 (직접 처리해서 결과 표시)
+  var keys=['sinoon_promo_memos','sinoon_promo_data','sinoon_s4_sparse_edits',
+    'sinoon_mkt_budget','sinoon_mkt_spend','sinoon_mkt_target','sinoon_mkt_spend_total',
+    'sinoon_mkt_weekly','sinoon_mkt_review','sinoon_mkt_daily_report','sinoon_mkt_daily_table'];
+  var d={};
+  keys.forEach(function(k){var v=localStorage.getItem(k);if(v)d[k]=v;});
+  fetch(JSONBIN_URL,{
+    method:'PUT',
+    headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY,'X-Bin-Versioning':'false'},
+    body:JSON.stringify(d)
+  }).then(function(r){
+    if(t){
+      if(r.ok){
+        t.textContent='✅ 저장 완료 (클라우드 동기화됨)';t.style.background='#2d6a4f';
+      }else{
+        t.textContent='⚠️ 로컬 저장만 됨 (클라우드 오류 '+r.status+')';t.style.background='#c0392b';
+      }
+      t.style.opacity='1';
+      setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.style.display='none';t.textContent='✅ 저장 완료 (클라우드 동기화됨)';t.style.background='#2d6a4f';},400);},2500);
+    }
+  }).catch(function(e){
+    if(t){
+      t.textContent='⚠️ 네트워크 오류 - 로컬만 저장됨';t.style.background='#c0392b';
+      t.style.opacity='1';
+      setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.style.display='none';t.textContent='✅ 저장 완료 (클라우드 동기화됨)';t.style.background='#2d6a4f';},400);},2500);
+    }
+  });
 }
 
 function mktToggleLock(){
@@ -3156,12 +3235,21 @@ document.addEventListener('selectionchange',function(){
 });
 
 (function(){
+  // sync 알림 배지 생성
+  var nb=document.createElement('div');
+  nb.id='jb-sync-notice';
+  nb.style.cssText='position:fixed;bottom:20px;right:20px;background:#1565c0;color:#fff;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;z-index:9999;pointer-events:none;transition:opacity 0.5s;opacity:0;box-shadow:0 2px 10px #0003;';
+  document.body.appendChild(nb);
+
   jsonbinLoad(function(){
     try{
+      _jbLastHash=_jbGetHash();
       s4LoadFullPromo();
       mktLoad();
       renderHeader();
       switchTab(0);
+      // 30초마다 JSONBin 체크 → 변경 감지 시 자동 갱신
+      setInterval(_jbPoll,30000);
     }catch(e){
       console.error('초기화 오류:', e);
     }
