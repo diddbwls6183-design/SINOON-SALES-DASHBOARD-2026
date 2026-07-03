@@ -2289,7 +2289,7 @@ function s4ApplyLockState(){
     if(lb){lb.textContent='🔓 편집 잠금 해제';lb.style.background='#8b6f5e';lb.style.borderColor='#8b6f5e';}
     if(sb) sb.style.display='none';
   }
-  document.querySelectorAll('.s4-editable').forEach(function(el){
+  document.querySelectorAll('.s4-editable, #s4-table [contenteditable], #s4-table [data-idx]').forEach(function(el){
     el.contentEditable = s4Unlocked ? 'true' : 'false';
     el.style.cursor = s4Unlocked ? 'text' : 'default';
   });
@@ -2429,17 +2429,19 @@ function s4Render(){
       const memoTxt=(memoStore[mk]!==undefined)?memoStore[mk]:(p.memo||'');
       const achColor=(p.ach===null||p.ach===undefined||p.ach===0)?'#999':p.ach>=100?'#1e7a4a':p.ach>=70?'#d4830a':'#c0392b';
       const hlBg=p.highlight?'background:#fffbea;':'';
+      const ce=s4Unlocked?'true':'false';
+      const ceCursor=s4Unlocked?'text':'default';
       html+=`<tr style="border-bottom:1px solid #ede8e1;" onmouseover="this.style.background='#faf8f5'" onmouseout="this.style.background=''" >
-        <td style="${cellStyle}font-weight:600;color:#2d2926;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;${p.highlight?'background:#fffbea;':''}" contenteditable="true" data-idx="${gi}" data-key="name" onblur="s4SaveCell(this)">${p.name}</td>
-        <td style="${cellStyle}background:#ffffff;" contenteditable="true" data-idx="${gi}" data-key="tgt_raw" onblur="s4SaveCell(this)">${p.tgt?p.tgt.toLocaleString():'—'}</td>
-        <td style="${cellStyle}font-size:11px;color:#1a1a1a;background:#ffffff;" contenteditable="true" data-idx="${gi}" data-key="period" onblur="s4SaveCell(this)">${p.period||''}</td>
-        <td style="${cellStyle}${YEL_BG}color:#c0392b;font-weight:700;" contenteditable="true" data-idx="${gi}" data-key="qty_raw" onblur="s4SaveCell(this)">${(p.qty!=null&&p.qty!==0)?p.qty.toLocaleString():'—'}</td>
-        <td style="${cellStyle}${YEL_BG}color:#c0392b;font-weight:700;" contenteditable="true" data-idx="${gi}" data-key="sales_raw" onblur="s4SaveCell(this)">${p.sales?p.sales.toLocaleString():'—'}</td>
-        <td style="${cellStyle}${YEL_BG}color:${achColor};font-weight:700;" contenteditable="true" data-idx="${gi}" onblur="s4SaveAch(this)">${(p.ach!==null&&p.ach!==undefined&&p.ach!==0)?p.ach+'%':'—'}</td>
-        <td style="${cellStyle}background:#ffffff;"><div style="font-size:11px;color:#1a1a1a;line-height:1.8;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;text-align:center;" contenteditable="true" data-idx="${gi}" data-key="scheme_h" onblur="s4SaveCell(this)">${p.scheme_h||''}</div></td>
-        <td style="${cellStyle}background:#ffffff;"><div style="${subStyle}" contenteditable="true" data-idx="${gi}" data-key="ad_h" onblur="s4SaveCell(this)">${p.ad_h||''}</div></td>
+        <td style="${cellStyle}font-weight:600;color:#2d2926;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;cursor:${ceCursor};${p.highlight?'background:#fffbea;':''}" contenteditable="${ce}" data-idx="${gi}" data-key="name" onblur="s4SaveCell(this)">${p.name}</td>
+        <td style="${cellStyle}background:#ffffff;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="tgt_raw" onblur="s4SaveCell(this)">${p.tgt?p.tgt.toLocaleString():'—'}</td>
+        <td style="${cellStyle}font-size:11px;color:#1a1a1a;background:#ffffff;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="period" onblur="s4SaveCell(this)">${p.period||''}</td>
+        <td style="${cellStyle}${YEL_BG}color:#c0392b;font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="qty_raw" onblur="s4SaveCell(this)">${(p.qty!=null&&p.qty!==0)?p.qty.toLocaleString():'—'}</td>
+        <td style="${cellStyle}${YEL_BG}color:#c0392b;font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="sales_raw" onblur="s4SaveCell(this)">${p.sales?p.sales.toLocaleString():'—'}</td>
+        <td style="${cellStyle}${YEL_BG}color:${achColor};font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" onblur="s4SaveAch(this)">${(p.ach!==null&&p.ach!==undefined&&p.ach!==0)?p.ach+'%':'—'}</td>
+        <td style="${cellStyle}background:#ffffff;"><div style="font-size:11px;color:#1a1a1a;line-height:1.8;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;text-align:center;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="scheme_h" onblur="s4SaveCell(this)">${p.scheme_h||''}</div></td>
+        <td style="${cellStyle}background:#ffffff;"><div style="${subStyle}cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="ad_h" onblur="s4SaveCell(this)">${p.ad_h||''}</div></td>
         <td style="${cellStyle}${YEL_BG}vertical-align:middle;">
-          <div style="font-size:11px;font-weight:700;color:#1a1a1a;line-height:1.8;text-align:center;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;" contenteditable="true" data-idx="${gi}" data-key="review_h" onblur="s4SaveCell(this)">${p.review_h||''}</div>
+          <div style="font-size:11px;font-weight:700;color:#1a1a1a;line-height:1.8;text-align:center;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="review_h" onblur="s4SaveCell(this)">${p.review_h||''}</div>
           </td>
       </tr>`;
     });
