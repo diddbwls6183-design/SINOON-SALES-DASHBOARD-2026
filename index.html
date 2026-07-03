@@ -216,47 +216,53 @@ body{-webkit-text-size-adjust:100%;}
 
 <script>
 
-// ── JSONBin.io 클라우드 동기화 ──────────────────────────
-const JSONBIN_BIN_ID='6a471410da38895dfe25bdde';
-const JSONBIN_API_KEY='$2a$10$0MkDEYG86yUaP5SteJ6bM.etckjV08GTqlMVZXS8I11gcGyq8ohbi';
-const JSONBIN_URL='https://api.jsonbin.io/v3/b/'+JSONBIN_BIN_ID;
+// ── GitHub 클라우드 동기화 ──────────────────────────────────────
+var GH_TOKEN='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';
+var GH_API='https://api.github.com/repos/diddbwls6183-design/SINOON-SALES-DASHBOARD-2026/contents/dashboard-sync.json';
 var _jbSaveTimer=null;
-var _jbLastHash='';
+var _ghLastSha='';
 var JB_KEYS=['sinoon_promo_memos','sinoon_promo_data','sinoon_s4_sparse_edits',
   'sinoon_mkt_budget','sinoon_mkt_spend','sinoon_mkt_target','sinoon_mkt_spend_total',
   'sinoon_mkt_weekly','sinoon_mkt_review','sinoon_mkt_daily_report','sinoon_mkt_daily_table'];
 
-// 현재 localStorage 상태 해시 (변경 감지용)
-function _jbGetHash(){
-  var s='';
-  JB_KEYS.forEach(function(k){var v=localStorage.getItem(k);if(v)s+=v.length+',';});
-  return s;
+function _ghEnc(str){try{return btoa(unescape(encodeURIComponent(str)));}catch(e){return btoa(str);}}
+function _ghDec(str){try{return decodeURIComponent(escape(atob(str.replace(/\s/g,''))));}catch(e){return atob(str.replace(/\s/g,''));}}
+
+function _ghReadFile(cb){
+  fetch(GH_API+'?t='+Date.now(),{
+    headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'}
+  }).then(function(r){return r.json();}).then(function(res){
+    if(!res||!res.content){cb(null,null);return;}
+    var data=JSON.parse(_ghDec(res.content));
+    _ghLastSha=res.sha||'';
+    cb(data,res.sha);
+  }).catch(function(){cb(null,null);});
 }
 
-// JSONBin에 PUT (공통)
+// GitHub에 PUT (공통) - 기존 함수명 유지
 function _jbPutAll(onOk,onErr){
   var d={};
   JB_KEYS.forEach(function(k){var v=localStorage.getItem(k);if(v)d[k]=v;});
-  fetch(JSONBIN_URL,{
+  var body={message:'dashboard sync '+new Date().toISOString(),content:_ghEnc(JSON.stringify(d))};
+  if(_ghLastSha)body.sha=_ghLastSha;
+  fetch(GH_API,{
     method:'PUT',
-    headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY,'X-Bin-Versioning':'false'},
-    body:JSON.stringify(d)
+    headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+    body:JSON.stringify(body)
   }).then(function(r){
-    if(r.ok){if(onOk)onOk();}
-    else{if(onErr)onErr(r.status);}
+    if(r.ok){r.json().then(function(res){if(res.content)_ghLastSha=res.content.sha;});if(onOk)onOk();}
+    else{r.text().then(function(t){if(onErr)onErr(r.status);});}
   }).catch(function(e){if(onErr)onErr(e);});
 }
 
-// 기존 호환용 (프로모션 리뷰 저장에서 아직 사용 가능)
 function jsonbinSave(){
   clearTimeout(_jbSaveTimer);
-  _jbSaveTimer=setTimeout(function(){_jbPutAll(null,function(e){console.warn('JSONBin 오류:',e);});},800);
+  _jbSaveTimer=setTimeout(function(){_jbPutAll(null,function(e){console.warn('GitHub 동기화 오류:',e);});},800);
 }
 
-// JSONBin에서 가져온 데이터를 localStorage + 화면에 적용
+// 가져온 데이터를 localStorage + 화면에 적용
 function _jbApplyData(d){
   JB_KEYS.forEach(function(k){if(d[k])localStorage.setItem(k,d[k]);});
-  _jbLastHash=_jbGetHash();
   try{s4LoadFullPromo();}catch(e){}
   try{mktLoad();}catch(e){}
   var btns=[...document.querySelectorAll('.tab-btn')];
@@ -270,31 +276,23 @@ function _jbApplyData(d){
 
 // 30초마다 변경 감지 폴링
 function _jbPoll(){
-  fetch(JSONBIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_API_KEY}})
-  .then(function(r){return r.json();})
-  .then(function(res){
-    var d=res.record;if(!d||typeof d!=='object')return;
-    var newHash='';
-    JB_KEYS.forEach(function(k){if(d[k])newHash+=d[k].length+',';});
-    if(newHash&&newHash!==_jbLastHash){_jbApplyData(d);}
+  fetch(GH_API+'?t='+Date.now(),{
+    headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'}
+  }).then(function(r){return r.json();}).then(function(res){
+    if(!res||!res.sha||res.sha===_ghLastSha)return;
+    _ghLastSha=res.sha;
+    if(!res.content)return;
+    var d=JSON.parse(_ghDec(res.content));
+    _jbApplyData(d);
   }).catch(function(){});
 }
 
 function jsonbinLoad(callback){
-  fetch(JSONBIN_URL+'/latest',{headers:{'X-Master-Key':JSONBIN_API_KEY}})
-  .then(function(r){return r.json();})
-  .then(function(res){
-    var d=res.record;
-    if(d&&typeof d==='object'){
-      var keys=['sinoon_promo_memos','sinoon_promo_data','sinoon_s4_sparse_edits',
-        'sinoon_mkt_budget','sinoon_mkt_spend','sinoon_mkt_target','sinoon_mkt_spend_total',
-        'sinoon_mkt_weekly','sinoon_mkt_review','sinoon_mkt_daily_report','sinoon_mkt_daily_table'];
-      keys.forEach(function(k){if(d[k])localStorage.setItem(k,d[k]);});
+  _ghReadFile(function(data,sha){
+    if(data&&typeof data==='object'){
+      _ghLastSha=sha||'';
+      JB_KEYS.forEach(function(k){if(data[k])localStorage.setItem(k,data[k]);});
     }
-    if(callback)callback();
-  })
-  .catch(function(e){
-    console.warn('JSONBin 로드 실패(오프라인 모드):',e);
     if(callback)callback();
   });
 }
@@ -2382,7 +2380,6 @@ function s4SaveAll(){
     if(t){t.textContent='✅ 저장 완료 (전직원 동기화됨)';t.style.background='#2d6a4f';
       setTimeout(function(){t.style.opacity='0';t.style.transform='translateY(-8px)';
         setTimeout(function(){t.textContent='✅ 저장 완료 (전직원 동기화됨)';t.style.background='#2d6a4f';},400);},2500);}
-    _jbLastHash=_jbGetHash();
   },function(e){
     if(t){t.textContent='⚠️ 클라우드 오류 (로컬만 저장됨)';t.style.background='#c0392b';
       setTimeout(function(){t.style.opacity='0';t.style.transform='translateY(-8px)';},2500);}
@@ -2635,32 +2632,16 @@ function mktSaveAll(){
   // 토스트: 저장 중 표시
   var t=document.getElementById('mkt-save-toast');
   if(t){t.textContent='⏳ 클라우드 동기화 중...';t.style.background='#5a6a7a';t.style.opacity='1';t.style.display='';}
-  // JSONBin 클라우드 동기화 (직접 처리해서 결과 표시)
-  var keys=['sinoon_promo_memos','sinoon_promo_data','sinoon_s4_sparse_edits',
-    'sinoon_mkt_budget','sinoon_mkt_spend','sinoon_mkt_target','sinoon_mkt_spend_total',
-    'sinoon_mkt_weekly','sinoon_mkt_review','sinoon_mkt_daily_report','sinoon_mkt_daily_table'];
-  var d={};
-  keys.forEach(function(k){var v=localStorage.getItem(k);if(v)d[k]=v;});
-  fetch(JSONBIN_URL,{
-    method:'PUT',
-    headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY,'X-Bin-Versioning':'false'},
-    body:JSON.stringify(d)
-  }).then(function(r){
-    if(t){
-      if(r.ok){
-        t.textContent='✅ 저장 완료 (클라우드 동기화됨)';t.style.background='#2d6a4f';
-      }else{
-        t.textContent='⚠️ 로컬 저장만 됨 (클라우드 오류 '+r.status+')';t.style.background='#c0392b';
-      }
+  // GitHub 클라우드 동기화
+  _jbPutAll(function(){
+    if(t){t.textContent='✅ 저장 완료 (전직원 동기화됨)';t.style.background='#2d6a4f';
       t.style.opacity='1';
-      setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.style.display='none';t.textContent='✅ 저장 완료 (클라우드 동기화됨)';t.style.background='#2d6a4f';},400);},2500);
-    }
-  }).catch(function(e){
-    if(t){
-      t.textContent='⚠️ 네트워크 오류 - 로컬만 저장됨';t.style.background='#c0392b';
+      setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.style.display='none';t.textContent='✅ 저장 완료 (전직원 동기화됨)';t.style.background='#2d6a4f';},400);},2500);}
+  },function(e){
+    if(t){t.textContent='⚠️ 클라우드 오류 (로컬만 저장됨)';t.style.background='#c0392b';
       t.style.opacity='1';
-      setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.style.display='none';t.textContent='✅ 저장 완료 (클라우드 동기화됨)';t.style.background='#2d6a4f';},400);},2500);
-    }
+      setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.style.display='none';t.textContent='✅ 저장 완료 (전직원 동기화됨)';t.style.background='#2d6a4f';},400);},2500);}
+    console.warn('GitHub 저장 오류:',e);
   });
 }
 
@@ -3243,8 +3224,7 @@ document.addEventListener('selectionchange',function(){
 
   jsonbinLoad(function(){
     try{
-      _jbLastHash=_jbGetHash();
-      s4LoadFullPromo();
+        s4LoadFullPromo();
       mktLoad();
       renderHeader();
       switchTab(0);
