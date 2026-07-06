@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=1280, initial-scale=1.0, minimum-scale=0.1, maximum-scale=5.0, user-scalable=yes">
 <title>SINOON SALES DASHBOARD 2026</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
   --bg:#f7f6f4; --card:#fff; --border:#e8e4df; --text:#1a1a1a; --sub:#7a7470;
@@ -104,6 +105,14 @@ body{-webkit-text-size-adjust:100%;}
   font-size:13px; vertical-align:middle;
 }
 .tbl-wrap table tr:hover td { background:#faf9f7; }
+.s1-chan-tbl { table-layout:auto; width:100%; border-collapse:collapse; font-size:12px; }
+.s1-chan-tbl th { background:#f5f3f1; padding:6px 10px; font-weight:600; font-size:12px;
+  white-space:nowrap; text-align:center; vertical-align:middle; border-bottom:2px solid #ddd; }
+.s1-chan-tbl td { padding:6px 10px; border-bottom:1px solid var(--border);
+  font-size:12px; text-align:center; vertical-align:middle; white-space:nowrap; }
+.s1-chan-tbl td:first-child { text-align:center; white-space:nowrap; }
+.s1-chan-tbl tr:hover td { background:#faf9f7; }
+.s1-chan-tbl .sum-col { background:#f5f2ed; }
 .neg-val { color:var(--neg) !important; }
 .pos-val { color:var(--pos) !important; }
 </style>
@@ -195,8 +204,8 @@ body{-webkit-text-size-adjust:100%;}
     <p id="data-date-label" style="font-size:10px;opacity:.5;margin-top:3px;letter-spacing:.3px;"></p>
   </div>
   <div class="header-right" id="header-chips"></div>
-  <button onclick="location.reload()" title="페이지 새로고침" class="no-print" style="margin-left:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap;">🔄 새로고침</button>
   <button id="print-btn" onclick="printDashboard()" title="현재 탭 인쇄" style="margin-left:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap;">🖨️ 인쇄</button>
+  <button onclick="downloadExcel()" title="엑셀 다운로드" class="no-print" style="margin-left:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;flex-shrink:0;white-space:nowrap;">📥 엑셀 다운로드</button>
 </div>
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab(0)">&#128202; 개요</button>
@@ -399,6 +408,96 @@ function yoyClass(v26,v25){if(!v25)return '';return v26>=v25?'pos-val':'neg-val'
 
 let chartInstances={};
 function destroyChart(id){if(chartInstances[id]){chartInstances[id].destroy();delete chartInstances[id];}}
+
+function printDashboard(){
+  const activeTab=document.querySelector('.tab-btn.active');
+  if(activeTab){
+    const idx=[...document.querySelectorAll('.tab-btn')].indexOf(activeTab);
+    const names=['개요','매출목표&실적','채널분석','상품분석','애널리틱스','프로모션 리뷰','MKT','SCM'];
+    const pTitle=document.querySelector('.print-title');
+    if(pTitle)pTitle.textContent='SINOON SALES DASHBOARD 2026 — '+( names[idx]||'');
+  }
+  window.print();
+}
+
+function downloadExcel(){
+  try{
+    // 현재 활성 탭
+    const tabBtns=[...document.querySelectorAll('.tab-btn')];
+    const activeIdx=tabBtns.findIndex(b=>b.classList.contains('active'));
+    const tabNames=['개요','매출목표&실적','채널분석','상품분석','애널리틱스','프로모션리뷰','MKT','SCM'];
+    const tabName=tabNames[activeIdx]||'데이터';
+    const activeContent=document.querySelectorAll('.tab-content')[activeIdx];
+    if(!activeContent){alert('탭 콘텐츠를 찾을 수 없습니다.');return;}
+
+    // ── 1. DOM 클론 ──
+    const clone=activeContent.cloneNode(true);
+
+    // ── 2. 불필요 요소 제거 ──
+    clone.querySelectorAll('button,input,select,textarea,canvas,svg').forEach(el=>el.remove());
+
+    // ── 3. 접혀있는 행 펼치기 (전체 데이터 포함) ──
+    clone.querySelectorAll('tr').forEach(tr=>{
+      if(tr.style.display==='none')tr.style.display='table-row';
+    });
+
+    // ── 4. 라이브 DOM에서 computed style → 클론 셀에 인라인 주입 ──
+    const liveCells=[...activeContent.querySelectorAll('td,th')];
+    const cloneCells=[...clone.querySelectorAll('td,th')];
+    liveCells.forEach((live,i)=>{
+      const cl=cloneCells[i];if(!cl)return;
+      const cs=window.getComputedStyle(live);
+      cl.style.backgroundColor=cs.backgroundColor;
+      cl.style.color=cs.color;
+      cl.style.fontWeight=cs.fontWeight;
+      cl.style.fontSize=cs.fontSize;
+      cl.style.textAlign=cs.textAlign;
+      cl.style.verticalAlign=cs.verticalAlign;
+      cl.style.padding='4px 8px';
+      cl.style.border='1px solid #ccc';
+      cl.style.whiteSpace='nowrap';
+    });
+
+    // ── 5. 내부 span 스타일도 인라인 주입 ──
+    const liveSpans=[...activeContent.querySelectorAll('td span,th span')];
+    const cloneSpans=[...clone.querySelectorAll('td span,th span')];
+    liveSpans.forEach((live,i)=>{
+      const cl=cloneSpans[i];if(!cl)return;
+      const cs=window.getComputedStyle(live);
+      cl.style.color=cs.color;
+      cl.style.fontWeight=cs.fontWeight;
+    });
+
+    // ── 6. Excel HTML 문서 생성 ──
+    const today=new Date();
+    const dateStr=`${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}`;
+    const safeTab=tabName.replace(/[&\/\\]/g,'_');
+
+    const htmlDoc=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8">
+<style>
+  table{border-collapse:collapse;font-family:Apple SD Gothic Neo,Malgun Gothic,sans-serif;font-size:11px;}
+  td,th{border:1px solid #ccc;padding:4px 8px;white-space:nowrap;}
+  .card-title{font-size:13px;font-weight:700;color:#2d2926;padding:8px 0 4px;border:none;background:none;}
+</style>
+</head>
+<body>${clone.innerHTML}</body>
+</html>`;
+
+    // ── 7. Blob 다운로드 ──
+    const blob=new Blob(['﻿',htmlDoc],{type:'application/vnd.ms-excel;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download=`SINOON_${safeTab}_${dateStr}.xls`;
+    document.body.appendChild(a);a.click();
+    document.body.removeChild(a);
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }catch(err){
+    console.error('Excel 다운로드 오류:',err);
+    alert('다운로드 중 오류가 발생했습니다:\n'+err.message);
+  }
+}
+
 
 function switchTab(idx){
   document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
@@ -1468,6 +1567,25 @@ function s0Cards(){
 
 // TAB 1
 let s1={gran:'월별',selMonths:[CUR_MON],wkMon:CUR_MON,selWeeks:[D.month_to_weeks[CUR_MON]?.slice(-1)[0]||''],dyMon:CUR_MON,selDays:[],selChs:[...CH_NAMES]};
+// 채널분석 컬럼 표시/순서 설정 (목표,순매출,달성률,비중,전주대비신장률,전년동기신장률)
+function loadS1ColVis(){try{const v=JSON.parse(localStorage.getItem('sinoon_s1col_vis'));return Array.isArray(v)&&v.length===10?v:[true,true,true,false,false,false,false,false,false,false];}catch(e){return[true,true,true,false,false,false,false,false,false,false];}}
+function loadS1ColOrder(){try{const v=JSON.parse(localStorage.getItem('sinoon_s1col_order'));return Array.isArray(v)&&v.length===10?v:[0,1,2,3,4,5,6,7,8,9];}catch(e){return[0,1,2,3,4,5,6,7,8,9];}}
+let s1ColVis=loadS1ColVis();
+let s1ColOrder=loadS1ColOrder();
+let _s1DragPos=null;
+function s1ToggleCol(colIdx){s1ColVis[colIdx]=!s1ColVis[colIdx];localStorage.setItem('sinoon_s1col_vis',JSON.stringify(s1ColVis));s1Table();}
+function s1DragStart(e,pos){_s1DragPos=pos;e.dataTransfer.effectAllowed='move';e.currentTarget.style.opacity='0.5';}
+function s1DragEnd(e){e.currentTarget.style.opacity='1';}
+function s1DragOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';}
+function s1DragEnter(e){e.currentTarget.style.background='#e8e0d8';}
+function s1DragLeave(e){e.currentTarget.style.background='';}
+function s1Drop(e,pos){
+  e.preventDefault();e.currentTarget.style.background='';
+  if(_s1DragPos===null||_s1DragPos===pos){_s1DragPos=null;return;}
+  const o=[...s1ColOrder];const v=o.splice(_s1DragPos,1)[0];o.splice(pos,0,v);
+  s1ColOrder=o;localStorage.setItem('sinoon_s1col_order',JSON.stringify(s1ColOrder));
+  _s1DragPos=null;s1Table();
+}
 
 function renderTab1(){
   const el=document.getElementById('tab2');
@@ -1488,7 +1606,7 @@ function renderTab1(){
     <button class="pill ${s1.selChs.length===CH_NAMES.length?'active':''}" onclick="s1_allCh()">전체</button>
     ${CH_NAMES.map(ch=>`<button class="pill ${s1.selChs.includes(ch)?'active':''}" onclick="s1_tCh('${ch}')">${dn(ch)}</button>`).join('')}
   </div>
-  <div class="card" style="margin-bottom:16px;"><div class="tbl-wrap" id="s1tbl"></div></div>
+  <div class="card" style="margin-bottom:16px;"><div id="s1colCtrl" style="margin-bottom:8px;"></div><div class="tbl-wrap" id="s1tbl"></div></div>
   <div class="grid-2">
     <div class="card"><div class="card-title">누적 반품률 (%)</div><div style="height:220px;position:relative;"><canvas id="s1ret"></canvas></div></div>
     <div class="card"><div class="card-title">누적 YoY 신장률 (%)</div><div style="height:220px;position:relative;"><canvas id="s1yoy"></canvas></div></div>
@@ -1562,8 +1680,8 @@ function s1PF(){
   const el=document.getElementById('s1pf');if(!el)return;
   const g=s1.gran;
   if(g==='월별'){el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+MONTHS.filter(m=>hasMon(m)).map(m=>`<button class="pill ${s1.selMonths.includes(m)?'active':''}" onclick="s1_tM('${m}')">${m}</button>`).join('')+'</div>';}
-  else if(g==='주차별'){const wks=D.month_to_weeks[s1.wkMon]||[];el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+MONTHS.filter(m=>(D.month_to_weeks[m]||[]).some(w=>hasWeek(w))).map(m=>`<button class="pill ${s1.wkMon===m?'active':''}" onclick="s1_wkMon('${m}')">${m}</button>`).join('')+'</div><div class="filter-row"><span class="filter-label">주차:</span>'+wks.filter(w=>hasWeek(w)).map(w=>`<button class="pill ${s1.selWeeks.includes(w)?'active':''}" onclick="s1_tW('${w}')">${wkLabel(w)}</button>`).join('')+'</div>';}
-  else{const ds=D.month_to_dates[s1.dyMon]||[];el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+MONTHS.filter(m=>(D.month_to_dates[m]||[]).some(d=>hasData(d))).map(m=>`<button class="pill ${s1.dyMon===m?'active':''}" onclick="s1_dyMon('${m}')">${m}</button>`).join('')+'</div><div class="filter-row"><span class="filter-label">일:</span>'+ds.filter(d=>hasData(d)).map(d=>{const p=d.slice(5).replace('-','/');return`<button class="pill ${s1.selDays.includes(d)?'active':''}" onclick="s1_tD('${d}')">${p}</button>`}).join('')+'</div>';}
+  else if(g==='주차별'){const wks=D.month_to_weeks[s1.wkMon]||[];el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+MONTHS.filter(m=>(D.month_to_weeks[m]||[]).length>0).map(m=>`<button class="pill ${s1.wkMon===m?'active':''}" onclick="s1_wkMon('${m}')">${m}</button>`).join('')+'</div><div class="filter-row"><span class="filter-label">주차:</span>'+wks.map(w=>`<button class="pill ${s1.selWeeks.includes(w)?'active':''}" onclick="s1_tW('${w}')">${wkLabel(w)}</button>`).join('')+'</div>';}
+  else{const ds=D.month_to_dates[s1.dyMon]||[];el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+MONTHS.filter(m=>(D.month_to_dates[m]||[]).length>0).map(m=>`<button class="pill ${s1.dyMon===m?'active':''}" onclick="s1_dyMon('${m}')">${m}</button>`).join('')+'</div><div class="filter-row"><span class="filter-label">일:</span>'+ds.map(d=>`<button class="pill ${s1.selDays.includes(d)?'active':''}" onclick="s1_tD('${d}')">${d.slice(5).replace('-','/')}</button>`).join('')+'</div>';}
 }
 function s1_tM(m){const a=s1.selMonths,i=a.indexOf(m);i>=0?a.splice(i,1):a.push(m);s1PF();s1Table();s1Charts();}
 function s1_wkMon(m){s1.wkMon=m;s1.selWeeks=[];s1PF();s1Table();s1Charts();}
@@ -1577,57 +1695,172 @@ function s1Periods(){
   if(g==='주차별'){const sel=s1.selWeeks.length?s1.selWeeks:(D.month_to_weeks[s1.wkMon]||[]);return D.weeks.filter(w=>sel.includes(w));}
   const sel=s1.selDays.length?s1.selDays:(D.month_to_dates[s1.dyMon]||[]);return D.dates.filter(d=>sel.includes(d));
 }
+
 function s1D(p,ch){
-  const g=s1.gran;let s26=0,r26=0,s25=0,tgt=0;
-  if(g==='월별'){s26=m26s(p,ch);r26=m26r(p,ch);if(hasMon(p)){s25=m25s(p,ch);tgt=D.targets[ch]?D.targets[ch][p]||0:0;}}
-  else if(g==='주차별'){s26=sv(D.weekly26[p],ch,'s');r26=sv(D.weekly26[p],ch,'r');if(hasWeek(p)){s25=sv(D.weekly25[p],ch)||0;tgt=D.weekly_target[p]?D.weekly_target[p][ch]||0:0;}}
-  else{s26=sv(D.daily26[p],ch,'s');r26=sv(D.daily26[p],ch,'r');if(hasData(p)){s25=sv(D.daily25[p],ch)||0;tgt=D.daily_target[p]?D.daily_target[p][ch]||0:0;}}
-  return{s26,r26,net:s26-r26,s25,tgt};
+  const g=s1.gran;let s26=0,r26=0,s25=0,tgt=0,sq=0,rq=0;
+  if(g==='월별'){s26=m26s(p,ch);r26=m26r(p,ch);sq=sv(D.monthly26[p],ch,'q');rq=sv(D.monthly26[p],ch,'rq');if(hasMon(p)){s25=m25s(p,ch);tgt=D.targets[ch]?D.targets[ch][p]||0:0;}}
+  else if(g==='주차별'){s26=sv(D.weekly26[p],ch,'s');r26=sv(D.weekly26[p],ch,'r');sq=sv(D.weekly26[p],ch,'q');rq=sv(D.weekly26[p],ch,'rq');if(hasWeek(p)){s25=sv(D.weekly25[p],ch)||0;tgt=D.weekly_target[p]?D.weekly_target[p][ch]||0:0;}}
+  else{s26=sv(D.daily26[p],ch,'s');r26=sv(D.daily26[p],ch,'r');sq=sv(D.daily26[p],ch,'q');rq=sv(D.daily26[p],ch,'rq');if(hasData(p)){s25=sv(D.daily25[p],ch)||0;tgt=D.daily_target[p]?D.daily_target[p][ch]||0:0;}}
+  return{s26,r26,net:s26-r26,s25,tgt,sq,rq};
 }
 
 function s1Table(){
   const wrap=document.getElementById('s1tbl');if(!wrap)return;
+  const ctrl=document.getElementById('s1colCtrl');
   const periods=s1Periods();
   const chs=s1.selChs.length?s1.selChs:CH_NAMES;
+
+  // ── 컬럼 정의 ──
+  const wowLabel=s1.gran==='월별'?'전월대비 신장률':s1.gran==='일별'?'전일대비 신장률':'전주대비 신장률';
+  const ALL_COLS=[
+    {key:'tgt',   label:'목표'},
+    {key:'net',   label:'순매출'},
+    {key:'ach',   label:'달성률'},
+    {key:'share', label:'비중'},
+    {key:'wow',   label:wowLabel},
+    {key:'yoy',   label:'전년동기 신장률'},
+    {key:'sq',    label:'판매수량'},
+    {key:'rq',    label:'반품수량'},
+    {key:'sgross',label:'판매금액'},
+    {key:'rgross',label:'반품금액'},
+  ];
+  // ── 컬럼 토글 버튼 렌더 (드래그 재배치 가능) ──
+  if(ctrl){
+    ctrl.innerHTML='<span style="font-size:11px;color:#999;margin-right:6px;vertical-align:middle">컬럼:</span>'+
+      s1ColOrder.map((colIdx,pos)=>{
+        const c=ALL_COLS[colIdx];const on=s1ColVis[colIdx];
+        return `<button draggable="true"
+          ondragstart="s1DragStart(event,${pos})"
+          ondragend="s1DragEnd(event)"
+          ondragover="s1DragOver(event)"
+          ondragenter="s1DragEnter(event)"
+          ondragleave="s1DragLeave(event)"
+          ondrop="s1Drop(event,${pos})"
+          onclick="s1ToggleCol(${colIdx})"
+          title="드래그해서 순서 변경"
+          style="font-size:11px;padding:3px 10px;margin-right:4px;border-radius:12px;cursor:grab;border:1px solid ${on?'#2d2926':'#ccc'};background:${on?'#2d2926':'#f5f5f5'};color:${on?'#fff':'#aaa'};transition:all 0.15s;user-select:none"><span style="opacity:0.4;margin-right:3px;font-size:10px">⠿</span>${c.label}</button>`;
+      }).join('');
+  }
+
   if(!periods.length){wrap.innerHTML='<p style="padding:16px;color:var(--sub)">기간을 선택하세요</p>';return;}
-  
-  let thead=`<thead><tr><th>채널</th>`;
-  periods.forEach(p=>{thead+=`<th colspan="6" style="text-align:center;border-left:1px solid #ddd">${p}</th>`;});
-  thead+=`<th colspan="6" style="text-align:center;border-left:2px solid #bbb;background:#ebe8e3">합계</th></tr><tr><th></th>`;
-  const subCols=['판매','반품','순매출','YoY','목표','달성률'];
+
+  const visCols=s1ColOrder.map(i=>({...ALL_COLS[i],origIdx:i})).filter(c=>s1ColVis[c.origIdx]);
+  const NC=visCols.length||1;
   const allPeriods=[...periods,'합계'];
-  allPeriods.forEach((p,pi)=>{subCols.forEach(s=>{thead+=`<th style="${pi===allPeriods.length-1?'background:#ebe8e3':''}">${s}</th>`;});});
+
+  // ── 이전 기간 조회 (WoW/전월대비) ──
+  const periodArr=s1.gran==='월별'?D.months:s1.gran==='주차별'?D.weeks:D.dates;
+  function prevPeriod(p){if(p==='합계')return null;const idx=periodArr?periodArr.indexOf(p):-1;return idx>0?periodArr[idx-1]:null;}
+
+  // ── 신장률 HTML 포맷 ──
+  function fmtGrowth(cur,base){
+    if(!base||base===0)return '<span style="color:#aaa">-</span>';
+    const pct=(cur-base)/Math.abs(base)*100;
+    const color=pct>=0?'#1e7a4a':'#c0392b';
+    const arrow=pct>=0?'▲':'▼';
+    return `<span style="color:${color};font-weight:600">${arrow}${Math.abs(pct).toFixed(1)}%</span>`;
+  }
+
+  // ── 1차: 전체 데이터 집계 ──
+  const chData={};
+  const periodTotals={};
+  allPeriods.forEach(p=>{periodTotals[p]={tgt:0,net:0,s25:0,sq:0,rq:0,s26:0,r26:0};});
+
+  chs.forEach(ch=>{
+    chData[ch]={};
+    let sumS=0,sumR=0,sumTgt=0,sumS25=0;
+    let sumSq=0,sumRq=0;
+    periods.forEach(p=>{
+      const{s26,r26,net,tgt,s25,sq,rq}=s1D(p,ch);
+      chData[ch][p]={net,tgt,s25,sq,rq,s26,r26};
+      sumS+=s26;sumR+=r26;sumTgt+=tgt;sumS25+=s25;sumSq+=sq;sumRq+=rq;
+      periodTotals[p].net+=net;periodTotals[p].tgt+=tgt;periodTotals[p].s25+=s25;
+      periodTotals[p].sq+=sq;periodTotals[p].rq+=rq;
+      periodTotals[p].s26+=s26;periodTotals[p].r26+=r26;
+    });
+    const sumNet=sumS-sumR;
+    chData[ch]['합계']={net:sumNet,tgt:sumTgt,s25:sumS25,sq:sumSq,rq:sumRq,s26:sumS,r26:sumR};
+    periodTotals['합계'].net+=sumNet;periodTotals['합계'].tgt+=sumTgt;periodTotals['합계'].s25+=sumS25;
+    periodTotals['합계'].sq=(periodTotals['합계'].sq||0)+sumSq;periodTotals['합계'].rq=(periodTotals['합계'].rq||0)+sumRq;
+    periodTotals['합계'].s26=(periodTotals['합계'].s26||0)+sumS;periodTotals['합계'].r26=(periodTotals['합계'].r26||0)+sumR;
+  });
+
+  // ── 헤더 ──
+  let thead=`<thead><tr><th>채널</th>`;
+  periods.forEach(p=>{
+    const pLabel=s1.gran==='주차별'?wkLabel(p):s1.gran==='일별'?p.slice(5).replace('-','/'):p;
+    thead+=`<th colspan="${NC}" style="text-align:center;border-left:1px solid #ddd">${pLabel}</th>`;
+  });
+  thead+=`<th colspan="${NC}" style="text-align:center;border-left:2px solid #bbb;background:#ebe8e3">합계</th></tr><tr><th></th>`;
+  allPeriods.forEach((p,pi)=>{
+    const bg=pi===allPeriods.length-1?'background:#ebe8e3;':'';
+    visCols.forEach(c=>{thead+=`<th style="${bg}white-space:nowrap;font-size:11px">${c.label}</th>`;});
+  });
   thead+=`</tr></thead>`;
-  
-  let totals={};
-  allPeriods.forEach(p=>{totals[p]={s26:0,r26:0,s25:0,tgt:0};});
+
+  // ── 채널별 행 ──
   let rows='';
   chs.forEach(ch=>{
-    let sumS=0,sumR=0,sumS25=0,sumTgt=0;
     let row=`<tr><td><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${CH_COLORS[ch]};margin-right:5px"></span>${dn(ch)}</td>`;
-    periods.forEach(p=>{
-      const{s26,r26,net,s25,tgt}=s1D(p,ch);
-      sumS+=s26;sumR+=r26;sumS25+=s25;sumTgt+=tgt;
-      totals[p].s26+=s26;totals[p].r26+=r26;totals[p].s25+=s25;totals[p].tgt+=tgt;
-      const ach=tgt?((s26/tgt)*100).toFixed(1)+'%':'-';
-      const yoy=yoyStr(s26,s25);const yc=yoyClass(s26,s25);
-      row+=`<td>${won(s26)}</td><td>${won(r26)}</td><td style="font-weight:700;color:#c0392b">${won(net)}</td><td class="${yc}">${yoy}</td><td>${won(tgt)}</td><td>${ach}</td>`;
+    allPeriods.forEach((p,pi)=>{
+      const d=chData[ch][p];
+      const net=d.net,tgt=d.tgt,s25=d.s25;
+      const ach=tgt?(net/tgt*100).toFixed(1)+'%':'-';
+      const ptNet=periodTotals[p].net;
+      const share=ptNet?(net/ptNet*100).toFixed(1)+'%':'-';
+      const prev=prevPeriod(p);
+      let prevNet=0;
+      if(prev){const pd=s1D(prev,ch);prevNet=pd.net;}
+      const wowHtml=p!=='합계'&&prev?fmtGrowth(net,prevNet):'<span style="color:#aaa">-</span>';
+      const yoyHtml=fmtGrowth(net,s25);
+      const sc=pi===allPeriods.length-1?' class="sum-col"':'';
+      const sq=d.sq||0,rq=d.rq||0,s26v=d.s26||0,r26v=d.r26||0;
+      const cellMap={
+        tgt:`<td${sc}>${won(tgt)}</td>`,
+        net:`<td${sc} style="font-weight:700;color:#c0392b">${won(net)}</td>`,
+        ach:`<td${sc}>${ach}</td>`,
+        share:`<td${sc} style="color:#2980b9;font-weight:600">${share}</td>`,
+        wow:`<td${sc}>${wowHtml}</td>`,
+        yoy:`<td${sc}>${yoyHtml}</td>`,
+        sq:`<td${sc}>${sq.toLocaleString()}개</td>`,
+        rq:`<td${sc} style="color:#c0392b">${rq.toLocaleString()}개</td>`,
+        sgross:`<td${sc}>${won(s26v)}</td>`,
+        rgross:`<td${sc} style="color:#c0392b">${won(r26v)}</td>`,
+      };
+      visCols.forEach(c=>{row+=cellMap[c.key];});
     });
-    const sNet=sumS-sumR;const sAch=sumTgt?((sumS/sumTgt)*100).toFixed(1)+'%':'-';
-    const sYoy=yoyStr(sumS,sumS25);const syc=yoyClass(sumS,sumS25);
-    totals['합계'].s26+=sumS;totals['합계'].r26+=sumR;totals['합계'].s25+=sumS25;totals['합계'].tgt+=sumTgt;
-    row+=`<td class="sum-col">${won(sumS)}</td><td class="sum-col">${won(sumR)}</td><td class="sum-col">${won(sNet)}</td><td class="sum-col ${syc}">${sYoy}</td><td class="sum-col">${won(sumTgt)}</td><td class="sum-col">${sAch}</td></tr>`;
-    rows+=row;
+    row+=`</tr>`;rows+=row;
   });
+
+  // ── 합계 행 ──
   let trow=`<tr style="font-weight:700;background:#f0ede8"><td>합계</td>`;
   allPeriods.forEach((p,pi)=>{
-    const t=totals[p];const ach=t.tgt?((t.s26/t.tgt)*100).toFixed(1)+'%':'-';
-    const yoy=yoyStr(t.s26,t.s25);const yc=yoyClass(t.s26,t.s25);
+    const t=periodTotals[p];
+    const ach=t.tgt?(t.net/t.tgt*100).toFixed(1)+'%':'-';
+    const prev=prevPeriod(p);
+    let prevTotalNet=0;
+    if(prev){chs.forEach(ch2=>{const pd=s1D(prev,ch2);prevTotalNet+=pd.net;});}
+    const wowHtml=p!=='합계'&&prev?fmtGrowth(t.net,prevTotalNet):'<span style="color:#aaa">-</span>';
+    const yoyHtml=fmtGrowth(t.net,t.s25);
     const sc=pi===allPeriods.length-1?' class="sum-col"':'';
-    trow+=`<td${sc}>${won(t.s26)}</td><td${sc}>${won(t.r26)}</td><td${sc} style="font-weight:700;color:#c0392b">${won(t.s26-t.r26)}</td><td${sc.replace('"','').replace('"','')} class="${(sc?' sum-col ':' ')+yc}">${yoy}</td><td${sc}>${won(t.tgt)}</td><td${sc}>${ach}</td>`;
+    const tsq=t.sq||0,trq=t.rq||0,ts26=t.s26||0,tr26=t.r26||0;
+    const cellMap={
+      tgt:`<td${sc}>${won(t.tgt)}</td>`,
+      net:`<td${sc} style="font-weight:700;color:#c0392b">${won(t.net)}</td>`,
+      ach:`<td${sc}>${ach}</td>`,
+      share:`<td${sc} style="color:#2980b9;font-weight:600">100%</td>`,
+      wow:`<td${sc}>${wowHtml}</td>`,
+      yoy:`<td${sc}>${yoyHtml}</td>`,
+      sq:`<td${sc}>${tsq.toLocaleString()}개</td>`,
+      rq:`<td${sc} style="color:#c0392b">${trq.toLocaleString()}개</td>`,
+      sgross:`<td${sc}>${won(ts26)}</td>`,
+      rgross:`<td${sc} style="color:#c0392b">${won(tr26)}</td>`,
+    };
+    visCols.forEach(c=>{trow+=cellMap[c.key];});
   });
   trow+=`</tr>`;
-  wrap.innerHTML=`<table>${thead}<tbody>${rows}${trow}</tbody></table>`;
+
+  wrap.innerHTML=`<table class="s1-chan-tbl">${thead}<tbody>${rows}${trow}</tbody></table>`;
 }
 
 function s1Charts(){
@@ -1718,6 +1951,7 @@ function s2PF(){
     el.innerHTML='';
   }
 }
+
 function s2_gran(g){
   s2.gran=g;
   if(g==='주차별'){
@@ -1976,7 +2210,7 @@ function s3PF(){
   const el=document.getElementById('s3pf');if(!el)return;
   const g=s3.gran;
   if(g==='월별'){el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+MONTHS.map(m=>`<button class="pill ${s3.selMonths.includes(m)?'active':''}" onclick="s3_tM('${m}')">${m}</button>`).join('')+'</div>';}
-  else if(g==='주차별'){const wks=D.month_to_weeks[s3.wkMon]||[];el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+MONTHS.map(m=>`<button class="pill ${s3.wkMon===m?'active':''}" onclick="s3_wkMon('${m}')">${m}</button>`).join('')+'</div><div class="filter-row"><span class="filter-label">주차:</span>'+wks.map(w=>`<button class="pill ${s3.selWeeks.includes(w)?'active':''}" onclick="s3_tW('${w}')">${wkLabel(w)}</button>`).join('')+'</div>'; }
+  else if(g==='주차별'){const wks=D.month_to_weeks[s3.wkMon]||[];el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+MONTHS.map(m=>`<button class="pill ${s3.wkMon===m?'active':''}" onclick="s3_wkMon('${m}')">${m}</button>`).join('')+'</div><div class="filter-row"><span class="filter-label">주차:</span>'+wks.map(w=>`<button class="pill ${s3.selWeeks.includes(w)?'active':''}" onclick="s3_tW('${w}')">${wkLabel(w)}</button>`).join('')+'</div>';}
   else{el.innerHTML='';}
 }
 function s3_tM(m){const a=s3.selMonths,i=a.indexOf(m);i>=0?a.splice(i,1):a.push(m);s3PF();s3All();}
@@ -1997,6 +2231,7 @@ function s3Ps(){
   const sel=s3.selDays.length?s3.selDays:(D.month_to_dates[s3.dyMon]||[]);
   return D.dates.filter(d=>sel.includes(d));
 }
+
 function s3S26(p,ch){const g=s3.gran;if(g==='월별')return m26s(p,ch);if(g==='주차별')return sv(D.weekly26[p],ch,'s');return sv(D.daily26[p],ch,'s');}
 function s3R26(p,ch){const g=s3.gran;if(g==='월별')return m26r(p,ch);if(g==='주차별')return sv(D.weekly26[p],ch,'r');return sv(D.daily26[p],ch,'r');}
 
