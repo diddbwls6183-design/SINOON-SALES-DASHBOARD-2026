@@ -236,7 +236,7 @@ var JB_KEYS=['sinoon_promo_memos','sinoon_promo_data','sinoon_s4_sparse_edits',
   'sinoon_mkt_budget','sinoon_mkt_spend','sinoon_mkt_target','sinoon_mkt_spend_total',
   'sinoon_mkt_weekly','sinoon_mkt_review','sinoon_mkt_daily_report','sinoon_mkt_daily_table',
   'sinoon_scm_edits','sinoon_aov_data','sinoon_cust_weekly','sinoon_conv_extra',
-  'sinoon_s2_memo'];
+  'sinoon_s2_memo','sinoon_s4_col_w','sinoon_s4_row_h'];
 
 function _fbGetHash(){
   var s='';
@@ -266,6 +266,14 @@ function jsonbinSave(){
 // 가져온 데이터를 localStorage + 화면에 적용
 function _jbApplyData(d){
   JB_KEYS.forEach(function(k){if(d[k])localStorage.setItem(k,d[k]);});
+  // 열너비·행높이 메모리 변수 갱신 후 테이블 즉시 반영
+  try{
+    var cw=localStorage.getItem('sinoon_s4_col_w');
+    var rh=localStorage.getItem('sinoon_s4_row_h');
+    if(cw)s4ColWidths=JSON.parse(cw);
+    if(rh)s4RowHeights=JSON.parse(rh);
+    s4ApplyResizeSizes();
+  }catch(e){}
   try{s4LoadFullPromo();}catch(e){}
   try{mktLoad();}catch(e){}
   try{s2Memo=_s2LoadMemo();s2Top();s2Ret();}catch(e){}
@@ -298,6 +306,13 @@ function jsonbinLoad(callback){
     if(d&&typeof d==='object'){
       JB_KEYS.forEach(function(k){if(d[k])localStorage.setItem(k,d[k]);});
       _fbLastHash=_fbGetHash();
+      // 열너비·행높이 메모리 변수 갱신
+      try{
+        var cw=localStorage.getItem('sinoon_s4_col_w');
+        var rh=localStorage.getItem('sinoon_s4_row_h');
+        if(cw)s4ColWidths=JSON.parse(cw);
+        if(rh)s4RowHeights=JSON.parse(rh);
+      }catch(e){}
     }
     if(callback)callback();
   })
@@ -3195,6 +3210,79 @@ function s4ResetAll(){
   try{localStorage.removeItem('sinoon_promo_edits');localStorage.removeItem('sinoon_s4_sparse_edits');s4UserEdits={};}catch(e){}
   location.reload();
 }
+// ── 프로모션 테이블 레이아웃 내보내기/가져오기/초기화 ──
+function s4ShowLayoutMsg(msg, color){
+  var el=document.getElementById('s4-layout-msg');
+  if(!el)return;
+  el.textContent=msg;
+  el.style.color=color||'#27ae60';
+  el.style.display='inline';
+  setTimeout(function(){el.style.display='none';},3000);
+}
+
+function s4ExportLayout(){
+  var layout={
+    col_w: s4ColWidths,
+    row_h: s4RowHeights,
+    exported: new Date().toISOString(),
+    ver: '1.0'
+  };
+  var json=JSON.stringify(layout,null,2);
+  var blob=new Blob([json],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  var d=new Date();
+  var dateStr=d.getFullYear()+''+(d.getMonth()+1+'').padStart(2,'0')+''+(d.getDate()+'').padStart(2,'0');
+  a.href=url;
+  a.download='sinoon_promo_layout_'+dateStr+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  s4ShowLayoutMsg('✓ 내보내기 완료 — 팀원과 파일을 공유하세요','#27ae60');
+}
+
+function s4ImportLayout(e){
+  var file=e.target.files&&e.target.files[0];
+  if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      var layout=JSON.parse(ev.target.result);
+      if(layout.col_w){
+        s4ColWidths=layout.col_w;
+        localStorage.setItem('sinoon_s4_col_w',JSON.stringify(s4ColWidths));
+      }
+      if(layout.row_h){
+        s4RowHeights=layout.row_h;
+        localStorage.setItem('sinoon_s4_row_h',JSON.stringify(s4RowHeights));
+      }
+      s4ApplyResizeSizes();
+      s4ShowLayoutMsg('✓ 가져오기 완료 — 레이아웃이 적용됐습니다','#27ae60');
+    }catch(err){
+      s4ShowLayoutMsg('✗ 파일 오류: 올바른 레이아웃 파일인지 확인하세요','#e74c3c');
+    }
+    e.target.value='';
+  };
+  reader.readAsText(file);
+}
+
+function s4ResetLayout(){
+  if(!confirm('열 너비·행 높이를 기본값으로 초기화할까요?'))return;
+  s4ColWidths={};s4RowHeights={};
+  try{
+    localStorage.removeItem('sinoon_s4_col_w');
+    localStorage.removeItem('sinoon_s4_row_h');
+  }catch(e){}
+  // 모든 s4-resizable 테이블 셀 인라인 스타일 제거
+  document.querySelectorAll('.s4-resizable th,.s4-resizable td').forEach(function(cell){
+    cell.style.width='';cell.style.minWidth='';
+    cell.style.height='';cell.style.maxHeight='';cell.style.overflow='';
+  });
+  document.querySelectorAll('.s4-resizable tr').forEach(function(tr){
+    tr.style.height='';
+  });
+  s4ShowLayoutMsg('✓ 레이아웃이 초기화됐습니다','#e67e22');
+}
+
 function s4SetMon(m){s4.mon=m;document.querySelectorAll('#s4g-mon .toggle-btn').forEach(b=>b.classList.toggle('active',b.textContent===m));s4Render();}
 function s4SetCh(c){s4.ch=c;document.querySelectorAll('#s4g-ch .toggle-btn').forEach(b=>b.classList.toggle('active',b.textContent===c));s4Render();}
 
