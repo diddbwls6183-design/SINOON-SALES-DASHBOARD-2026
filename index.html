@@ -925,7 +925,7 @@ function renderTabTarget(){
         <th style="${TH_S}">연목표</th>
         <th style="${TH_S}">25년 동기 실적</th>
         <th style="${TH_S}">26년 YTD</th>
-        <th style="${TH_S}">달성률</th>
+        <th style="${TH_S}">달성률<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
         <th style="${TH_S}">신장률(동기간)</th>
       </tr></thead>
       <tbody>${annRows.join('')}
@@ -1615,7 +1615,7 @@ function s0Cards(){
       <th>채널</th>
       <th>매출 목표</th>
       <th>판매 실적</th>
-      <th>달성률</th>
+      <th>달성률<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
       <th>전년 실적</th>
       <th>YoY 신장률</th>
     </tr></thead>
@@ -2505,7 +2505,7 @@ function renderCustTable(){
     <span style="font-size:10px;font-weight:400;color:#999;margin-left:6px;">첫구매자/재구매자 = 카페24 애널리틱스 주차별 데이터</span></div>
   <div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%">
   <thead><tr>
-    <th style="${hS}min-width:120px;">주차 기간</th>
+    <th style="${hS}min-width:120px;">주차 기간<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
     <th style="${hS}min-width:70px;color:${NC};">🌱 첫구매자</th>
     <th style="${hS}min-width:70px;color:${RC};">🔄 재구매자</th>
     <th style="${hS}min-width:72px;color:${NC};">첫구매비율</th>
@@ -2725,7 +2725,7 @@ function renderConvTable(){
     <span style="font-size:10px;font-weight:400;color:#999;margin-left:6px;">구매전환율 = 구매자 ÷ 방문자 × 100</span></div>
   <div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%">
   <thead><tr>
-    <th style="${hS}min-width:120px;">주차 기간</th>
+    <th style="${hS}min-width:120px;">주차 기간<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
     <th style="${hS}min-width:80px;">방문자</th>
     <th style="${hS}min-width:70px;color:#2980b9;">구매자</th>
     <th style="${hS}min-width:70px;">주문건수</th>
@@ -2884,6 +2884,18 @@ function s3AOV(){
   chartInstances['t3a']=new Chart(e,{type:'line',data:{labels:ps,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}},title:{display:!D.monthly_aov,text:'(AOV 데이터 미포함 — 순매출 기준)',font:{size:10},color:'#999'}},scales:{y:{ticks:{callback:v=>wonShort(v)},grid:{color:'#f0eeec'}},x:{grid:{display:false}}}}});
 }
 
+// 품번 prefix → 카테고리 보정 (week_top15 item='기타' 중 재분류)
+function fixItemCat(item, code){
+  if(item!=='기타') return item;
+  var m=code&&code.match(/SN2[A-Z]\d([A-Z]{2})\d/);
+  if(!m) return item;
+  var pfx=m[1];
+  var map={'BM':'하의','DD':'드레스','TB':'블라우스','OV':'드레스','KD':'니트웨어',
+           'KP':'니트웨어','KZ':'니트웨어','BD':'하의','BP':'하의','BH':'하의',
+           'TW':'티셔츠','TO':'티셔츠','AU':'악세사리','AA':'악세사리',
+           'AH':'악세사리','HH':'기타','TH':'기타','BJ':'기타','WB':'기타','SS':'기타'};
+  return map[pfx]||item;
+}
 function s3Cat(){
   const el=document.getElementById('t3c');if(!el)return;
   const ps=s3Ps();const g=s3.gran;
@@ -2898,7 +2910,7 @@ function s3Cat(){
       const allItems=((D.week_top15||{})[w]||{})['전체'];
       if(Array.isArray(allItems)&&allItems.length){
         hasWkData=true;
-        allItems.forEach(p=>{const cat=p.item||'기타';cats[cat]=(cats[cat]||0)+(p.s||0);});
+        allItems.forEach(p=>{const cat=fixItemCat(p.item||'기타',p.code||'');cats[cat]=(cats[cat]||0)+(p.s||0);});
       }
     });
     if(!hasWkData){
@@ -3391,18 +3403,18 @@ function s4Render(){
         <span style="font-size:14px;font-weight:700;color:#2d2926">${dn(ch)}</span>
         <span style="font-size:12px;color:#999">${items.length}개 프로모션</span>
       </div>
-      <div class="tbl-wrap"><table style="width:100%;border-collapse:collapse;font-size:12px;table-layout:auto;">
+      <div class="tbl-wrap" style="overflow-x:auto;"><table class="s4-resizable" style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;" id="s4tbl-${ch}">
         
         <thead><tr style="background:#000000;border-bottom:2px solid #000000;">
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;">프로모션</th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;">목표 매출</th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;">기간</th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;">판매수량</th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;">판매금액</th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;">달성률</th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;">스킴</th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;">광고/운영</th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;">리뷰</th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:hidden;">프로모션<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:hidden;">목표 매출<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:hidden;">기간<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:hidden;">판매수량<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:hidden;">판매금액<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:hidden;">달성률<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:hidden;">스킴<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:hidden;">광고/운영<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:hidden;">리뷰<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
         </tr></thead>
         <tbody>`;
     items.forEach(p=>{
@@ -3427,7 +3439,7 @@ function s4Render(){
         <td style="${cellStyle}${YEL_BG}vertical-align:middle;">
           <div style="font-size:11px;font-weight:700;color:#1a1a1a;line-height:1.8;text-align:center;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="review_h" onblur="s4SaveCell(this)">${p.review_h||''}</div>
           </td>
-      </tr>`;
+      <tr class="s4-row-resize-tr"><td colspan="9" style="padding:0;border:none;height:4px;cursor:row-resize;" onmousedown="s4RowResizeStart(event,this)"><span class="s4-row-resize"></span></td></tr>`;
     });
     html+=`</tbody></table></div>
       <div style="text-align:right;margin-top:6px;padding-right:2px;">
@@ -3436,6 +3448,7 @@ function s4Render(){
     </div>`;
   });
   el.innerHTML=html;
+  s4ApplyResizeSizes();
 }
 
 // ── 서식 툴바 ──
@@ -4319,6 +4332,142 @@ document.addEventListener('selectionchange',function(){
     console.error('초기화 오류:', e);
   }
 })();
+
+// ── 프로모션 테이블 열/행 리사이즈 ──
+(function(){
+  var styleEl=document.createElement('style');
+  styleEl.textContent=`
+    .s4-col-resize{
+      position:absolute;right:0;top:0;bottom:0;width:5px;
+      cursor:col-resize;background:transparent;z-index:10;
+      border-right:2px solid transparent;
+    }
+    .s4-col-resize:hover{border-right:2px solid #8b6f5e;}
+    .s4-row-resize-tr td{
+      background:transparent;transition:background 0.15s;
+    }
+    .s4-row-resize-tr td:hover{background:#e8e0d8;}
+    .s4-row-resize{
+      display:block;width:100%;height:4px;cursor:row-resize;
+      background:transparent;
+    }
+    .s4-resizable td{box-sizing:border-box;}
+    .s4-resizing{cursor:col-resize!important;user-select:none;}
+    .s4-row-resizing{cursor:row-resize!important;user-select:none;}
+  `;
+  document.head.appendChild(styleEl);
+})();
+
+// 열 너비 저장
+var s4ColWidths={};
+try{s4ColWidths=JSON.parse(localStorage.getItem('sinoon_s4_col_w')||'{}');}catch(e){}
+
+// 행 높이 저장
+var s4RowHeights={};
+try{s4RowHeights=JSON.parse(localStorage.getItem('sinoon_s4_row_h')||'{}');}catch(e){}
+
+function s4ColResizeStart(e,handle){
+  e.preventDefault();
+  var th=handle.closest('th');
+  if(!th)return;
+  var table=th.closest('table');
+  var thIdx=Array.from(th.parentElement.children).indexOf(th);
+  var startX=e.clientX;
+  var startW=th.offsetWidth;
+  document.body.classList.add('s4-resizing');
+  function onMove(e2){
+    var dx=e2.clientX-startX;
+    var newW=Math.max(40,startW+dx);
+    th.style.width=newW+'px';
+    th.style.minWidth=newW+'px';
+    // Apply to all cells in this column
+    if(table){
+      Array.from(table.rows).forEach(function(row){
+        var cell=row.cells[thIdx];
+        if(cell){cell.style.width=newW+'px';cell.style.minWidth=newW+'px';}
+      });
+    }
+  }
+  function onUp(){
+    document.body.classList.remove('s4-resizing');
+    document.removeEventListener('mousemove',onMove);
+    document.removeEventListener('mouseup',onUp);
+    // Save
+    if(table){
+      var key=table.id||'s4tbl';
+      if(!s4ColWidths[key])s4ColWidths[key]={};
+      s4ColWidths[key][thIdx]=th.offsetWidth;
+      try{localStorage.setItem('sinoon_s4_col_w',JSON.stringify(s4ColWidths));}catch(ex){}
+    }
+  }
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
+}
+
+function s4RowResizeStart(e,handle){
+  e.preventDefault();
+  // handle은 s4-row-resize-tr 안에 있음 → 바로 위 데이터 tr을 리사이즈
+  var resizeTr=handle.closest('tr');
+  if(!resizeTr)return;
+  var dataTr=resizeTr.previousElementSibling;
+  if(!dataTr)return;
+  var table=resizeTr.closest('table');
+  var trIdx=Array.from(dataTr.parentElement.children).indexOf(dataTr);
+  var startY=e.clientY;
+  var startH=dataTr.offsetHeight;
+  document.body.classList.add('s4-row-resizing');
+  function onMove(e2){
+    var dy=e2.clientY-startY;
+    var newH=Math.max(28,startH+dy);
+    dataTr.style.height=newH+'px';
+    Array.from(dataTr.cells).forEach(function(td){
+      td.style.height=newH+'px';
+      td.style.maxHeight=newH+'px';
+      td.style.overflow='hidden';
+    });
+  }
+  function onUp(){
+    document.body.classList.remove('s4-row-resizing');
+    document.removeEventListener('mousemove',onMove);
+    document.removeEventListener('mouseup',onUp);
+    if(table){
+      var key=(table.id||'s4tbl')+'_r';
+      if(!s4RowHeights[key])s4RowHeights[key]={};
+      s4RowHeights[key][trIdx]=dataTr.offsetHeight;
+      try{localStorage.setItem('sinoon_s4_row_h',JSON.stringify(s4RowHeights));}catch(ex){}
+    }
+  }
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
+}
+
+function s4ApplyResizeSizes(){
+  document.querySelectorAll('.s4-resizable').forEach(function(table){
+    var key=table.id||'s4tbl';
+    var cw=s4ColWidths[key]||{};
+    Object.keys(cw).forEach(function(ci){
+      Array.from(table.rows).forEach(function(row){
+        var cell=row.cells[parseInt(ci)];
+        if(cell){cell.style.width=cw[ci]+'px';cell.style.minWidth=cw[ci]+'px';}
+      });
+    });
+    var rh=s4RowHeights[key+'_r']||{};
+    // tbody 내 s4-row-resize-tr 제외한 데이터 tr만 복원
+    var tbRows=Array.from((table.tBodies[0]&&table.tBodies[0].rows)||[]);
+    tbRows.forEach(function(tr,i){
+      if(tr.classList.contains('s4-row-resize-tr'))return;
+      var ri=Array.from(tr.parentElement.children).indexOf(tr);
+      if(rh[ri]){
+        tr.style.height=rh[ri]+'px';
+        Array.from(tr.cells).forEach(function(td){
+          td.style.height=rh[ri]+'px';
+          td.style.maxHeight=rh[ri]+'px';
+          td.style.overflow='hidden';
+        });
+      }
+    });
+  });
+}
 
 </script>
 </body>
