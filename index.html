@@ -1176,6 +1176,7 @@ function promoSaveMemo(idx){
   var store=memoLoad();
   store[key]=val;
   memoSave(store);
+  try{jsonbinSave();}catch(e){} // Firebase 동기화
   // PROMO_DATA 메모 업데이트 (인메모리)
   for(var i=0;i<PROMO_DATA.length;i++){
     if(memoKey(PROMO_DATA[i])===key){PROMO_DATA[i].memo=val;break;}
@@ -4715,6 +4716,9 @@ function s4ApplyResizeSizes(){
   });
 }
 
+// Firebase 폴링 시작 (페이지 로드 시 즉시 + 30초 간격)
+_jbPoll();
+setInterval(_jbPoll, 30000);
 </script>
 </body>
 </html>
