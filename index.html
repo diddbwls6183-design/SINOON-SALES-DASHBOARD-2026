@@ -3903,6 +3903,11 @@ function s4ApplyLockState(){
     el.contentEditable = s4Unlocked ? 'true' : 'false';
     el.style.cursor = s4Unlocked ? 'text' : 'default';
   });
+  // 리사이즈 핸들 활성화/비활성화
+  document.querySelectorAll('table.s4-resizable').forEach(function(tbl){
+    if(s4Unlocked) tbl.classList.add('unlocked');
+    else tbl.classList.remove('unlocked');
+  });
 }
 
 function s4Focus(el){
@@ -4062,7 +4067,7 @@ function s4Render(){
         <span style="font-size:15px;font-weight:700;color:#111">${dn(ch)}</span>
         <span style="font-size:13px;color:#555">${items.length}개 프로모션</span>
       </div>
-      <div class="tbl-wrap" style="overflow-x:auto;"><table class="s4-resizable" style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;" id="s4tbl-${ch}">
+      <div class="tbl-wrap" style="overflow-x:auto;"><table class="s4-resizable" style="width:100%;border-collapse:collapse;font-size:12px;table-layout:auto;" id="s4tbl-${ch}">
         
         <thead><tr style="background:#000000;border-bottom:2px solid #000000;">
           <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:hidden;">프로모션<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
@@ -4107,7 +4112,97 @@ function s4Render(){
     </div>`;
   });
   el.innerHTML=html;
-  s4ApplyResizeSizes();
+  // unlocked 클래스 적용 후 자동 맞춤
+  requestAnimationFrame(function(){
+    document.querySelectorAll('table.s4-resizable').forEach(function(tbl){
+      if(s4Unlocked) tbl.classList.add('unlocked');
+      else tbl.classList.remove('unlocked');
+    });
+    s4ApplyResizeSizes();
+  });
+}
+
+// ── 열/행 리사이즈 ──
+var s4ColWidths={},s4RowHeights={};
+
+function s4ApplyResizeSizes(){
+  document.querySelectorAll('table.s4-resizable').forEach(function(tbl){
+    var id=tbl.id;
+    // 열 너비 적용
+    if(s4ColWidths[id]&&s4ColWidths[id].length){
+      tbl.style.tableLayout='fixed';
+      var cg=tbl.querySelector('colgroup');
+      if(!cg){cg=document.createElement('colgroup');tbl.insertBefore(cg,tbl.firstChild);}
+      cg.innerHTML='';
+      s4ColWidths[id].forEach(function(w){
+        var col=document.createElement('col');
+        if(w)col.style.width=w+'px';
+        cg.appendChild(col);
+      });
+    }
+    // 행 높이 적용
+    if(s4RowHeights[id]){
+      var rows=tbl.querySelectorAll('tbody tr:not(.s4-row-resize-tr)');
+      rows.forEach(function(tr,i){
+        if(s4RowHeights[id][i]!=null) tr.style.height=s4RowHeights[id][i]+'px';
+      });
+    }
+  });
+}
+
+function s4ColResizeStart(e,handle){
+  if(!s4Unlocked)return;
+  e.preventDefault();e.stopPropagation();
+  var th=handle.parentElement;
+  var table=th.closest('table');
+  var headRow=th.closest('tr');
+  var allThs=Array.from(headRow.querySelectorAll('th'));
+  var idx=allThs.indexOf(th);
+  // 첫 리사이즈: 현재 모든 열 너비 캡처 후 fixed로 전환
+  if(table.style.tableLayout!=='fixed'){
+    var ws=allThs.map(function(t){return t.getBoundingClientRect().width;});
+    table.style.tableLayout='fixed';
+    var cg=table.querySelector('colgroup');
+    if(!cg){cg=document.createElement('colgroup');table.insertBefore(cg,table.firstChild);}
+    cg.innerHTML='';
+    ws.forEach(function(w){var col=document.createElement('col');col.style.width=w+'px';cg.appendChild(col);});
+    s4ColWidths[table.id]=ws.slice();
+  }
+  var startX=e.clientX;
+  var cols=table.querySelectorAll('col');
+  var startW=cols[idx]?parseFloat(cols[idx].style.width)||allThs[idx].getBoundingClientRect().width:100;
+  function onMove(ev){
+    var diff=ev.clientX-startX;
+    var newW=Math.max(40,startW+diff);
+    if(cols[idx])cols[idx].style.width=newW+'px';
+    if(s4ColWidths[table.id])s4ColWidths[table.id][idx]=newW;
+  }
+  function onUp(){document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);}
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
+}
+
+function s4RowResizeStart(e,cell){
+  if(!s4Unlocked)return;
+  e.preventDefault();e.stopPropagation();
+  var resizeTr=cell.parentElement;
+  var dataTr=resizeTr.previousElementSibling;
+  if(!dataTr)return;
+  var table=dataTr.closest('table');
+  var rows=Array.from(table.querySelectorAll('tbody tr:not(.s4-row-resize-tr)'));
+  var rowIdx=rows.indexOf(dataTr);
+  var startY=e.clientY;
+  var startH=dataTr.getBoundingClientRect().height;
+  function onMove(ev){
+    var diff=ev.clientY-startY;
+    var newH=Math.max(24,startH+diff);
+    dataTr.style.height=newH+'px';
+    if(!s4RowHeights[table.id])s4RowHeights[table.id]={};
+    s4RowHeights[table.id][rowIdx]=newH;
+  }
+  function onUp(){document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);}
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
 }
 
 // ── 서식 툴바 ──
@@ -5060,7 +5155,7 @@ document.addEventListener('selectionchange',function(){
 (function(){
   var styleEl=document.createElement('style');
   styleEl.textContent=
-    '.s4-col-resize{position:absolute;right:0;top:0;bottom:0;width:5px;cursor:col-resize;background:transparent;z-index:10;border-right:2px solid transparent;}'+
+    '.s4-col-resize{position:absolute;right:0;top:0;bottom:0;width:5px;cursor:default;background:transparent;z-index:10;border-right:2px solid transparent;pointer-events:none;}table.s4-resizable.unlocked .s4-col-resize{cursor:col-resize;pointer-events:auto;}table.s4-resizable.unlocked .s4-col-resize:hover{border-right-color:#8b6f5e;background:rgba(139,111,94,0.15);}table.s4-resizable.unlocked .s4-row-resize{cursor:row-resize;}table.s4-resizable.unlocked .s4-row-resize:hover{background:#8b6f5e;opacity:0.4;}'+
     '.s4-col-resize:hover{border-right-color:#aaa;}'+
     '.s4-row-resize-tr td{transition:none;}'+
     '.s4-row-resize{display:block;width:100%;height:4px;cursor:row-resize;background:transparent;}'+
