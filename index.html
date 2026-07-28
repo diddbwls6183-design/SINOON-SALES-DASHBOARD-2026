@@ -2912,7 +2912,10 @@ function s2GetTop(){
       for(const [kw,sf] of Object.entries(_ckm)){if(p.name.includes(kw)){const fc=code+sf;if(STOCK_MAP[fc]!==undefined||IMG_MAP[fc]){code=fc;break;}}}
     }
     const stk=STOCK_MAP[code]??p.stock??0;const cst=COST_MAP[code]??p.cost??0;
-    if(!map[code])map[code]={code,item:p.item,name:(p.name||'').replace(/\s*\([^)]+\)\s*$/,'').trim()||p.name,season:p.season,s:0,r:0,q:0,rq:0,cost:cst,stock:stk};
+    const _bCode=code.slice(0,10);const _pd=D.ps_data&&D.ps_data[_bCode];
+    const _season=p.season||(_pd&&_pd.season)||_codeToSeason(code)||'';
+    const _item=p.item||(_pd&&_pd.item)||'';
+    if(!map[code])map[code]={code,item:_item,name:(p.name||'').replace(/\s*\([^)]+\)\s*$/,'').trim()||p.name,season:_season,s:0,r:0,q:0,rq:0,cost:cst,stock:stk};
     map[code].s+=p.s||0;map[code].r+=p.r||0;map[code].q+=p.q||0;map[code].rq+=p.rq||0;
   }
   s2.selChs.forEach(ch=>{
@@ -2965,7 +2968,10 @@ function s2GetRet(){
   const hasFilter=targetMons||targetWks;
   function addP(p){
     const stk=STOCK_MAP[p.code]??p.stock??0;const cst=COST_MAP[p.code]??p.cost??0;
-    if(!map[p.code])map[p.code]={code:p.code,item:p.item||'-',name:p.name,season:p.season,s:0,r:0,q:0,rq:0,rr:0,cost:cst,stock:stk};
+    const _bCode2=p.code.slice(0,10);const _pd2=D.ps_data&&D.ps_data[_bCode2];
+    const _season2=p.season||(_pd2&&_pd2.season)||_codeToSeason(p.code)||'';
+    const _item2=p.item||(_pd2&&_pd2.item)||'';
+    if(!map[p.code])map[p.code]={code:p.code,item:_item2||'-',name:p.name,season:_season2,s:0,r:0,q:0,rq:0,rr:0,cost:cst,stock:stk};
     map[p.code].s+=p.s||0;map[p.code].r+=p.r||0;map[p.code].q+=p.q||0;map[p.code].rq+=p.rq||0;
   }
   s2.selChs.forEach(ch=>{
