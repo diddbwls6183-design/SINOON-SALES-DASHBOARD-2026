@@ -6241,14 +6241,13 @@ function _applyFreshData(fresh) {
   if (fresh.PROMO_DATA) D.PROMO_DATA = fresh.PROMO_DATA;
 
   // ── D.dates / D.weeks / D.months / D.month_to_dates / D.month_to_weeks 재계산 ──
-  D.dates = Object.keys(D.daily26 || {}).filter(d => /^2026-/.test(d)).sort();
-  D.weeks = Object.keys(D.weekly26 || {}).sort((a, b) => {
-    const pw = s => { const m = s.match(/(\d+)월(\d+)주/); return m ? parseInt(m[1])*100 + parseInt(m[2]) : 0; };
-    return pw(a) - pw(b);
-  });
-  D.months = Object.keys(D.monthly26 || {}).sort((a, b) => {
-    return (parseInt(a) || 0) - (parseInt(b) || 0);
-  });
+  const _nd = Object.keys(D.daily26 || {}).filter(d => /^2026-/.test(d)).sort();
+  const _pwFn = s => { const _m = s.match(/(\d+)월(\d+)주/); return _m ? parseInt(_m[1])*100 + parseInt(_m[2]) : 0; };
+  const _nw = Object.keys(D.weekly26 || {}).sort((a, b) => _pwFn(a) - _pwFn(b));
+  const _nm = Object.keys(D.monthly26 || {}).sort((a, b) => (parseInt(a)||0) - (parseInt(b)||0));
+  D.dates.splice(0, D.dates.length, ..._nd);
+  D.weeks.splice(0, D.weeks.length, ..._nw);
+  D.months.splice(0, D.months.length, ..._nm);
   const _m2d = {}, _m2w = {};
   D.dates.forEach(dt => {
     const mon = parseInt(dt.split('-')[1]) + '월';
