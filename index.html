@@ -3815,18 +3815,18 @@ function _codeToItem(code){
   var m=code.match(/SN\d[A-Z]\d([A-Z]{2,3})\d/);
   if(!m)return '기타';
   var cat=m[1].toUpperCase();
-  if(['TO','TT','TS','TP'].includes(cat))return '티셔츠';
-  if(['DO','DR','DS'].includes(cat))return '드레스';
-  if(['BL','BM','BH','BS','BK','BW','BO'].includes(cat))return '하의';
-  if(['KA','KC','KK','KN','KP'].includes(cat))return '니트웨어';
-  if(['KJ','JK','OA','OC','OJ'].includes(cat))return '아우터';
-  if(['BU','BV','SH','SB','BT'].includes(cat))return '블라우스';
-  if(['AN','SS','AA','AC','AG','AB','AP','AO'].includes(cat))return '악세사리';
+  if(['TO','TT','TS','TP','TW'].includes(cat))return '티셔츠';
+  if(['DO','DR','DS','DD','DK','DJ','KD'].includes(cat))return '드레스';
+  if(['BL','BM','BH','BS','BK','BW','BO','BP','BD','BJ','KS'].includes(cat))return '하의';
+  if(['KA','KC','KK','KN','KP','KV'].includes(cat))return '니트웨어';
+  if(['KJ','JK','OA','OC','OJ','OF','OP','OV','TH'].includes(cat))return '아우터';
+  if(['BU','BV','SH','SB','BT','TB'].includes(cat))return '블라우스';
+  if(['AN','SS','AA','AC','AG','AB','AP','AO','AH','AU','AZ','HH','HE','KH','KZ'].includes(cat))return '악세사리';
   return '기타';
 }
 // item 정규화
 function _normItem(item,code){
-  var NORM={'상의':'티셔츠','하의,바디제품':'하의','악세사리,기타':'악세사리','수영복':'기타','핸드백,가방류':'기타','바디':'기타'};
+  var NORM={'상의':'티셔츠','하의,바디제품':'하의','악세사리,기타':'악세사리','수영복':'기타','핸드백,가방류':'악세사리','바디':'기타'};
   if(NORM[item])return NORM[item];
   if(!item||item==='기타'||item==='')return _codeToItem(code);
   return item;
