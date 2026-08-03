@@ -1630,8 +1630,18 @@ function buildYoY(){
 
 function s0_gran(g){
   s0.gran=g;
-  if(g==='주차별')s0.selWeeks=[];
-  if(g==='일별')s0.selDays=[];
+  if(g==='주차별'){
+    s0.selWeeks=[];
+    let wkM=s0.wkMon;
+    if(!(D.month_to_weeks[wkM]||[]).length){const fb=MONTHS.slice().reverse().find(m=>(D.month_to_weeks[m]||[]).length>0);if(fb)wkM=fb;}
+    s0.wkMon=wkM;
+  }
+  if(g==='일별'){
+    s0.selDays=[];
+    let dyM=s0.dyMon;
+    if(!(D.month_to_dates[dyM]||[]).length){const fb=MONTHS.slice().reverse().find(m=>(D.month_to_dates[m]||[]).length>0);if(fb)dyM=fb;}
+    s0.dyMon=dyM;
+  }
   document.querySelectorAll('.s0-gran-btn').forEach(b=>{
     b.classList.toggle('active',b.dataset.gran===g);
   });
@@ -4361,13 +4371,17 @@ function renderCustTable(){
   const NC='#5B8CF7',RC='#D0D5E8',NW='#F7875B',OW='#5BC4B8';
   const all=loadCustData();
   const monthSet=new Set();
-  all.forEach(d=>monthSet.add(d.w.substring(0,2)));
+  all.forEach(d=>{
+    monthSet.add(d.w.substring(0,2));
+    const endMon=d.w.substring(6,8);
+    if(endMon&&endMon!==d.w.substring(0,2)) monthSet.add(endMon);
+  });
   const monthKeys=[...monthSet].sort();
   if(!monthKeys.length){el.innerHTML='<div style="color:#111;padding:20px;text-align:center;">데이터 없음</div>';return;}
   const curM=_getCSMon();
   if(!monthKeys.includes(curM)) s3CustSeasonMon=monthKeys[monthKeys.length-1];
   const mon=_getCSMon();
-  const monRows=all.filter(d=>d.w.substring(0,2)===mon);
+  const monRows=all.filter(d=>d.w.substring(0,2)===mon||(d.w.substring(6,8)===mon&&d.w.substring(0,2)!==mon));
   const mLabel=parseInt(mon,10)+'월';
   const prevMon=monthKeys[monthKeys.indexOf(mon)-1];
   const prevMLabel=prevMon?parseInt(prevMon,10)+'월':null;
@@ -4657,12 +4671,14 @@ function renderConvTable(){
   const el=document.getElementById('t3conv-table');if(!el)return;
   const all=loadConvData();
 
-  // 월별 그룹핑
+  // 월별 그룹핑 (월 경계 주차는 양쪽 월에 모두 포함)
   const monthGroups={};
+  const _addToMGrp=(mon,d,i)=>{if(!monthGroups[mon])monthGroups[mon]=[];if(!monthGroups[mon].find(x=>x.d.w===d.w))monthGroups[mon].push({d,i});};
   all.forEach((d,i)=>{
-    const mon=d.w.substring(0,2)+'월';
-    if(!monthGroups[mon])monthGroups[mon]=[];
-    monthGroups[mon].push({d,i});
+    const startMon=d.w.substring(0,2)+'월';
+    _addToMGrp(startMon,d,i);
+    const endMon=d.w.substring(6,8);
+    if(endMon&&endMon!==d.w.substring(0,2)) _addToMGrp(endMon+'월',d,i);
   });
   const monthKeys=Object.keys(monthGroups);
   if(!monthKeys.length){el.innerHTML='<div style="color:#aaa;padding:20px;text-align:center;">데이터 없음</div>';return;}
