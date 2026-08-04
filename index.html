@@ -4898,7 +4898,8 @@ function s4ResetLayout(){
   // 모든 s4-resizable 테이블 셀 인라인 스타일 제거
   document.querySelectorAll('.s4-resizable th,.s4-resizable td').forEach(function(cell){
     cell.style.width='';cell.style.minWidth='';
-    cell.style.height='';cell.style.maxHeight='';cell.style.overflow='';
+    cell.style.height='';cell.style.maxHeight='';cell.style.overflow='';cell.style.verticalAlign='';
+    Array.from(cell.children).forEach(function(ch){ch.style.maxHeight='';ch.style.overflow='';});
   });
   document.querySelectorAll('.s4-resizable tr').forEach(function(tr){
     tr.style.height='';
@@ -5231,7 +5232,13 @@ function s4ApplyResizeSizes(){
           tr.style.height=h+'px';
           Array.from(tr.querySelectorAll('td')).forEach(function(td){
             td.style.height=h+'px';
+            td.style.maxHeight=h+'px';
             td.style.overflow='hidden';
+            td.style.verticalAlign='top';
+            Array.from(td.children).forEach(function(child){
+              child.style.maxHeight=(h-4)+'px';
+              child.style.overflow='hidden';
+            });
           });
         }
       });
@@ -5291,7 +5298,14 @@ function s4RowResizeStart(e,cell){
     tr.style.height=h+'px';
     Array.from(tr.querySelectorAll('td')).forEach(function(td){
       td.style.height=h+'px';
+      td.style.maxHeight=h+'px';
       td.style.overflow='hidden';
+      td.style.verticalAlign='top';
+      // 내부 div도 높이 제한 (내용이 td를 밀어내지 않도록)
+      Array.from(td.children).forEach(function(child){
+        child.style.maxHeight=(h-4)+'px';
+        child.style.overflow='hidden';
+      });
     });
   }
   function onMove(ev){
