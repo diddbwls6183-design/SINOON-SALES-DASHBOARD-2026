@@ -3015,7 +3015,7 @@ function _s2CellMap(p,col){
   const memo=s2Memo[p.code]||'';
   return {
     code:`<td style="text-align:center">${p.code}</td>`,
-    season:(()=>{const co=p.co||(D.ps_data&&D.ps_data[p.code]&&D.ps_data[p.code].co)||'';if(co){const c=co==='신규캐리오버'?'#5B8CF7':'#888';return`<td style="text-align:center;color:${c};font-weight:600;font-size:11px">${co}</td>`;}return`<td style="text-align:center">${p.season||'-'}</td>`;})(),
+    season:(()=>{const co=p.co||(D.ps_data&&D.ps_data[p.code]&&D.ps_data[p.code].co)||'';if(co){const c=co==='신규캐리오버'?'#5B8CF7':'#888';return`<td style="text-align:center;color:${c};font-weight:600">${co}</td>`;}return`<td style="text-align:center">${p.season||'-'}</td>`;})(),
     item:`<td style="text-align:center">${p.item||'-'}</td>`,
     name:(()=>{
       const nm=p.name||'';
