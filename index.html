@@ -6115,6 +6115,7 @@ function _applyFreshData(fresh) {
       if (D.ps_data && D.ps_data[code]) {
         if (D.ps_data[code].item)   fresh.ps_data[code].item   = D.ps_data[code].item;
         if (D.ps_data[code].season) fresh.ps_data[code].season = D.ps_data[code].season;
+        if (D.ps_data[code].co)     fresh.ps_data[code].co     = D.ps_data[code].co;
       }
     }
     D.ps_data = fresh.ps_data;
