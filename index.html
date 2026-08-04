@@ -5139,6 +5139,8 @@ function s4Render(){
   const groups={};
   data.forEach(p=>{if(!groups[p.ch])groups[p.ch]=[];groups[p.ch].push(p);});
   const cellStyle='padding:8px 10px;vertical-align:middle;text-align:center;border:1px solid #d4c9bc;font-size:12px;line-height:1.5;word-break:break-word;overflow-wrap:break-word;white-space:pre-wrap;';
+  const tdStyle='border:1px solid #d4c9bc;vertical-align:middle;overflow:hidden;padding:0;';
+  const innerBaseStyle='padding:8px 10px;text-align:center;font-size:12px;line-height:1.5;word-break:break-word;overflow-wrap:break-word;white-space:pre-wrap;box-sizing:border-box;overflow:hidden;width:100%;display:block;';
   const subStyle='font-size:11px;color:#111;line-height:1.8;text-align:center;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;';
   const YEL_BG='background:#fffde7;';
   let html='';
@@ -5175,17 +5177,15 @@ function s4Render(){
       const ce=s4Unlocked?'true':'false';
       const ceCursor=s4Unlocked?'text':'default';
       html+=`<tr style="border-bottom:1px solid #ede8e1;" onmouseover="this.style.background='#faf8f5'" onmouseout="this.style.background=''" >
-        <td style="${cellStyle}font-weight:600;color:#111;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;cursor:${ceCursor};${p.highlight?'background:#fffbea;':''}" contenteditable="${ce}" data-idx="${gi}" data-key="name" onblur="s4SaveCell(this)">${p.name}</td>
-        <td style="${cellStyle}background:#ffffff;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="tgt_raw" onfocus="s4NumFocus(this)" onblur="s4SaveCell(this)">${p.tgt?p.tgt.toLocaleString():'—'}</td>
-        <td style="${cellStyle}font-size:11px;color:#111;background:#ffffff;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="period" onblur="s4SaveCell(this)">${p.period||''}</td>
-        <td style="${cellStyle}${YEL_BG}color:#c0392b;font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="qty_raw" onfocus="s4NumFocus(this)" onblur="s4SaveCell(this)">${(p.qty!=null&&p.qty!==0)?p.qty.toLocaleString():'—'}</td>
-        <td style="${cellStyle}${YEL_BG}color:#c0392b;font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="sales_raw" onfocus="s4NumFocus(this)" onblur="s4SaveCell(this)">${p.sales?p.sales.toLocaleString():'—'}</td>
-        <td style="${cellStyle}${YEL_BG}color:${achColor};font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="ach" onblur="s4SaveAch(this)">${(p.ach!==null&&p.ach!==undefined&&p.ach!==0)?p.ach+'%':'—'}</td>
-        <td style="${cellStyle}background:#ffffff;"><div style="font-size:11px;color:#111;line-height:1.8;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;text-align:center;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="scheme_h" onblur="s4SaveCell(this)">${p.scheme_h||''}</div></td>
-        <td style="${cellStyle}background:#ffffff;"><div style="${subStyle}cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="ad_h" onblur="s4SaveCell(this)">${p.ad_h||''}</div></td>
-        <td style="${cellStyle}${YEL_BG}vertical-align:middle;">
-          <div style="font-size:11px;font-weight:700;color:#111;line-height:1.8;text-align:center;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="review_h" onblur="s4SaveCell(this)">${p.review_h||''}</div>
-          </td>
+        <td style="${tdStyle}${p.highlight?'background:#fffbea;':''}"><div class="s4-cell-wrap" style="${innerBaseStyle}font-weight:600;color:#111;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="name" onblur="s4SaveCell(this)">${p.name}</div></td>
+        <td style="${tdStyle}background:#ffffff;"><div class="s4-cell-wrap" style="${innerBaseStyle}cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="tgt_raw" onfocus="s4NumFocus(this)" onblur="s4SaveCell(this)">${p.tgt?p.tgt.toLocaleString():'—'}</div></td>
+        <td style="${tdStyle}background:#ffffff;"><div class="s4-cell-wrap" style="${innerBaseStyle}font-size:11px;color:#111;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="period" onblur="s4SaveCell(this)">${p.period||''}</div></td>
+        <td style="${tdStyle}${YEL_BG}"><div class="s4-cell-wrap" style="${innerBaseStyle}color:#c0392b;font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="qty_raw" onfocus="s4NumFocus(this)" onblur="s4SaveCell(this)">${(p.qty!=null&&p.qty!==0)?p.qty.toLocaleString():'—'}</div></td>
+        <td style="${tdStyle}${YEL_BG}"><div class="s4-cell-wrap" style="${innerBaseStyle}color:#c0392b;font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="sales_raw" onfocus="s4NumFocus(this)" onblur="s4SaveCell(this)">${p.sales?p.sales.toLocaleString():'—'}</div></td>
+        <td style="${tdStyle}${YEL_BG}"><div class="s4-cell-wrap" style="${innerBaseStyle}color:${achColor};font-weight:700;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="ach" onblur="s4SaveAch(this)">${(p.ach!==null&&p.ach!==undefined&&p.ach!==0)?p.ach+'%':'—'}</div></td>
+        <td style="${tdStyle}background:#ffffff;"><div class="s4-cell-wrap" style="padding:8px 10px;font-size:11px;color:#111;line-height:1.8;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;text-align:center;cursor:${ceCursor};overflow:hidden;box-sizing:border-box;width:100%;display:block;" contenteditable="${ce}" data-idx="${gi}" data-key="scheme_h" onblur="s4SaveCell(this)">${p.scheme_h||''}</div></td>
+        <td style="${tdStyle}background:#ffffff;"><div class="s4-cell-wrap" style="${subStyle}cursor:${ceCursor};overflow:hidden;box-sizing:border-box;width:100%;display:block;padding:8px 10px;" contenteditable="${ce}" data-idx="${gi}" data-key="ad_h" onblur="s4SaveCell(this)">${p.ad_h||''}</div></td>
+        <td style="${tdStyle}${YEL_BG}"><div class="s4-cell-wrap" style="padding:8px 10px;font-size:11px;font-weight:700;color:#111;line-height:1.8;text-align:center;white-space:pre-wrap;word-break:break-word;overflow-wrap:break-word;cursor:${ceCursor};overflow:hidden;box-sizing:border-box;width:100%;display:block;" contenteditable="${ce}" data-idx="${gi}" data-key="review_h" onblur="s4SaveCell(this)">${p.review_h||''}</div></td>
       <tr class="s4-row-resize-tr"><td colspan="9" style="padding:0;border:none;height:4px;cursor:row-resize;" onmousedown="s4RowResizeStart(event,this)"><span class="s4-row-resize"></span></td></tr>`;
     });
     html+=`</tbody></table></div>
@@ -5230,15 +5230,10 @@ function s4ApplyResizeSizes(){
         var h=s4RowHeights[id][i];
         if(h!=null){
           tr.style.height=h+'px';
-          Array.from(tr.querySelectorAll('td')).forEach(function(td){
+          tr.querySelectorAll('td').forEach(function(td){
             td.style.height=h+'px';
-            td.style.maxHeight=h+'px';
-            td.style.overflow='hidden';
-            td.style.verticalAlign='top';
-            Array.from(td.children).forEach(function(child){
-              child.style.maxHeight=(h-4)+'px';
-              child.style.overflow='hidden';
-            });
+            var wrap=td.querySelector('.s4-cell-wrap');
+            if(wrap){wrap.style.height=h+'px';wrap.style.overflow='hidden';}
           });
         }
       });
@@ -5296,16 +5291,10 @@ function s4RowResizeStart(e,cell){
   var startH=dataTr.getBoundingClientRect().height;
   function _applyRowH(tr,h){
     tr.style.height=h+'px';
-    Array.from(tr.querySelectorAll('td')).forEach(function(td){
+    tr.querySelectorAll('td').forEach(function(td){
       td.style.height=h+'px';
-      td.style.maxHeight=h+'px';
-      td.style.overflow='hidden';
-      td.style.verticalAlign='top';
-      // 내부 div도 높이 제한 (내용이 td를 밀어내지 않도록)
-      Array.from(td.children).forEach(function(child){
-        child.style.maxHeight=(h-4)+'px';
-        child.style.overflow='hidden';
-      });
+      var wrap=td.querySelector('.s4-cell-wrap');
+      if(wrap){wrap.style.height=h+'px';wrap.style.overflow='hidden';}
     });
   }
   function onMove(ev){
