@@ -491,10 +491,16 @@ function _calcMonthSeasonDynamic(mLabel) {
     let nv, dv;
     if (info) { nv = info.n; dv = info.d; }
     else {
-      // 품번 패턴으로 추정: SN2G=26시즌=신상
-      const is26 = /^SN2G/.test(code);
-      nv = is26 ? '신상' : '이월';
-      dv = is26 ? '신상' : '이월';
+      // D.ps_data co/season 기반 분류
+      const psCo = p.co || '';
+      const psSeason = p.season || '';
+      if (psCo === '신규캐리오버') { nv = '신상'; dv = '캐리오버'; }
+      else if (psCo === '캐리오버') { nv = '이월'; dv = '캐리오버'; }
+      else {
+        const is26 = psSeason ? /^26/.test(psSeason) : /^SN2G/.test(code);
+        nv = is26 ? '신상' : '이월';
+        dv = is26 ? '신상' : '이월';
+      }
     }
     season[nv] = (season[nv] || 0) + net;
     if (dv === '익스클루시브') division['익스클루시브'] = (division['익스클루시브'] || 0) + net;
@@ -3854,15 +3860,17 @@ function s3Cat(){
   var itemTotals={};
   // 모든 채널 합산 (month_top15에 '전체' 키 없음)
   var _allItems={};
-  var _chs=Object.keys((D.month_top15&&D.month_top15[curMon])||{});
-  _chs.forEach(function(ch){
-    var arr=(D.month_top15[curMon][ch])||[];
-    arr.forEach(function(it){
-      var net=(it.s||0)-(it.r||0);if(net<=0)return;
-      if(!_allItems[it.code])_allItems[it.code]={name:it.name,code:it.code,s:0,r:0,item:it.item||''};
-      _allItems[it.code].s+=(it.s||0);_allItems[it.code].r+=(it.r||0);
-    });
-  });
+  // D.ps_data.by_mon 기반 동적 계산 (month_top15 불필요)
+  if(D.ps_data){
+    for(var _c in D.ps_data){
+      var _p=D.ps_data[_c];
+      var _md=_p.by_mon&&_p.by_mon[curMon];
+      if(!_md)continue;
+      var _net=(_md.s||0)-(_md.r||0);if(_net<=0)continue;
+      if(!_allItems[_c])_allItems[_c]={name:_p.name||_c,code:_c,s:0,r:0,item:_p.item||''};
+      _allItems[_c].s+=(_md.s||0);_allItems[_c].r+=(_md.r||0);
+    }
+  }
   var top=Object.values(_allItems);
   top.forEach(function(it){
     var net=(it.s||0)-(it.r||0);if(net<=0)return;
@@ -4443,17 +4451,16 @@ function renderCustTable(){
 
   // ── BEST5 (week_top15 전채널 합산)
   function getMonthBest5(ml){
-    // month_top15 전채널(VISIBLE_CHS) 합산 → 상품분석 판매순과 동일 기준
+    // D.ps_data.by_mon 기반 동적 계산 (month_top15 불필요)
+    if(!D.ps_data)return[];
     const prod={};
-    const chs=(typeof VISIBLE_CHS!=='undefined')?VISIBLE_CHS:['자사몰','29CM','무신사','무신사글로벌','카카오톡'];
-    chs.forEach(ch=>{
-      const arr=(D.month_top15&&D.month_top15[ml]&&D.month_top15[ml][ch])||[];
-      arr.forEach(it=>{
-        const net=(it.s||0)-(it.r||0);if(net<=0)return;
-        if(!prod[it.code])prod[it.code]={code:it.code,name:it.name,amt:0};
-        prod[it.code].amt+=net;
-      });
-    });
+    for(const code in D.ps_data){
+      const p=D.ps_data[code];
+      const monData=p.by_mon&&p.by_mon[ml];
+      if(!monData)continue;
+      const net=(monData.s||0)-(monData.r||0);if(net<=0)continue;
+      prod[code]={code,name:p.name||code,amt:net};
+    }
     return Object.values(prod).sort((a,b)=>b.amt-a.amt).slice(0,5);
   }
   const best5=getMonthBest5(mLabel);
