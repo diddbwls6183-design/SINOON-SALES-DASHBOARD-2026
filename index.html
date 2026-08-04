@@ -2196,7 +2196,7 @@ function s1D(p,ch){
   const g=s1.gran;let s26=0,r26=0,s25=0,tgt=0,sq=0,rq=0;
   if(g==='월별'){s26=m26s(p,ch);r26=m26r(p,ch);sq=sv(D.monthly26[p],ch,'q');rq=sv(D.monthly26[p],ch,'rq');if(hasMon(p)){s25=m25s(p,ch);tgt=D.targets[ch]?D.targets[ch][p]||0:0;}}
   else if(g==='주차별'){s26=sv(D.weekly26[p],ch,'s');r26=sv(D.weekly26[p],ch,'r');sq=sv(D.weekly26[p],ch,'q');rq=sv(D.weekly26[p],ch,'rq');if(hasWeek(p)){s25=_weekly_yoy_same_period(p,ch);tgt=D.weekly_target[p]?D.weekly_target[p][ch]||0:0;}}
-  else{s26=sv(D.daily26[p],ch,'s');r26=sv(D.daily26[p],ch,'r');sq=sv(D.daily26[p],ch,'q');rq=sv(D.daily26[p],ch,'rq');if(hasData(p)){s25=sv(D.daily25[p],ch)||0;tgt=D.daily_target[p]?D.daily_target[p][ch]||0:0;}}
+  else{s26=sv(D.daily26[p],ch,'s');r26=sv(D.daily26[p],ch,'r');sq=sv(D.daily26[p],ch,'q');rq=sv(D.daily26[p],ch,'rq');if(hasData(p)){s25=sv(D.daily25[p.replace('2026','2025')],ch)||0;tgt=D.daily_target[p]?D.daily_target[p][ch]||0:0;}}
   return{s26,r26,net:s26-r26,s25,tgt,sq,rq};
 }
 
