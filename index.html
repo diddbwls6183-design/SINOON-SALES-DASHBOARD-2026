@@ -3724,8 +3724,16 @@ const _s3InitWkMon=(D.month_to_weeks[CUR_MON]||[]).length?CUR_MON:(MONTHS.slice(
 const _s3InitWk=D.month_to_weeks[_s3InitWkMon]?.slice(-1)[0]||'';
 let s3={gran:'월별',selMonths:[CUR_MON],wkMon:_s3InitWkMon,selWeeks:_s3InitWk?[_s3InitWk]:[],dyMon:CUR_MON,selDays:[]};
 function renderTab3(){
-  _aovCurMon=null;_convCurMon=null;_catCurMon=null;_funnelPeriod=null;s3CustSeasonMon=null;
   loadAnalyticsData();
+  // 렌더 전 최신 월로 명시적 초기화 (null 두면 자동감지가 7월 반환하는 버그)
+  (function(){
+    var _im=MONTHS[MONTHS.length-1];
+    var _in=parseInt(_im)||parseInt((_im||'').replace('월',''));
+    var _ip=String(_in).padStart(2,'0');
+    _t3GlobalMon=_im;_aovCurMon=_im;_catCurMon=_im;
+    _convCurMon=_ip+'월';s3CustSeasonMon=_ip;
+    if(typeof FUNNEL_DATA!=='undefined'&&FUNNEL_DATA[_im])_funnelPeriod=_im;
+  })();
   const el=document.getElementById('tab3');
   el.innerHTML=`${tabBanner(3)}
   <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:16px;">
