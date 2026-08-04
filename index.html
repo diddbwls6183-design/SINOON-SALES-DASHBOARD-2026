@@ -6240,7 +6240,7 @@ function _applyFreshData(fresh) {
   }
   const ctrl = new AbortController();
   const timer = setTimeout(()=>ctrl.abort(), 25000);
-  fetch(_GS_URL, {signal: ctrl.signal})
+  fetch(_GS_URL + '?t=' + Date.now(), {signal: ctrl.signal})
     .then(res => res.json())
     .then(fresh => {
       clearTimeout(timer);
