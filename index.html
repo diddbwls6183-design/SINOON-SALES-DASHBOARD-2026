@@ -6191,6 +6191,8 @@ function _applyFreshData(fresh) {
   D.month_to_dates = _m2d;
   D.month_to_weeks = _m2w;
   if (fresh.week_to_dates) D.week_to_dates = fresh.week_to_dates;
+  // 2025 일별 전년실적 업데이트
+  if (fresh.daily25 && Object.keys(fresh.daily25).length > 0) D.daily25 = fresh.daily25;
   // MONTHLY_AOV 전역 변수 업데이트 (GS는 {aov,orders,sales} 형태로 반환)
   if (fresh.MONTHLY_AOV) {
     for (const ch in fresh.MONTHLY_AOV) {
