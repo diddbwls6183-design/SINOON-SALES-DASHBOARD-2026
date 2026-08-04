@@ -2915,7 +2915,12 @@ function s2GetTop(){
       for(const [kw,sf] of Object.entries(_ckm)){if(p.name.includes(kw)){const fc=code+sf;if(STOCK_MAP[fc]!==undefined||IMG_MAP[fc]){code=fc;break;}}}
     }
     const stk=STOCK_MAP[code]??p.stock??0;const cst=COST_MAP[code]??p.cost??0;
-    if(!map[code])map[code]={code,item:p.item,name:p.name,season:p.season,s:0,r:0,q:0,rq:0,cost:cst,stock:stk};
+    // ps_data에서 season/item 보완 (month_top15/week_top15엔 비어있는 경우)
+    const _psd=D.ps_data&&(D.ps_data[code]||D.ps_data[p.code]);
+    const _item=p.item||(_psd&&_psd.item)||'';
+    const _season=p.season||(_psd&&_psd.season)||'';
+    if(!map[code])map[code]={code,item:_item,name:p.name,season:_season,s:0,r:0,q:0,rq:0,cost:cst,stock:stk};
+    else{if(!map[code].item&&_item)map[code].item=_item;if(!map[code].season&&_season)map[code].season=_season;}
     map[code].s+=p.s||0;map[code].r+=p.r||0;map[code].q+=p.q||0;map[code].rq+=p.rq||0;
   }
   s2.selChs.forEach(ch=>{
