@@ -384,7 +384,7 @@ var JB_KEYS=['sinoon_promo_memos','sinoon_promo_data','sinoon_s4_sparse_edits',
   'sinoon_mkt_weekly','sinoon_mkt_review','sinoon_mkt_daily_report','sinoon_mkt_daily_table',
   'sinoon_scm_edits','sinoon_aov_data','sinoon_cust_weekly','sinoon_conv_extra',
   'sinoon_s2_memo','sinoon_s4_col_w','sinoon_s4_row_h'];
-var s4={mon:'7월',ch:'전체'};
+var s4={mon:'',ch:'전체'};
 
 function _fbGetHash(){
   var s='';
@@ -4760,6 +4760,7 @@ function renderConvTable(){
 function renderTab4(){
   const el=document.getElementById('tab4');if(!el)return;
   const mons=[...new Set(PROMO_DATA.map(function(d){return d.mon;}))].sort(function(a,b){return parseInt(a)-parseInt(b);});
+  if(mons.length&&!mons.includes(s4.mon))s4.mon=mons[mons.length-1];
   const chs=['전체','자사몰&해외','29CM','무신사&글로벌','카카오톡'];
   el.innerHTML=`${tabBanner(4)}
   <div style="display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:20px;">
