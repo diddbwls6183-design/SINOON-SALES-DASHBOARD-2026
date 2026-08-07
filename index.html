@@ -3783,40 +3783,33 @@ function renderTab3(){
       <div id="t3funnel" style="margin-top:8px;"></div>
     </div>
   <div class="card" style="margin-top:16px;">
-    <div class="card-title">🛒 자사몰 고객 장바구니 분석</div>
-    <div id="t3cart-filter" style="margin-bottom:12px;"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-      <div>
-        <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
-          🛒 장바구니 BEST
-          <div class="dd-wrap-cart" style="position:relative;display:inline-block;">
-            <button class="pill" style="font-size:12px;padding:3px 12px;" onclick="toggleCartDD('best')">⚙ 컬럼 설정 ▾</button>
-            <div id="cartdd-best" style="display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid #e8e4df;border-radius:10px;padding:6px 0;z-index:100;min-width:130px;box-shadow:0 4px 16px rgba(0,0,0,.08);">
-              <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:13px;cursor:pointer;"><input type="checkbox" id="cc-best-exp" onchange="renderCartSection()"> 노출수</label>
-              <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:13px;cursor:pointer;"><input type="checkbox" id="cc-best-cart" checked onchange="renderCartSection()"> 담긴수</label>
-              <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:13px;cursor:pointer;"><input type="checkbox" id="cc-best-crate" onchange="renderCartSection()"> 담긴율</label>
-            </div>
-          </div>
+    <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>🛒 자사몰 고객 장바구니 분석</span>
+      <div class="dd-wrap-cart" style="position:relative;display:inline-block;">
+        <button class="pill" style="font-size:13px;padding:4px 14px;" onclick="toggleCartDD('col')">⚙ 컬럼 설정 ▾</button>
+        <div id="cartdd-col" style="display:none;position:absolute;top:calc(100% + 4px);right:0;background:#fff;border:1px solid #e8e4df;border-radius:10px;padding:8px 0;z-index:100;min-width:150px;box-shadow:0 4px 16px rgba(0,0,0,.08);">
+          <div style="padding:4px 14px 6px;font-size:11px;font-weight:700;color:#7a7470;letter-spacing:.05em;">장바구니 BEST</div>
+          <label style="display:flex;align-items:center;gap:8px;padding:5px 14px;font-size:13px;cursor:pointer;"><input type="checkbox" id="cc-best-exp" checked onchange="renderCartSection()"> 노출수</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:5px 14px;font-size:13px;cursor:pointer;"><input type="checkbox" id="cc-best-cart" checked onchange="renderCartSection()"> 담긴수</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:5px 14px;font-size:13px;cursor:pointer;"><input type="checkbox" id="cc-best-crate" checked onchange="renderCartSection()"> 담긴율</label>
+          <div style="padding:8px 14px 6px;font-size:11px;font-weight:700;color:#7a7470;letter-spacing:.05em;border-top:1px solid #e8e4df;margin-top:4px;">장바구니 포기</div>
+          <label style="display:flex;align-items:center;gap:8px;padding:5px 14px;font-size:13px;cursor:pointer;"><input type="checkbox" id="cc-abd-cart" checked onchange="renderCartSection()"> 담긴수</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:5px 14px;font-size:13px;cursor:pointer;"><input type="checkbox" id="cc-abd-abd" checked onchange="renderCartSection()"> 포기수</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:5px 14px;font-size:13px;cursor:pointer;"><input type="checkbox" id="cc-abd-arate" checked onchange="renderCartSection()"> 포기율</label>
         </div>
-        <div style="overflow-x:auto;"><table id="cart-best-tbl" style="border-collapse:collapse;width:100%;font-size:14px;white-space:nowrap;"></table></div>
-        <div id="cart-best-more" style="text-align:center;margin-top:8px;"></div>
-      </div>
-      <div>
-        <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
-          🚫 장바구니 포기
-          <div class="dd-wrap-cart" style="position:relative;display:inline-block;">
-            <button class="pill" style="font-size:12px;padding:3px 12px;" onclick="toggleCartDD('abd')">⚙ 컬럼 설정 ▾</button>
-            <div id="cartdd-abd" style="display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid #e8e4df;border-radius:10px;padding:6px 0;z-index:100;min-width:130px;box-shadow:0 4px 16px rgba(0,0,0,.08);">
-              <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:13px;cursor:pointer;"><input type="checkbox" id="cc-abd-cart" checked onchange="renderCartSection()"> 담긴수</label>
-              <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:13px;cursor:pointer;"><input type="checkbox" id="cc-abd-abd" checked onchange="renderCartSection()"> 포기수</label>
-              <label style="display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:13px;cursor:pointer;"><input type="checkbox" id="cc-abd-arate" onchange="renderCartSection()"> 포기율</label>
-            </div>
-          </div>
-        </div>
-        <div style="overflow-x:auto;"><table id="cart-abd-tbl" style="border-collapse:collapse;width:100%;font-size:14px;white-space:nowrap;"></table></div>
-        <div id="cart-abd-more" style="text-align:center;margin-top:8px;"></div>
       </div>
     </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:10px;">🛒 장바구니 BEST</div>
+        <div style="overflow-x:auto;"><table id="cart-best-tbl" style="border-collapse:collapse;width:100%;font-size:14px;white-space:nowrap;"></table></div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#111;margin-bottom:10px;">🚫 장바구니 포기</div>
+        <div style="overflow-x:auto;"><table id="cart-abd-tbl" style="border-collapse:collapse;width:100%;font-size:14px;white-space:nowrap;"></table></div>
+      </div>
+    </div>
+    <div id="cart-more-wrap" style="text-align:center;margin-top:12px;"></div>
   </div>
   </div>`;
   try{s3Cat();}catch(e){console.warn('s3Cat',e);}
@@ -4195,36 +4188,37 @@ var analyticsUnlocked=false;
 var AOV_DATA={};
 
 // ── 장바구니 분석 ───────────────────────────────────────────────
-var _cartMon='8월';
-var _cartBestLimit=10, _cartAbdLimit=10;
+var _cartLimit=10;
 var _cartBestSort={key:'cart',dir:-1}, _cartAbdSort={key:'abd',dir:-1};
 
-function renderCartSection(){
-  // 월 필터 렌더
-  var filterEl=document.getElementById('t3cart-filter');
-  if(filterEl){
-    var mons=Object.keys(CART_BEST).sort(function(a,b){return parseInt(a)-parseInt(b);});
-    if(!mons.includes(_cartMon)) _cartMon=mons[mons.length-1];
-    filterEl.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'
-      +mons.map(function(m){
-        return '<button class="pill '+(m===_cartMon?'active':'')+'" onclick="_cartMon=\''+m+'\';_cartBestLimit=10;_cartAbdLimit=10;renderCartSection();">'+parseInt(m)+'월</button>';
-      }).join('')+'</div>';
+function _cartMon(){
+  // t3-global-mon 드롭다운 값 사용, 없으면 최신 월
+  var dd=document.getElementById('t3-global-mon');
+  var m=dd?dd.value:'';
+  if(!m||!CART_BEST[m]){
+    var keys=Object.keys(CART_BEST).sort(function(a,b){return parseInt(a)-parseInt(b);});
+    m=keys[keys.length-1]||'8월';
   }
+  return m;
+}
+
+function renderCartSection(){
   _renderCartBest();
   _renderCartAbd();
+  _renderCartMore();
 }
 
 function _cartColVis(prefix,keys){
   return keys.filter(function(k){
     var el=document.getElementById('cc-'+prefix+'-'+k);
-    return el?el.checked:false;
+    return el?el.checked:true;
   });
 }
 
-function _cartThHtml(label,key,sort,tbl){
+function _cartThHtml(label,key,sort,tbl,isRed){
   var arrow=sort.key===key?(sort.dir<0?' ↓':' ↑'):'';
-  var isSorted=sort.key===key?'color:#2d2926;font-weight:700;':'';
-  return '<th style="background:#f5f4f2;padding:8px 12px;text-align:center;font-weight:600;color:#7a7470;border-bottom:1px solid #e8e4df;cursor:pointer;white-space:nowrap;'+isSorted+'" onclick="_cartSort(\''+tbl+'\',\''+key+'\')">'+label+arrow+'</th>';
+  var sortColor=sort.key===key?'color:#2d2926;':'color:#7a7470;';
+  return '<th style="background:#f5f4f2;padding:8px 12px;text-align:center;font-weight:600;'+sortColor+'border-bottom:1px solid #e8e4df;cursor:pointer;white-space:nowrap;" onclick="_cartSort(\''+tbl+'\',\''+key+'\')">'+label+arrow+'</th>';
 }
 
 function _cartSort(tbl,key){
@@ -4237,63 +4231,82 @@ function _cartSort(tbl,key){
     _cartAbdSort.key=key;
     _renderCartAbd();
   }
+  _renderCartMore();
 }
 
 function _renderCartBest(){
   var tbl=document.getElementById('cart-best-tbl');
-  var moreEl=document.getElementById('cart-best-more');
   if(!tbl)return;
-  var rows=(CART_BEST[_cartMon]||[]).slice().sort(function(a,b){return (a[_cartBestSort.key]-b[_cartBestSort.key])*_cartBestSort.dir;});
+  var mon=_cartMon();
+  var rows=(CART_BEST[mon]||[]).slice().sort(function(a,b){return (a[_cartBestSort.key]-b[_cartBestSort.key])*_cartBestSort.dir;});
   var visCols=_cartColVis('best',['exp','cart','crate']);
-  var colMap={exp:{label:'노출수',fmt:function(v){return Math.round(v).toLocaleString();}},cart:{label:'담긴수',fmt:function(v){return Math.round(v).toLocaleString();}},crate:{label:'담긴율',fmt:function(v){return v.toFixed(2)+'%';}}};
+  var colMap={
+    exp:{label:'노출수',fmt:function(v){return Math.round(v).toLocaleString();},red:false},
+    cart:{label:'담긴수',fmt:function(v){return Math.round(v).toLocaleString();},red:true},
+    crate:{label:'담긴율',fmt:function(v){return v.toFixed(2)+'%';},red:false}
+  };
   var thead='<thead><tr><th style="background:#f5f4f2;padding:8px 12px;text-align:left;font-weight:600;color:#7a7470;border-bottom:1px solid #e8e4df;cursor:default;">상품명</th>'
-    +visCols.map(function(k){return _cartThHtml(colMap[k].label,k,_cartBestSort,'best');}).join('')+'</tr></thead>';
+    +visCols.map(function(k){return _cartThHtml(colMap[k].label,k,_cartBestSort,'best',colMap[k].red);}).join('')+'</tr></thead>';
   var rankBg=['#FAC775','#ddd','#F0997B'];
   var rankColor=['#412402','#555','#4A1B0C'];
-  var shown=rows.slice(0,_cartBestLimit);
+  var shown=rows.slice(0,_cartLimit);
   var tbody='<tbody>'+shown.map(function(r,i){
-    var rankStyle=i<3?'background:'+rankBg[i]+';color:'+rankColor[i]+';':'background:#f0eeeb;color:#7a7470;';
+    var rBg=i<3?'background:'+rankBg[i]+';color:'+rankColor[i]+';':'background:#f0eeeb;color:#7a7470;';
     return '<tr>'
-      +'<td style="padding:7px 12px;text-align:left;border-bottom:1px solid #e8e4df;color:#111;"><span style="display:inline-flex;width:18px;height:18px;align-items:center;justify-content:center;border-radius:50%;font-size:11px;font-weight:600;margin-right:4px;'+rankStyle+'">'+(i+1)+'</span>'+r.name+'</td>'
-      +visCols.map(function(k){return '<td style="padding:7px 12px;text-align:center;border-bottom:1px solid #e8e4df;color:#7a7470;">'+colMap[k].fmt(r[k])+'</td>';}).join('')
+      +'<td style="padding:7px 12px;text-align:left;border-bottom:1px solid #e8e4df;color:#111;"><span style="display:inline-flex;width:18px;height:18px;align-items:center;justify-content:center;border-radius:50%;font-size:11px;font-weight:600;margin-right:4px;'+rBg+'">'+(i+1)+'</span>'+r.name+'</td>'
+      +visCols.map(function(k){
+        var isRed=colMap[k].red;
+        var style='padding:7px 12px;text-align:center;border-bottom:1px solid #e8e4df;'+(isRed?'color:#c0392b;font-weight:700;':'color:#111;');
+        return '<td style="'+style+'">'+colMap[k].fmt(r[k])+'</td>';
+      }).join('')
       +'</tr>';
   }).join('')+'</tbody>';
   tbl.innerHTML=thead+tbody;
-  if(moreEl){
-    if(rows.length>_cartBestLimit&&_cartBestLimit<30){
-      moreEl.innerHTML='<button class="pill" style="font-size:13px;" onclick="_cartBestLimit=Math.min(_cartBestLimit+10,30);_renderCartBest();">더보기 ('+Math.min(rows.length,30)+'개 중 '+_cartBestLimit+'개 표시)</button>';
-    } else {
-      moreEl.innerHTML='';
-    }
-  }
 }
 
 function _renderCartAbd(){
   var tbl=document.getElementById('cart-abd-tbl');
-  var moreEl=document.getElementById('cart-abd-more');
   if(!tbl)return;
-  var rows=(CART_ABD[_cartMon]||[]).slice().sort(function(a,b){return (a[_cartAbdSort.key]-b[_cartAbdSort.key])*_cartAbdSort.dir;});
+  var mon=_cartMon();
+  var rows=(CART_ABD[mon]||[]).slice().sort(function(a,b){return (a[_cartAbdSort.key]-b[_cartAbdSort.key])*_cartAbdSort.dir;});
   var visCols=_cartColVis('abd',['cart','abd','arate']);
-  var colMap={cart:{label:'담긴수',fmt:function(v){return Math.round(v).toLocaleString();}},abd:{label:'포기수',fmt:function(v){return Math.round(v).toLocaleString();}},arate:{label:'포기율',fmt:function(v){return v.toFixed(2)+'%';}}};
+  var colMap={
+    cart:{label:'담긴수',fmt:function(v){return Math.round(v).toLocaleString();},red:false},
+    abd:{label:'포기수',fmt:function(v){return Math.round(v).toLocaleString();},red:false},
+    arate:{label:'포기율',fmt:function(v){return v.toFixed(2)+'%';},red:true}
+  };
   var thead='<thead><tr><th style="background:#f5f4f2;padding:8px 12px;text-align:left;font-weight:600;color:#7a7470;border-bottom:1px solid #e8e4df;cursor:default;">상품명</th>'
-    +visCols.map(function(k){return _cartThHtml(colMap[k].label,k,_cartAbdSort,'abd');}).join('')+'</tr></thead>';
+    +visCols.map(function(k){return _cartThHtml(colMap[k].label,k,_cartAbdSort,'abd',colMap[k].red);}).join('')+'</tr></thead>';
   var rankBg=['#FAC775','#ddd','#F0997B'];
   var rankColor=['#412402','#555','#4A1B0C'];
-  var shown=rows.slice(0,_cartAbdLimit);
+  var shown=rows.slice(0,_cartLimit);
   var tbody='<tbody>'+shown.map(function(r,i){
-    var rankStyle=i<3?'background:'+rankBg[i]+';color:'+rankColor[i]+';':'background:#f0eeeb;color:#7a7470;';
+    var rBg=i<3?'background:'+rankBg[i]+';color:'+rankColor[i]+';':'background:#f0eeeb;color:#7a7470;';
     return '<tr>'
-      +'<td style="padding:7px 12px;text-align:left;border-bottom:1px solid #e8e4df;color:#111;"><span style="display:inline-flex;width:18px;height:18px;align-items:center;justify-content:center;border-radius:50%;font-size:11px;font-weight:600;margin-right:4px;'+rankStyle+'">'+(i+1)+'</span>'+r.name+'</td>'
-      +visCols.map(function(k){return '<td style="padding:7px 12px;text-align:center;border-bottom:1px solid #e8e4df;color:#7a7470;">'+colMap[k].fmt(r[k])+'</td>';}).join('')
+      +'<td style="padding:7px 12px;text-align:left;border-bottom:1px solid #e8e4df;color:#111;"><span style="display:inline-flex;width:18px;height:18px;align-items:center;justify-content:center;border-radius:50%;font-size:11px;font-weight:600;margin-right:4px;'+rBg+'">'+(i+1)+'</span>'+r.name+'</td>'
+      +visCols.map(function(k){
+        var isRed=colMap[k].red;
+        var style='padding:7px 12px;text-align:center;border-bottom:1px solid #e8e4df;'+(isRed?'color:#c0392b;font-weight:700;':'color:#111;');
+        return '<td style="'+style+'">'+colMap[k].fmt(r[k])+'</td>';
+      }).join('')
       +'</tr>';
   }).join('')+'</tbody>';
   tbl.innerHTML=thead+tbody;
-  if(moreEl){
-    if(rows.length>_cartAbdLimit&&_cartAbdLimit<30){
-      moreEl.innerHTML='<button class="pill" style="font-size:13px;" onclick="_cartAbdLimit=Math.min(_cartAbdLimit+10,30);_renderCartAbd();">더보기 ('+Math.min(rows.length,30)+'개 중 '+_cartAbdLimit+'개 표시)</button>';
-    } else {
-      moreEl.innerHTML='';
-    }
+}
+
+function _renderCartMore(){
+  var wrap=document.getElementById('cart-more-wrap');
+  if(!wrap)return;
+  var mon=_cartMon();
+  var bestTotal=Math.min((CART_BEST[mon]||[]).length,30);
+  var abdTotal=Math.min((CART_ABD[mon]||[]).length,30);
+  var maxTotal=Math.max(bestTotal,abdTotal);
+  if(_cartLimit<maxTotal){
+    var next=Math.min(_cartLimit+10,maxTotal);
+    var diff=next-_cartLimit;
+    wrap.innerHTML='<button class="pill" style="font-size:14px;padding:6px 20px;" onclick="_cartLimit=Math.min(_cartLimit+10,30);renderCartSection();">더보기 (+'+diff+')</button>';
+  } else {
+    wrap.innerHTML='';
   }
 }
 
@@ -4332,6 +4345,7 @@ function setT3GlobalMon(m){
   renderConvTable();
   renderCustTable();
   renderFunnelCard();
+  renderCartSection();
   var dd=document.getElementById('t3-global-mon');
   if(dd&&dd.value!==m)dd.value=m;
 }
