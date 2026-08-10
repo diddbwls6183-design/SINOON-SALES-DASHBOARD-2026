@@ -4059,15 +4059,16 @@ var FUNNEL_DATA={
       {stage:'결제 완료',s:911,cr:0.8,churn:0.0,churn_n:911,cr_chg:0.2}
     ]},
   '8월':{
-    period:'2026-08-01 ~ 2026-08-02',
+    period:'2026-08-01 ~ 2026-08-10',
     steps:[
-      {stage:'방문',s:3064,cr:100.0,churn:44.1,churn_n:1352,cr_chg:null},
-      {stage:'상세페이지 조회',s:1712,cr:55.9,churn:96.6,churn_n:1653,cr_chg:-8.1},
-      {stage:'장바구니 추가',s:59,cr:1.9,churn:83.1,churn_n:49,cr_chg:null},
-      {stage:'주문서 작성',s:10,cr:0.3,churn:null,churn_n:-3,cr_chg:-0.4},
-      {stage:'주문 완료',s:13,cr:0.4,churn:0.0,churn_n:0,cr_chg:null},
-      {stage:'결제 완료',s:13,cr:0.4,churn:0.0,churn_n:13,cr_chg:-0.1}
-    ]}
+      {stage:'방문',s:26494,cr:100.0,churn:45.2,churn_n:11976,cr_chg:null},
+      {stage:'상세페이지 조회',s:14518,cr:54.8,churn:95.6,churn_n:13885,cr_chg:0.9},
+      {stage:'장바구니 추가',s:633,cr:2.4,churn:66.4,churn_n:420,cr_chg:null},
+      {stage:'주문서 작성',s:213,cr:0.8,churn:37.1,churn_n:79,cr_chg:0.0},
+      {stage:'주문 완료',s:134,cr:0.5,churn:1.5,churn_n:2,cr_chg:null},
+      {stage:'결제 완료',s:132,cr:0.5,churn:0.0,churn_n:132,cr_chg:0.1}
+    ]
+  }
 };
 
 function setFunnelPeriod(p){_funnelPeriod=p;renderFunnelCard();}
