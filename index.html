@@ -382,7 +382,7 @@ var PROMO_DATA = [{"mon": "5월", "ch": "자사몰&해외", "ch_tgt": 134000000,
 var JB_KEYS=['sinoon_promo_memos','sinoon_promo_data','sinoon_s4_sparse_edits',
   'sinoon_mkt_budget','sinoon_mkt_spend','sinoon_mkt_target','sinoon_mkt_spend_total',
   'sinoon_mkt_weekly','sinoon_mkt_review','sinoon_mkt_daily_report','sinoon_mkt_daily_table',
-  'sinoon_scm_edits','sinoon_aov_data','sinoon_conv_extra',
+  'sinoon_scm_edits','sinoon_aov_data','sinoon_cust_weekly','sinoon_conv_extra',
   'sinoon_s2_memo','sinoon_s4_col_w','sinoon_s4_row_h'];
 var s4={mon:'',ch:'전체'};
 
@@ -523,30 +523,92 @@ function computeMonthlyAOV(){return MONTHLY_AOV;}
 
 const CART_BEST={"7월": [{"name": "Braided One-Shoulder T-Shirt (Navy)", "exp": 2662, "cart": 169, "crate": 6.35}, {"name": "Pear Drop Necklace (Silver)", "exp": 1219, "cart": 154, "crate": 12.63}, {"name": "Tiny Ponies T-Shirt (Ivory)", "exp": 1688, "cart": 151, "crate": 8.95}, {"name": "TAW&TOE x SINOON Zerovity OG Charm Set Silver (Silver)", "exp": 1817, "cart": 143, "crate": 7.87}, {"name": "Big Unicorn Puff T-Shirt (Blue)", "exp": 909, "cart": 121, "crate": 13.31}, {"name": "Sweat Short Pants (Melange Grey)", "exp": 1390, "cart": 119, "crate": 8.56}, {"name": "Classic Logo Cap (Navy)", "exp": 468, "cart": 104, "crate": 22.22}, {"name": "Cubic Toe Ring (Blue)", "exp": 1243, "cart": 103, "crate": 8.29}, {"name": "TAW&TOE x SINOON Zerovity OG Charm Set Baby Pink (Baby Pink)", "exp": 2856, "cart": 78, "crate": 2.73}, {"name": "Classic Logo Cap (Cream Yellow)", "exp": 643, "cart": 76, "crate": 11.82}, {"name": "Chiffon Frill Stripe Long Skirt (Ivory)", "exp": 2602, "cart": 74, "crate": 2.84}, {"name": "Clear Grape Ring (Silver)", "exp": 568, "cart": 64, "crate": 11.27}, {"name": "Classic Logo Cap (Pink)", "exp": 340, "cart": 61, "crate": 17.94}, {"name": "Half Sleeve Cotton Shirt (White)", "exp": 589, "cart": 56, "crate": 9.51}, {"name": "TAW&TOE x SINOON Zerovity OG Charm Set Black (Black)", "exp": 736, "cart": 56, "crate": 7.61}, {"name": "Satin Lace Ribbon Onepiece (Moss Green)", "exp": 1426, "cart": 54, "crate": 3.79}, {"name": "Half Sleeve Cotton Shirt (Pink)", "exp": 674, "cart": 53, "crate": 7.86}, {"name": "Red Bell Flower Puff T-Shirt (White)", "exp": 508, "cart": 49, "crate": 9.65}, {"name": "[수지 착용] Graphic Mini Skirt (Cream)", "exp": 571, "cart": 48, "crate": 8.41}, {"name": "Flower Puff T-Shirt (White)", "exp": 235, "cart": 47, "crate": 20.0}, {"name": "Floral Embroidered Short Pants (Blue)", "exp": 955, "cart": 47, "crate": 4.92}, {"name": "Eggplant Drop Necklace (Silver)", "exp": 409, "cart": 45, "crate": 11.0}, {"name": "SN Flower Puff T-Shirt (White)", "exp": 400, "cart": 43, "crate": 10.75}, {"name": "Spiral Hotfix T-shirt (Navy)", "exp": 1082, "cart": 43, "crate": 3.97}, {"name": "Sinoon Texture Flower Dress (Ash Blue)", "exp": 483, "cart": 41, "crate": 8.49}, {"name": "Rose Floral Knit Halter Top (Green)", "exp": 2012, "cart": 40, "crate": 1.99}, {"name": "Initial Necklace", "exp": 728, "cart": 40, "crate": 5.49}, {"name": "Cubic Toe Ring (Pink)", "exp": 430, "cart": 40, "crate": 9.3}, {"name": "Spiral Ice Cream T-shirt (Pink)", "exp": 551, "cart": 39, "crate": 7.08}, {"name": "Babydoll Frill Blouse (Yellow)", "exp": 988, "cart": 36, "crate": 3.64}], "8월": [{"name": "Rose Cosmetic Pouch (Green Mix)", "exp": 164, "cart": 16, "crate": 9.76}, {"name": "Pear Drop Necklace (Silver)", "exp": 189, "cart": 13, "crate": 6.88}, {"name": "Sinoon Smocking Flared Skirt (Navy)", "exp": 129, "cart": 9, "crate": 6.98}, {"name": "Drawstring Layered Skirt Pants (Cream)", "exp": 19, "cart": 7, "crate": 36.84}, {"name": "Logo Basic T-Shirt (Olive)", "exp": 26, "cart": 7, "crate": 26.92}, {"name": "Braided One-Shoulder T-Shirt (Navy)", "exp": 188, "cart": 6, "crate": 3.19}, {"name": "Rose Frill Sleep Mask (Yellow)", "exp": 125, "cart": 6, "crate": 4.8}, {"name": "Clear Grape Ring (Silver)", "exp": 59, "cart": 5, "crate": 8.47}, {"name": "Ribbon Puff Pajama SET-UP (Green Mix)", "exp": 32, "cart": 5, "crate": 15.62}, {"name": "Rose Cosmetic Pouch (Pink)", "exp": 263, "cart": 5, "crate": 1.9}, {"name": "Neck Ribbon T-Shirt (Melange Grey)", "exp": 34, "cart": 4, "crate": 11.76}, {"name": "Flower Drawing Cardigan (Ivory)", "exp": 24, "cart": 4, "crate": 16.67}, {"name": "Smocking Color Block Flare Skirt (Beige)", "exp": 48, "cart": 4, "crate": 8.33}, {"name": "Satin Lace Ribbon Onepiece (Moss Green)", "exp": 199, "cart": 4, "crate": 2.01}, {"name": "Flower Patch T-Shirt (Soft Pink)", "exp": 120, "cart": 4, "crate": 3.33}, {"name": "Rose Floral Knit Halter Top (Blue)", "exp": 129, "cart": 4, "crate": 3.1}, {"name": "2-Way Drawstring Crop Shirt (Blue)", "exp": 45, "cart": 4, "crate": 8.89}, {"name": "Initial Necklace", "exp": 95, "cart": 4, "crate": 4.21}, {"name": "Cloven Garlic Necklace (Silver Gold)", "exp": 22, "cart": 3, "crate": 13.64}, {"name": "SN Texture Lace Dress (Green)", "exp": 13, "cart": 3, "crate": 23.08}, {"name": "[유인나 착용] Halterneck Check Vest (Check)", "exp": 11, "cart": 3, "crate": 27.27}, {"name": "Spiral Piece Belt (Silver)", "exp": 28, "cart": 3, "crate": 10.71}, {"name": "Clear Grape Bracelet (Silver)", "exp": 37, "cart": 3, "crate": 8.11}, {"name": "Flower Print Sleeveless Knit Dress (Blue)", "exp": 212, "cart": 3, "crate": 1.42}, {"name": "Sheer Glow Blouse (White)", "exp": 50, "cart": 3, "crate": 6.0}, {"name": "Rose Scalloped Hairpin Set (Apricot)", "exp": 112, "cart": 3, "crate": 2.68}, {"name": "Star Shell Anklet (Silver)", "exp": 63, "cart": 3, "crate": 4.76}, {"name": "[서현 착용] Off-Shoulder Pintuck Blouse (Black)", "exp": 12, "cart": 2, "crate": 16.67}, {"name": "Flower Cap Sleeve T-Shirt (Yellow)", "exp": 3, "cart": 2, "crate": 66.67}, {"name": "Rose Sleeveless (Cream)", "exp": 80, "cart": 2, "crate": 2.5}],"8월":[{name:"Initial Necklace",exp:3615,cart:174,crate:4.81},{name:"Pear Drop Necklace (Silver)",exp:784,cart:76,crate:9.69},{name:"Mini Apple Necklace Set (Silver Gold)",exp:429,cart:30,crate:6.99},{name:"Rose Cosmetic Pouch (Green Mix)",exp:289,cart:25,crate:8.65},{name:"Cherry Lantern Ring (Silver)",exp:130,cart:23,crate:17.69},{name:"Braided One-Shoulder T-Shirt (Navy)",exp:344,cart:17,crate:4.94},{name:"Cloven Garlic Necklace (Silver Gold)",exp:195,cart:16,crate:8.21},{name:"[수지 착용] Graphic Mini Skirt (Cream)",exp:97,cart:15,crate:15.46},{name:"Eggplant Drop Necklace (Silver)",exp:221,cart:14,crate:6.33},{name:"Braided Rose Necklace (Silver Gold)",exp:194,cart:12,crate:6.19},{name:"Sinoon Smocking Flared Skirt (Navy)",exp:165,cart:12,crate:7.27},{name:"Grape Hairpin (Silver)",exp:39,cart:11,crate:28.21},{name:"Twin Rabbits Necklace Set (Silver Gold)",exp:58,cart:11,crate:18.97},{name:"Initial Heart Necklace (Silver)",exp:130,cart:11,crate:8.46},{name:"Star Shell Anklet (Silver)",exp:214,cart:11,crate:5.14},{name:"Seashell Mirror Bag (Blue)",exp:104,cart:10,crate:9.62},{name:"Clear Strawberry Ring (Silver)",exp:57,cart:10,crate:17.54},{name:"Twin Night Necklace (Silver)",exp:89,cart:10,crate:11.24},{name:"Spiral Necklace (Silver)",exp:211,cart:10,crate:4.74},{name:"Clear Grape Ring (Silver)",exp:126,cart:8,crate:6.35},{name:"Satin Lace Ribbon Onepiece (Moss Green)",exp:420,cart:8,crate:1.9},{name:"Twin Pear Necklace (Silver)",exp:142,cart:8,crate:5.63},{name:"Twin Strawberry Necklace (Silver)",exp:107,cart:8,crate:7.48},{name:"Rose Frill Sleep Mask (Yellow)",exp:244,cart:8,crate:3.28},{name:"Cubic Toe Ring (Blue)",exp:238,cart:8,crate:3.36},{name:"Classic Cotton Shirt (White)",exp:40,cart:7,crate:17.5},{name:"Flower Jacquard Bucket Hat (White)",exp:36,cart:7,crate:19.44},{name:"Rose Sleeveless (Cream)",exp:130,cart:7,crate:5.38},{name:"Smocking Color Block Flare Skirt (Beige)",exp:72,cart:7,crate:9.72},{name:"Drawstring Layered Skirt Pants (Cream)",exp:24,cart:7,crate:29.17}]};
 const CART_ABD={"7월": [{"name": "Tiny Ponies T-Shirt (Ivory)", "cart": 151, "abd": 125, "arate": 82.78}, {"name": "Braided One-Shoulder T-Shirt (Navy)", "cart": 169, "abd": 123, "arate": 72.78}, {"name": "Pear Drop Necklace (Silver)", "cart": 154, "abd": 112, "arate": 72.73}, {"name": "Big Unicorn Puff T-Shirt (Blue)", "cart": 121, "abd": 98, "arate": 80.99}, {"name": "Sweat Short Pants (Melange Grey)", "cart": 119, "abd": 98, "arate": 82.35}, {"name": "TAW&TOE x SINOON Zerovity OG Charm Set Silver (Silver)", "cart": 143, "abd": 97, "arate": 67.83}, {"name": "Cubic Toe Ring (Blue)", "cart": 103, "abd": 76, "arate": 73.79}, {"name": "Classic Logo Cap (Navy)", "cart": 104, "abd": 73, "arate": 70.19}, {"name": "TAW&TOE x SINOON Zerovity OG Charm Set Baby Pink (Baby Pink)", "cart": 78, "abd": 57, "arate": 73.08}, {"name": "Clear Grape Ring (Silver)", "cart": 64, "abd": 55, "arate": 85.94}, {"name": "Classic Logo Cap (Cream Yellow)", "cart": 76, "abd": 54, "arate": 71.05}, {"name": "Chiffon Frill Stripe Long Skirt (Ivory)", "cart": 74, "abd": 54, "arate": 72.97}, {"name": "Satin Lace Ribbon Onepiece (Moss Green)", "cart": 54, "abd": 45, "arate": 83.33}, {"name": "Classic Logo Cap (Pink)", "cart": 61, "abd": 44, "arate": 72.13}, {"name": "Flower Puff T-Shirt (White)", "cart": 47, "abd": 41, "arate": 87.23}, {"name": "Half Sleeve Cotton Shirt (White)", "cart": 56, "abd": 40, "arate": 71.43}, {"name": "Half Sleeve Cotton Shirt (Pink)", "cart": 53, "abd": 40, "arate": 75.47}, {"name": "[수지 착용] Graphic Mini Skirt (Cream)", "cart": 48, "abd": 40, "arate": 83.33}, {"name": "Red Bell Flower Puff T-Shirt (White)", "cart": 49, "abd": 39, "arate": 79.59}, {"name": "Floral Embroidered Short Pants (Blue)", "cart": 47, "abd": 37, "arate": 78.72}, {"name": "TAW&TOE x SINOON Zerovity OG Charm Set Black (Black)", "cart": 56, "abd": 36, "arate": 64.29}, {"name": "Sinoon Texture Flower Dress (Ash Blue)", "cart": 41, "abd": 35, "arate": 85.37}, {"name": "Eggplant Drop Necklace (Silver)", "cart": 45, "abd": 35, "arate": 77.78}, {"name": "Spiral Hotfix T-shirt (Navy)", "cart": 43, "abd": 35, "arate": 81.4}, {"name": "Rose Floral Knit Halter Top (Green)", "cart": 40, "abd": 34, "arate": 85.0}, {"name": "SN Flower Puff T-Shirt (White)", "cart": 43, "abd": 33, "arate": 76.74}, {"name": "Ribbon Tie Swimsuit (Pink)", "cart": 35, "abd": 32, "arate": 91.43}, {"name": "Chiffon Frill Stripe Long Skirt (Pink)", "cart": 33, "abd": 31, "arate": 93.94}, {"name": "Rose Floral Knit Halter Top (Blue)", "cart": 33, "abd": 31, "arate": 93.94}, {"name": "Babydoll Frill Blouse (Yellow)", "cart": 36, "abd": 30, "arate": 83.33}], "8월": [{"name": "Pear Drop Necklace (Silver)", "cart": 13, "abd": 10, "arate": 76.92}, {"name": "Rose Cosmetic Pouch (Green Mix)", "cart": 16, "abd": 8, "arate": 50.0}, {"name": "Logo Basic T-Shirt (Olive)", "cart": 7, "abd": 7, "arate": 100.0}, {"name": "Sinoon Smocking Flared Skirt (Navy)", "cart": 9, "abd": 6, "arate": 66.67}, {"name": "Drawstring Layered Skirt Pants (Cream)", "cart": 7, "abd": 6, "arate": 85.71}, {"name": "Rose Frill Sleep Mask (Yellow)", "cart": 6, "abd": 6, "arate": 100.0}, {"name": "Braided One-Shoulder T-Shirt (Navy)", "cart": 6, "abd": 5, "arate": 83.33}, {"name": "Clear Grape Ring (Silver)", "cart": 5, "abd": 4, "arate": 80.0}, {"name": "Flower Drawing Cardigan (Ivory)", "cart": 4, "abd": 4, "arate": 100.0}, {"name": "Smocking Color Block Flare Skirt (Beige)", "cart": 4, "abd": 4, "arate": 100.0}, {"name": "Satin Lace Ribbon Onepiece (Moss Green)", "cart": 4, "abd": 4, "arate": 100.0}, {"name": "Rose Floral Knit Halter Top (Blue)", "cart": 4, "abd": 4, "arate": 100.0}, {"name": "2-Way Drawstring Crop Shirt (Blue)", "cart": 4, "abd": 4, "arate": 100.0}, {"name": "Initial Necklace", "cart": 4, "abd": 4, "arate": 100.0}, {"name": "Ribbon Puff Pajama SET-UP (Green Mix)", "cart": 5, "abd": 4, "arate": 80.0}, {"name": "SN Texture Lace Dress (Green)", "cart": 3, "abd": 3, "arate": 100.0}, {"name": "Spiral Piece Belt (Silver)", "cart": 3, "abd": 3, "arate": 100.0}, {"name": "Clear Grape Bracelet (Silver)", "cart": 3, "abd": 3, "arate": 100.0}, {"name": "Flower Print Sleeveless Knit Dress (Blue)", "cart": 3, "abd": 3, "arate": 100.0}, {"name": "Flower Patch T-Shirt (Soft Pink)", "cart": 4, "abd": 3, "arate": 75.0}, {"name": "Sheer Glow Blouse (White)", "cart": 3, "abd": 3, "arate": 100.0}, {"name": "Rose Cosmetic Pouch (Pink)", "cart": 5, "abd": 3, "arate": 60.0}, {"name": "Star Shell Anklet (Silver)", "cart": 3, "abd": 3, "arate": 100.0}, {"name": "[서현 착용] Off-Shoulder Pintuck Blouse (Black)", "cart": 2, "abd": 2, "arate": 100.0}, {"name": "Flower Cap Sleeve T-Shirt (Yellow)", "cart": 2, "abd": 2, "arate": 100.0}, {"name": "Puff Sleeve Pintuck Dress (Apricot)", "cart": 2, "abd": 2, "arate": 100.0}, {"name": "V-Neck Layered Lace Silky Dress (Blue)", "cart": 2, "abd": 2, "arate": 100.0}, {"name": "Cloven Garlic Necklace (Silver Gold)", "cart": 3, "abd": 2, "arate": 66.67}, {"name": "Rose Frill Mini Skirt (Black)", "cart": 2, "abd": 2, "arate": 100.0}, {"name": "[유인나 착용] Halterneck Check Vest (Check)", "cart": 3, "abd": 2, "arate": 66.67}],"8월":[{name:"Initial Necklace",cart:174,abd:145,arate:83.33},{name:"Pear Drop Necklace (Silver)",cart:76,abd:65,arate:85.53},{name:"Mini Apple Necklace Set (Silver Gold)",cart:30,abd:26,arate:86.67},{name:"Cherry Lantern Ring (Silver)",cart:23,abd:18,arate:78.26},{name:"Braided One-Shoulder T-Shirt (Navy)",cart:17,abd:15,arate:88.24},{name:"Rose Cosmetic Pouch (Green Mix)",cart:25,abd:14,arate:56.0},{name:"[수지 착용] Graphic Mini Skirt (Cream)",cart:15,abd:13,arate:86.67},{name:"Cloven Garlic Necklace (Silver Gold)",cart:16,abd:13,arate:81.25},{name:"Eggplant Drop Necklace (Silver)",cart:14,abd:13,arate:92.86},{name:"Star Shell Anklet (Silver)",cart:11,abd:11,arate:100.0},{name:"Grape Hairpin (Silver)",cart:11,abd:10,arate:90.91},{name:"Seashell Mirror Bag (Blue)",cart:10,abd:10,arate:100.0},{name:"Twin Rabbits Necklace Set (Silver Gold)",cart:11,abd:10,arate:90.91},{name:"Braided Rose Necklace (Silver Gold)",cart:12,abd:9,arate:75.0},{name:"Sinoon Smocking Flared Skirt (Navy)",cart:12,abd:9,arate:75.0},{name:"Clear Strawberry Ring (Silver)",cart:10,abd:9,arate:90.0},{name:"Satin Lace Ribbon Onepiece (Moss Green)",cart:8,abd:8,arate:100.0},{name:"Twin Night Necklace (Silver)",cart:10,abd:8,arate:80.0},{name:"Twin Strawberry Necklace (Silver)",cart:8,abd:8,arate:100.0},{name:"Initial Heart Necklace (Silver)",cart:11,abd:8,arate:72.73},{name:"Cubic Toe Ring (Blue)",cart:8,abd:8,arate:100.0},{name:"Spiral Necklace (Silver)",cart:10,abd:8,arate:80.0},{name:"Logo Basic T-Shirt (Olive)",cart:7,abd:7,arate:100.0},{name:"Twin Pear Necklace (Silver)",cart:8,abd:7,arate:87.5},{name:"Flower Jacquard Bucket Hat (White)",cart:7,abd:6,arate:85.71},{name:"Glassy Snail Necklace (Silver)",cart:6,abd:6,arate:100.0},{name:"Clear Grape Ring (Silver)",cart:8,abd:6,arate:75.0},{name:"Flower Drawing Cardigan (Ivory)",cart:6,abd:6,arate:100.0},{name:"Smocking Color Block Flare Skirt (Beige)",cart:7,abd:6,arate:85.71},{name:"Drawstring Layered Skirt Pants (Cream)",cart:7,abd:6,arate:85.71}]};
-const CUST_DATA={
-  "1월":{n:1589,r:199},
-  "2월":{n:196,r:50},
-  "3월":{n:1709,r:303},
-  "4월":{n:477,r:190},
-  "5월":{n:1499,r:561},
-  "6월":{n:157,r:185},
-  "7월":{n:515,r:430},
-  "8월":{n:107,r:25}
-};
+const CUST_DATA=[
+  {w:"01/05~01/11",n:302,r:35},
+  {w:"01/12~01/18",n:635,r:59},
+  {w:"01/19~01/25",n:591,r:88},
+  {w:"01/26~02/01",n:61,r:17},
+  {w:"02/02~02/08",n:49,r:13},
+  {w:"02/09~02/15",n:69,r:19},
+  {w:"02/16~02/22",n:36,r:6},
+  {w:"02/23~03/01",n:42,r:12},
+  {w:"03/02~03/08",n:149,r:40},
+  {w:"03/09~03/15",n:166,r:28},
+  {w:"03/16~03/22",n:104,r:23},
+  {w:"03/23~03/29",n:727,r:104},
+  {w:"03/30~04/05",n:563,r:108},
+  {w:"04/06~04/12",n:85,r:20},
+  {w:"04/13~04/19",n:70,r:22},
+  {w:"04/20~04/26",n:78,r:25},
+  {w:"04/27~05/03",n:244,r:123},
+  {w:"05/04~05/10",n:120,r:61},
+  {w:"05/11~05/17",n:146,r:54},
+  {w:"05/18~05/24",n:491,r:167},
+  {w:"05/25~05/31",n:742,r:279},
+  {w:"06/01~06/07",n:37,r:18},
+  {w:"06/08~06/14",n:46,r:16},
+  {w:"06/15~06/21",n:36,r:63},
+  {w:"06/22~06/28",n:38,r:88},
+  {w:"07/01~07/05",n:44,r:119},
+  {w:"07/06~07/12",n:59,r:177},
+  {w:"07/13~07/16",n:158,r:55},
+  {w:"07/17~07/19",n:155,r:49},
+  {w:"07/20~07/26",n:44,r:21},
+  {w:"07/27~08/02",n:55,r:9},
+  {w:"08/03~08/09",n:107,r:25}
+];
 var CUST_EXTRA=[];
-function loadCustData(){return CUST_DATA;}
+function loadCustData(){
+  try{
+    const saved=JSON.parse(localStorage.getItem('sinoon_cust_weekly')||'[]');
+    const baseMap={};CUST_DATA.forEach(d=>{baseMap[d.w]=d;});
+    saved.forEach(d=>{baseMap[d.w]=d;});
+    return Object.values(baseMap).sort((a,b)=>a.w.localeCompare(b.w));
+  }catch(e){return[...CUST_DATA];}
+}
 
-const CONV_DATA={
-  "1월":{v:289641,b:1778,o:1851,r:0.61},
-  "2월":{v:198136,b:246,o:250,r:0.12},
-  "3월":{v:359115,b:2001,o:2118,r:0.56},
-  "4월":{v:119294,b:658,o:699,r:0.55},
-  "5월":{v:172776,b:2023,o:2205,r:1.17},
-  "6월":{v:74533,b:326,o:357,r:0.44},
-  "7월":{v:124584,b:934,o:956,r:0.75},
-  "8월":{v:26540,b:131,o:134,r:0.49}
-};
-function loadConvData(){return CONV_DATA;}
+const CONV_DATA=[
+  {w:"01/08~01/11",v:39570,b:335,o:346,r:0.87},
+  {w:"01/12~01/18",v:113520,b:692,o:722,r:0.64},
+  {w:"01/19~01/25",v:112175,b:674,o:703,r:0.63},
+  {w:"01/26~02/01",v:24376,b:77,o:80,r:0.33},
+  {w:"02/02~02/08",v:64165,b:62,o:65,r:0.1},
+  {w:"02/09~02/15",v:25534,b:88,o:89,r:0.35},
+  {w:"02/16~02/22",v:59417,b:42,o:42,r:0.07},
+  {w:"02/23~03/01",v:49020,b:54,o:54,r:0.11},
+  {w:"03/02~03/08",v:44268,b:188,o:196,r:0.44},
+  {w:"03/09~03/15",v:46779,b:194,o:203,r:0.43},
+  {w:"03/16~03/22",v:40024,b:126,o:132,r:0.33},
+  {w:"03/23~03/29",v:114222,b:829,o:875,r:0.77},
+  {w:"03/30~04/05",v:113822,b:664,o:712,r:0.63},
+  {w:"04/06~04/12",v:27201,b:105,o:107,r:0.39},
+  {w:"04/13~04/19",v:24841,b:92,o:97,r:0.39},
+  {w:"04/20~04/26",v:22419,b:103,o:107,r:0.48},
+  {w:"04/27~05/03",v:44833,b:358,o:388,r:0.87},
+  {w:"05/04~05/10",v:20126,b:177,o:193,r:0.96},
+  {w:"05/11~05/17",v:25460,b:198,o:213,r:0.84},
+  {w:"05/18~05/24",v:49523,b:649,o:706,r:1.43},
+  {w:"05/25~05/31",v:77667,b:999,o:1093,r:1.41},
+  {w:"06/01~06/07",v:18725,b:55,o:62,r:0.33},
+  {w:"06/08~06/14",v:14860,b:62,o:70,r:0.47},
+  {w:"06/15~06/21",v:20469,b:88,o:99,r:0.48},
+  {w:"06/22~06/28",v:20479,b:121,o:126,r:0.62},
+  {w:"07/01~07/05",v:23033,b:161,o:163,r:0.70},
+  {w:"07/06~07/12",v:31197,b:229,o:235,r:0.73},
+  {w:"07/13~07/16",v:19266,b:212,o:219,r:1.10},
+  {w:"07/17~07/19",v:17758,b:203,o:208,r:1.14},
+  {w:"07/20~07/26",v:19775,b:65,o:66,r:0.33},
+  {w:"07/27~08/02",v:13555,b:64,o:65,r:0.47},
+  {w:"08/01~08/09",v:26540,b:131,o:134,r:0.49}
+];
+function loadConvData(){
+  try{
+    const saved=JSON.parse(localStorage.getItem('sinoon_conv_weekly')||'[]');
+    const baseMap={};CONV_DATA.forEach(d=>{baseMap[d.w]=d;});
+    saved.forEach(d=>{baseMap[d.w]=d;});
+    return Object.values(baseMap).sort((a,b)=>a.w.localeCompare(b.w));
+  }catch(e){return[...CONV_DATA];}
+}
 var CONV_EXTRA=[];
 const CH_NAMES=D.channels;
 const VISIBLE_CHS=CH_NAMES.filter(ch=>ch!=='NUGU_일본');
@@ -3687,7 +3749,7 @@ function renderTab3(){
     var _in=parseInt(_im)||parseInt((_im||'').replace('월',''));
     var _ip=String(_in).padStart(2,'0');
     _t3GlobalMon=_im;_aovCurMon=_im;_catCurMon=_im;
-    _convCurMon=_in+'월';s3CustSeasonMon=_in+'월';
+    _convCurMon=_ip+'월';s3CustSeasonMon=_ip;
     if(typeof FUNNEL_DATA!=='undefined'&&FUNNEL_DATA[_im])_funnelPeriod=_im;
   })();
   const el=document.getElementById('tab3');
@@ -4278,8 +4340,8 @@ function setT3GlobalMon(m){
   var mPadMon=mPad+'월';
   _aovCurMon=mFull;
   _catCurMon=mFull;
-  _convCurMon=mFull;
-  s3CustSeasonMon=mFull;
+  _convCurMon=mPadMon;
+  s3CustSeasonMon=mPad;
   if(typeof FUNNEL_DATA!=='undefined'&&FUNNEL_DATA[mFull])_funnelPeriod=mFull;
   renderAOVTable();
   try{s3Cat();}catch(e){}
@@ -4394,11 +4456,11 @@ function _wkEndMon(w){
 }
 function _getCSMon(){
   if(!s3CustSeasonMon){
-    const keys=Object.keys(CUST_DATA).sort((a,b)=>parseInt(a)-parseInt(b));
-    s3CustSeasonMon=keys.length?keys[keys.length-1]:MONTHS[MONTHS.length-1];
-  }
-  return s3CustSeasonMon;
-} else {
+    const all=loadCustData();
+    if(all.length){
+      const months=[...new Set(all.map(d=>_wkStartMon(d.w)).filter(Boolean))].sort();
+      s3CustSeasonMon=months[months.length-1];
+    } else {
       s3CustSeasonMon=MONTHS[MONTHS.length-1].replace('월','').padStart(2,'0');
     }
   }
@@ -4515,23 +4577,34 @@ function renderCustTable(){
   if(seasonEl){try{const c=seasonEl.closest('.card');if(c)c.style.display='none';}catch(e){}}
 
   const NC='#5B8CF7',RC='#D0D5E8',NW='#F7875B',OW='#5BC4B8';
-  const monthKeys=Object.keys(CUST_DATA).sort((a,b)=>parseInt(a)-parseInt(b));
+  const all=loadCustData();
+  const monthSet=new Set();
+  all.forEach(d=>{
+    const sm=_wkStartMon(d.w);if(sm)monthSet.add(sm);
+    // 주차가 두 달에 걸치면 종료 월도 그룹에 포함 (예: 07/27~08/02 → 08도 추가)
+    const endMon=_wkEndMon(d.w);
+    if(endMon&&endMon!==_wkStartMon(d.w))monthSet.add(endMon);
+  });
+  const monthKeys=[...monthSet].sort();
   if(!monthKeys.length){el.innerHTML='<div style="color:#111;padding:20px;text-align:center;">데이터 없음</div>';return;}
   const curM=_getCSMon();
-  const mon=monthKeys.includes(curM)?curM:monthKeys[monthKeys.length-1];
-  if(mon!==s3CustSeasonMon)s3CustSeasonMon=mon;
-  const mLabel=mon;
-  const prevMon=monthKeys[monthKeys.indexOf(mon)-1]||null;
-  const prevMLabel=prevMon||null;
+  if(!monthKeys.includes(curM)) s3CustSeasonMon=monthKeys[monthKeys.length-1];
+  const mon=_getCSMon();
+  // 해당 월이 시작 또는 종료인 주차 모두 포함 (월 경계 주차 양쪽 노출)
+  const monRows=all.filter(d=>_wkStartMon(d.w)===mon||(_wkEndMon(d.w)===mon&&_wkStartMon(d.w)!==mon));
+  const mLabel=parseInt(mon,10)+'월';
+  const prevMon=monthKeys[monthKeys.indexOf(mon)-1];
+  const prevMLabel=prevMon?parseInt(prevMon,10)+'월':null;
 
-  // ── 신규/기존 월 비율 (CUST_DATA 직접 사용)
-  function calcAvg(key){
-    const d=CUST_DATA[key];if(!d)return null;
-    const tot=d.n+d.r;
-    return{n:d.n,r:d.r,nPct:tot>0?Math.round(d.n/tot*100):0};
+  // ── 신규/기존 월합계 비율
+  function calcAvg(rows){
+    if(!rows.length)return null;
+    const sN=rows.reduce((a,d)=>a+d.n,0),sR=rows.reduce((a,d)=>a+d.r,0);
+    const tot=sN+sR;
+    return{n:sN,r:sR,nPct:tot>0?Math.round(sN/tot*100):0};
   }
-  const avg=calcAvg(mon);
-  const prevAvg=prevMon?calcAvg(prevMon):null;
+  const avg=calcAvg(monRows);
+  const prevAvg=prevMon?calcAvg(all.filter(d=>_wkStartMon(d.w)===prevMon)):null;
 
   // ── 신상/이월 (동적 계산 — D.ps_data + ITEM_SEASON_MAP)
   function getSeasonData(ml){
@@ -4772,47 +4845,74 @@ function _convWkLabel(w){
 }
 function renderConvTable(){
   const el=document.getElementById('t3conv-table');if(!el)return;
-  const data=CONV_DATA;
-  const monthKeys=Object.keys(data).sort((a,b)=>parseInt(a)-parseInt(b));
+  const all=loadConvData();
+
+  // 월별 그룹핑 (월 경계 주차는 양쪽 월에 모두 포함)
+  const monthGroups={};
+  const _addToMGrp=(mon,d,i)=>{if(!monthGroups[mon])monthGroups[mon]=[];if(!monthGroups[mon].find(x=>x.d.w===d.w))monthGroups[mon].push({d,i});};
+  all.forEach((d,i)=>{
+    const startMon=(_wkStartMon(d.w)||'00')+'월';
+    _addToMGrp(startMon,d,i);
+    // 주차는 시작 월 기준으로만 분류
+  });
+  const monthKeys=Object.keys(monthGroups);
   if(!monthKeys.length){el.innerHTML='<div style="color:#aaa;padding:20px;text-align:center;">데이터 없음</div>';return;}
 
-  // 선택 월 (구매자 있는 가장 최신 월)
+  // 월별 합계/평균
+  const monthAvgs={};
+  monthKeys.forEach(mon=>{
+    const rows=monthGroups[mon];
+    const sumV=rows.reduce((a,{d})=>a+d.v,0);
+    const sumB=rows.reduce((a,{d})=>a+d.b,0);
+    const sumO=rows.reduce((a,{d})=>a+d.o,0);
+    const avgR=sumV>0?parseFloat((sumB/sumV*100).toFixed(2)):parseFloat((rows.reduce((a,{d})=>a+d.r,0)/rows.length).toFixed(2));
+    monthAvgs[mon]={v:sumV,b:sumB,o:sumO,r:avgR};
+  });
+
+  // 선택 월 — 구매자 데이터(b>0)가 있는 가장 최신 월 기본 선택
   let curMon;
   if(_convCurMon&&monthKeys.includes(_convCurMon)){
     curMon=_convCurMon;
   } else {
-    const valid=monthKeys.filter(m=>data[m].b>0);
-    curMon=valid.length?valid[valid.length-1]:monthKeys[monthKeys.length-1];
+    const validMons=monthKeys.filter(m=>monthAvgs[m].b>0);
+    curMon=validMons.length?validMons[validMons.length-1]:monthKeys[monthKeys.length-1];
   }
   const curIdx=monthKeys.indexOf(curMon);
   const prevMon=curIdx>0?monthKeys[curIdx-1]:null;
-  const cur=data[curMon];
-  const prev=prevMon?data[prevMon]:null;
+  const cur=monthAvgs[curMon];
+  const prev=prevMon?monthAvgs[prevMon]:null;
   const momDiff=prev?parseFloat((cur.r-prev.r).toFixed(2)):null;
 
-  const maxR=Math.max(...Object.values(data).map(a=>a.r),0.01);
-  const barScaleMax=3.0;
+  // 전환율 스케일 (0~최대치 기준 바 높이)
+  const maxR=Math.max(...Object.values(monthAvgs).map(a=>a.r),0.01);
+  const barScaleMax=3.0; // progress bar 기준 (0~3%)
+
+  // 드롭다운
+  const ddOpts=monthKeys.map(m=>'<option value="'+m+'" '+(m===curMon?'selected':'')+'>'+parseInt(m)+'월</option>').join('');
+
 
   // 월별 트렌드 바
   let trendBars='';
   monthKeys.forEach(m=>{
-    const a=data[m];
+    const a=monthAvgs[m];
     const hPct=maxR>0?Math.max(10,Math.round(a.r/maxR*100)):10;
     const isCur=m===curMon;
     trendBars+='<div onclick="setConvMon(\''+m+'\')" style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;flex:1;cursor:pointer;gap:2px;">'
-      +'<div style="width:80%;background:'+(isCur?'#534AB7':'#CECBF6')+';border-radius:3px 3px 0 0;height:'+hPct+'px;'+(isCur?'outline:1.5px solid #534AB7;outline-offset:1px;':'')+'">'+'</div>'
+      +'<div style="width:80%;background:'+(isCur?'#534AB7':'#CECBF6')+';border-radius:3px 3px 0 0;height:'+hPct+'px;'+(isCur?'outline:1.5px solid #534AB7;outline-offset:1px;':'')+'"></div>'
       +'<span style="font-size:9px;color:'+(isCur?'#534AB7':'#aaa')+';font-weight:'+(isCur?'700':'400')+';">'+parseInt(m)+'</span>'
     +'</div>';
   });
 
+  // progress bar width (0~3% 기준)
   const barW=Math.min(100,Math.max(1,Math.round(cur.r/barScaleMax*100)));
   const momColor=momDiff===null?'#aaa':momDiff>=0?'#0F6E56':'#E24B4A';
   const momText=momDiff===null?'—':(momDiff>=0?'▲ +':'▼ ')+Math.abs(momDiff)+'%p 전월비';
 
   el.innerHTML=
+  // KPI 3개 가로 배치
   '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">'
     +'<div style="background:#E2E8F0;border-radius:12px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">'
-      +'<span style="font-size:12px;font-weight:600;color:#444;">방문자</span>'
+      +'<span style="font-size:12px;font-weight:600;color:#444;font-weight:600;">방문자</span>'
       +'<span style="font-size:26px;font-weight:800;color:#111;line-height:1;">'+cur.v.toLocaleString()+'</span>'
     +'</div>'
     +'<div style="background:#C7D2FE;border-radius:12px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">'
