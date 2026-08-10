@@ -5441,8 +5441,8 @@ function s4ColResizeStart(e,handle){
   function onUp(){
     document.removeEventListener('mousemove',onMove);
     document.removeEventListener('mouseup',onUp);
-    // 드래그 종료 후 localStorage 자동 저장
-    try{localStorage.setItem('sinoon_s4_col_w',JSON.stringify(s4ColWidths));}catch(ex){}
+    // 드래그 종료 후 localStorage 자동 저장 + Firebase 동기화
+    try{localStorage.setItem('sinoon_s4_col_w',JSON.stringify(s4ColWidths));jsonbinSave();}catch(ex){}
   }
   document.addEventListener('mousemove',onMove);
   document.addEventListener('mouseup',onUp);
@@ -5477,8 +5477,8 @@ function s4RowResizeStart(e,cell){
   function onUp(){
     document.removeEventListener('mousemove',onMove);
     document.removeEventListener('mouseup',onUp);
-    // 드래그 종료 후 localStorage 자동 저장
-    try{localStorage.setItem('sinoon_s4_row_h',JSON.stringify(s4RowHeights));}catch(ex){}
+    // 드래그 종료 후 localStorage 자동 저장 + Firebase 동기화
+    try{localStorage.setItem('sinoon_s4_row_h',JSON.stringify(s4RowHeights));jsonbinSave();}catch(ex){}
   }
   document.addEventListener('mousemove',onMove);
   document.addEventListener('mouseup',onUp);
