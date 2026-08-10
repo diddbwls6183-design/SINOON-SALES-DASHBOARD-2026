@@ -554,7 +554,8 @@ const CUST_DATA=[
   {w:"07/13~07/16",n:158,r:55},
   {w:"07/17~07/19",n:155,r:49},
   {w:"07/20~07/26",n:44,r:21},
-  {w:"07/27~08/02",n:55,r:9}
+  {w:"07/27~08/02",n:55,r:9},
+  {w:"08/03~08/09",n:107,r:25}
 ];
 var CUST_EXTRA=[];
 function loadCustData(){
@@ -4735,10 +4736,10 @@ function renderCustTable(){
   el.innerHTML=`
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
 
-    <!-- 좌상: 신규/기존 구매비율 -->
+    <!-- 좌상: 신규/기존 고객 구매비율 -->
     <div style="background:#fff;border-radius:14px;border:2px solid #c8c4c0;padding:16px 18px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <span style="font-size:13px;font-weight:700;color:#111;">신규 / 기존 구매비율</span>
+        <span style="font-size:13px;font-weight:700;color:#111;">신규 / 기존 고객 구매비율</span>
         <span style="font-size:11px;color:#aaa;">${mLabel} 전체</span>
       </div>
       ${avg?`
