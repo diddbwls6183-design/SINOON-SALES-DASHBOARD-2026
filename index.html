@@ -883,7 +883,7 @@ function renderHeader(){
 }
 
 // TAB 0
-let s0={gran:'월별',selMonths:[CUR_MON],wkMon:CUR_MON,selWeeks:[],dyMon:CUR_MON,selDays:[],donutGran:'연간',donutChs:[...CH_NAMES],yoyChs:[...CH_NAMES],achGran:'월별',rightTab:'달성률',rightMon:CUR_MON,rightHiddenChs:[],showAnnNugu:false};
+let s0={gran:'월별',selMonths:[CUR_MON],wkMon:CUR_MON,selWeeks:[],dyMon:CUR_MON,selDays:[],donutGran:'연간',donutChs:[...CH_NAMES],yoyChs:[...CH_NAMES],achGran:'월별',rightTab:'달성률',rightMon:CUR_MON,rightHiddenChs:[],showAnnNugu:false,achFilterCh:null};
 
 function s0_toggleAnnNugu(){s0.showAnnNugu=!s0.showAnnNugu;renderTab0();}
 
@@ -1401,7 +1401,7 @@ function resetAll(){
   if(typeof s2!=='undefined'){s2.topCh='전채널';s2.retCh='전채널';s2.gran='월별';s2.selMon='';}
   // 개요 달성률 초기화
   if(typeof s0!=='undefined'){
-    s0.gran='월별';s0.selMonths=[CUR_MON];s0.wkMon=CUR_MON;s0.selWeeks=[];s0.dyMon=CUR_MON;s0.selDays=[];s0.allSel=false;s0.donutGran='연간';s0.donutChs=[...CH_NAMES];s0.yoyChs=[...CH_NAMES];s0.achGran='월별';s0.rightTab='달성률';s0.rightMon=CUR_MON;s0.rightHiddenChs=[];
+    s0.gran='월별';s0.selMonths=[CUR_MON];s0.wkMon=CUR_MON;s0.selWeeks=[];s0.dyMon=CUR_MON;s0.selDays=[];s0.allSel=false;s0.donutGran='연간';s0.donutChs=[...CH_NAMES];s0.yoyChs=[...CH_NAMES];s0.achGran='월별';s0.rightTab='달성률';s0.rightMon=CUR_MON;s0.rightHiddenChs=[];s0.achFilterCh=null;
   }
   // 트렌드 초기화
   if(typeof trendSt!=='undefined'){
@@ -1556,7 +1556,7 @@ function buildTrendS1(){
 function s0_rightMon(m){
   s0.rightMon=m;
   document.querySelectorAll('#right-mon-pills .pill').forEach(b=>b.classList.toggle('active',b.textContent===m));
-  buildAchGraph();buildYoY();
+  buildAchGraph();buildYoY();buildMonthlyGoal();
 }
 
 function s0_yoyCh(ch){const a=s0.yoyChs,i=a.indexOf(ch);i>=0?a.splice(i,1):a.push(ch);if(!a.length)s0.yoyChs=[...CH_NAMES];buildYoY();}
@@ -1661,20 +1661,35 @@ function s0_achGran(g){
 function buildAchGraph(){
   const el=document.getElementById('s0ach-cards');if(!el)return;
   const mon=s0.rightMon||CUR_MON;
-const chs=VISIBLE_CHS;
+  const filterCh=s0.achFilterCh;
+  const chs=filterCh?[filterCh]:VISIBLE_CHS;
   el.innerHTML=chs.map(ch=>{
-    // 달성률
-    const net=m26s(mon,ch)-m26r(mon,ch);
+    const gross=m26s(mon,ch);
+    const ret=m26r(mon,ch);
+    const net=gross-ret;
     const tgt=D.targets[ch]?D.targets[ch][mon]||0:0;
     const ach=tgt?parseFloat((net/tgt*100).toFixed(1)):null;
     const achColor=ach===null?'rgba(255,255,255,.4)':ach>=100?'#4ecb7e':ach>=80?'#f5a623':'#e74c3c';
     const achStr=ach===null?'-':ach.toFixed(1)+'%';
-    // YoY (진행중 월은 동기간 일별 비교, 없으면 월별 폴백)
     let v25=_isIncompleteMon(mon)?_yoy_same_period(mon,ch):m25s(mon,ch);
     if(!v25) v25=m25s(mon,ch);
     const yoy=v25?parseFloat(((net-v25)/v25*100).toFixed(1)):null;
     const yoyColor=yoy===null?'rgba(255,255,255,.4)':yoy>=0?'#4ecb7e':'#e74c3c';
     const yoyStr=yoy===null?'-':`${yoy>=0?'+':''}${yoy.toFixed(1)}%`;
+    if(filterCh){
+      const retRate=gross?(ret/gross*100).toFixed(1):'0.0';
+      return`<div style="background:#2d2926;border-radius:10px;padding:16px 20px;">
+        <div style="font-size:16px;color:#fff;font-weight:700;margin-bottom:14px;">${dn(ch)}</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+          <div style="text-align:center;"><div style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;">판매액</div><div style="font-size:15px;font-weight:700;color:#fff;">${wonKr(gross)}</div></div>
+          <div style="text-align:center;"><div style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;">순매출</div><div style="font-size:15px;font-weight:700;color:#fff;">${wonKr(net)}</div></div>
+          <div style="text-align:center;"><div style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;">반품률</div><div style="font-size:15px;font-weight:700;color:#f5a623;">${retRate}%</div></div>
+          <div style="text-align:center;"><div style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;">목표</div><div style="font-size:15px;font-weight:700;color:#fff;">${wonKr(tgt)}</div></div>
+          <div style="text-align:center;"><div style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;">달성률</div><div style="font-size:15px;font-weight:700;color:${achColor};">${achStr}</div></div>
+          <div style="text-align:center;"><div style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;">신장률</div><div style="font-size:15px;font-weight:700;color:${yoyColor};">${yoyStr}</div></div>
+        </div>
+      </div>`;
+    }
     return`<div style="background:#2d2926;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <span style="font-size:15px;color:#fff;font-weight:700;white-space:nowrap;">${dn(ch)}</span>
       <span style="color:rgba(255,255,255,.3);font-size:15px;">ㅣ</span>
@@ -1685,6 +1700,38 @@ const chs=VISIBLE_CHS;
       <span style="font-size:17px;font-weight:700;color:${yoyColor};white-space:nowrap;">${yoyStr}</span>
     </div>`;
   }).join('');
+}
+function buildMonthlyGoal(){
+  const el=document.getElementById('s0goal-card');if(!el)return;
+  const mon=s0.rightMon||CUR_MON;
+  const chs=VISIBLE_CHS;
+  const totTgt=chs.reduce((a,ch)=>a+(D.targets[ch]?D.targets[ch][mon]||0:0),0);
+  el.innerHTML=`<div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:12px;padding:14px 16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="font-size:13px;font-weight:700;color:#2d2926;">채널별 월목표</div>
+      <select onchange="s0_rightMon(this.value)" style="padding:3px 22px 3px 8px;border:0.5px solid #ccc;border-radius:6px;font-size:12px;background:#faf9f7;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'10\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23888\' stroke-width=\'2\'><path d=\'M6 9l6 6 6-6\'/></svg>');background-repeat:no-repeat;background-position:right 5px center;color:#2d2926;">
+        ${MONTHS.filter(m=>hasMon(m)).map(m=>`<option value="${m}" ${mon===m?'selected':''}>${m}</option>`).join('')}
+      </select>
+    </div>
+    <div>
+      ${chs.map(ch=>{
+        const tgt=D.targets[ch]?D.targets[ch][mon]||0:0;
+        const sel=s0.achFilterCh===ch;
+        return`<div onclick="s0_achFilterCh('${ch}')" style="display:flex;justify-content:space-between;align-items:center;padding:7px 8px;border-radius:6px;cursor:pointer;transition:background .12s;margin-bottom:1px;${sel?'background:#e6f0fb;':''}" onmouseover="if(!${sel})this.style.background='#f5f3f0'" onmouseout="this.style.background='${sel?'#e6f0fb':'transparent'}'">
+          <span style="font-size:13px;color:${sel?'#185FA5':'#666'};">${dn(ch)}</span>
+          <span style="font-size:13px;${sel?'color:#185FA5;font-weight:700;':'color:#2d2926;'}">${wonKr(tgt)}</span>
+        </div>`;
+      }).join('')}
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 8px;border-top:0.5px solid #e8e0d8;margin-top:4px;">
+        <span style="font-size:13px;font-weight:700;color:#2d2926;">전체</span>
+        <span style="font-size:13px;font-weight:700;color:#185FA5;">${wonKr(totTgt)}</span>
+      </div>
+    </div>
+  </div>`;
+}
+function s0_achFilterCh(ch){
+  s0.achFilterCh=s0.achFilterCh===ch?null:ch;
+  buildAchGraph();buildMonthlyGoal();
 }
 function s0GetData(ch){
   const g=s0.gran;let s26=0,s25=0,tgt=0;
@@ -2007,14 +2054,16 @@ function renderTab1(){
   el.innerHTML=`${tabBanner(1)}
 
   <div style="background:transparent;border:none;border-radius:0;padding:0;margin-bottom:24px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+    <div style="margin-bottom:12px;">
       <div class="section-title">📅 월별 달성률 · 전년동기 신장률 요약</div>
-      <div id="right-mon-pills" style="display:flex;gap:4px;flex-wrap:wrap;">
-        ${MONTHS.filter(m=>hasMon(m)).map(m=>`<button class="pill ${s0.rightMon===m?'active':''}" onclick="s0_rightMon('${m}')">${m}</button>`).join('')}
-      </div>
     </div>
-    <div id="s0ach-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
-    <div id="s0yoy-cards" style="display:none;"></div>
+    <div style="display:grid;grid-template-columns:1fr 210px;gap:12px;align-items:start;">
+      <div>
+        <div id="s0ach-cards" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <div id="s0yoy-cards" style="display:none;"></div>
+      </div>
+      <div id="s0goal-card"></div>
+    </div>
   </div>
   <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-start;">
     <div>
@@ -2050,7 +2099,7 @@ function renderTab1(){
       <div style="height:300px;position:relative;"><canvas id="c1trend"></canvas></div>
     </div>
   </div>`;
-  buildAchGraph();buildYoY();s1PF();s1Table();s1Charts();buildTrendS1();
+  buildAchGraph();buildYoY();buildMonthlyGoal();s1PF();s1Table();s1Charts();buildTrendS1();
 }
 
 function s1Summary(){
