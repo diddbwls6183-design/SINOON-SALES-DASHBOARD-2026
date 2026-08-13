@@ -1692,36 +1692,39 @@ function buildAchGraph(){
     aov=aovChs.length?Math.round(aovChs.reduce((a,ch)=>a+(MONTHLY_AOV[ch][mon]||0),0)/aovChs.length):0;
   }
   const aovStr=aov?aov.toLocaleString('ko-KR'):'−';
-  el.innerHTML=`<div style="background:#2d2926;border-radius:10px;padding:16px 20px;">
-    <div style="font-size:14px;color:rgba(255,255,255,.6);margin-bottom:14px;">${label}</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
-      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px;text-align:center;">
-        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;">누적 판매액</div>
-        <div style="font-size:18px;font-weight:700;color:#fff;">${wonKr(totGross)}</div>
+  const remain=totTgt-totNet;
+  const remainColor=remain<=0?'#1e7a4a':'#c0392b';
+  el.innerHTML=`<div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:10px;padding:16px 20px;">
+    <div style="font-size:13px;color:#888;margin-bottom:12px;">${label}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+      <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+        <div style="font-size:11px;color:#999;margin-bottom:5px;">누적 순매출</div>
+        <div style="font-size:17px;font-weight:700;color:#2d2926;">${wonKr(totNet)}</div>
       </div>
-      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px;text-align:center;">
-        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;">누적 순매출</div>
-        <div style="font-size:18px;font-weight:700;color:#fff;">${wonKr(totNet)}</div>
+      <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+        <div style="font-size:11px;color:#999;margin-bottom:5px;">누적 반품률</div>
+        <div style="font-size:17px;font-weight:700;color:${retColor};">${retRate}%</div>
+        <div style="font-size:11px;color:#bbb;margin-top:2px;">판매 대비</div>
       </div>
-      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px;text-align:center;">
-        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;">누적 반품률</div>
-        <div style="font-size:18px;font-weight:700;color:${retColor};">${retRate}%</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;">판매 대비</div>
+      <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+        <div style="font-size:11px;color:#999;margin-bottom:5px;">YoY 신장률</div>
+        <div style="font-size:17px;font-weight:700;color:${yoyColor};">${yoyStr}</div>
+        <div style="font-size:11px;color:#bbb;margin-top:2px;">vs 2025</div>
       </div>
-      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px;text-align:center;">
-        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;">YoY 신장률</div>
-        <div style="font-size:18px;font-weight:700;color:${yoyColor};">${yoyStr}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;">vs 2025</div>
+      <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+        <div style="font-size:11px;color:#999;margin-bottom:5px;">목표 달성률</div>
+        <div style="font-size:17px;font-weight:700;color:${achColor};">${achStr}</div>
+        <div style="font-size:11px;color:#bbb;margin-top:2px;">목표 ${wonKr(totTgt)}</div>
       </div>
-      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px;text-align:center;">
-        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;">목표 달성률</div>
-        <div style="font-size:18px;font-weight:700;color:${achColor};">${achStr}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;">목표 ${wonKr(totTgt)}</div>
+      <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+        <div style="font-size:11px;color:#999;margin-bottom:5px;">잔여 목표</div>
+        <div style="font-size:17px;font-weight:700;color:${remainColor};">${wonKr(Math.abs(remain))}</div>
+        <div style="font-size:11px;color:#bbb;margin-top:2px;">${remain<=0?'목표 초과':'남은 금액'}</div>
       </div>
-      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px;text-align:center;">
-        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;">객단가</div>
-        <div style="font-size:18px;font-weight:700;color:#fff;">${aovStr}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;">원</div>
+      <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+        <div style="font-size:11px;color:#999;margin-bottom:5px;">객단가</div>
+        <div style="font-size:17px;font-weight:700;color:#2d2926;">${aovStr}</div>
+        <div style="font-size:11px;color:#bbb;margin-top:2px;">원</div>
       </div>
     </div>
   </div>`;
@@ -2082,12 +2085,12 @@ function renderTab1(){
     <div style="margin-bottom:12px;">
       <div class="section-title">📅 월별 달성률 · 전년동기 신장률 요약</div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 210px;gap:12px;align-items:start;">
+    <div style="display:grid;grid-template-columns:200px minmax(0,560px);gap:12px;align-items:start;">
+      <div id="s0goal-card"></div>
       <div>
         <div id="s0ach-cards" style="display:flex;flex-direction:column;gap:8px;"></div>
         <div id="s0yoy-cards" style="display:none;"></div>
       </div>
-      <div id="s0goal-card"></div>
     </div>
   </div>
   <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;align-items:flex-start;">
