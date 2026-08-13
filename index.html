@@ -1692,39 +1692,45 @@ function buildAchGraph(){
     aov=aovChs.length?Math.round(aovChs.reduce((a,ch)=>a+(MONTHLY_AOV[ch][mon]||0),0)/aovChs.length):0;
   }
   const aovStr=aov?aov.toLocaleString('ko-KR'):'−';
-  const remain=totTgt-totNet;
-  const remainColor=remain<=0?'#1e7a4a':'#c0392b';
-  el.innerHTML=`<div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:10px;padding:16px 20px;">
-    <div style="font-size:13px;color:#888;margin-bottom:12px;">${label}</div>
+  // 전월 대비(MoM)
+  const monIdx=MONTHS.indexOf(mon);
+  const prevMon=monIdx>0?MONTHS[monIdx-1]:null;
+  let totPrev=0;
+  if(prevMon) chs.forEach(ch=>{ totPrev+=m26s(prevMon,ch)-m26r(prevMon,ch); });
+  const mom=prevMon&&totPrev?parseFloat(((totNet-totPrev)/totPrev*100).toFixed(1)):null;
+  const momColor=mom===null?'#999':mom>=0?'#1e7a4a':'#c0392b';
+  const momStr=mom===null?'-':`${mom>=0?'+':''}${mom.toFixed(1)}%`;
+  el.innerHTML=`<div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:10px;padding:16px 20px;height:100%;box-sizing:border-box;">
+    <div style="font-size:13px;font-weight:700;color:#2d2926;margin-bottom:12px;">${label}</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
       <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
-        <div style="font-size:11px;color:#999;margin-bottom:5px;">누적 순매출</div>
+        <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">누적 순매출</div>
         <div style="font-size:17px;font-weight:700;color:#2d2926;">${wonKr(totNet)}</div>
       </div>
       <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
-        <div style="font-size:11px;color:#999;margin-bottom:5px;">누적 반품률</div>
+        <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">누적 반품률</div>
         <div style="font-size:17px;font-weight:700;color:${retColor};">${retRate}%</div>
-        <div style="font-size:11px;color:#bbb;margin-top:2px;">판매 대비</div>
+        <div style="font-size:11px;font-weight:700;color:#555;margin-top:2px;">판매 대비</div>
       </div>
       <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
-        <div style="font-size:11px;color:#999;margin-bottom:5px;">YoY 신장률</div>
+        <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">YoY 신장률</div>
         <div style="font-size:17px;font-weight:700;color:${yoyColor};">${yoyStr}</div>
-        <div style="font-size:11px;color:#bbb;margin-top:2px;">vs 2025</div>
+        <div style="font-size:11px;font-weight:700;color:#555;margin-top:2px;">vs 2025</div>
       </div>
       <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
-        <div style="font-size:11px;color:#999;margin-bottom:5px;">목표 달성률</div>
+        <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">목표 달성률</div>
         <div style="font-size:17px;font-weight:700;color:${achColor};">${achStr}</div>
-        <div style="font-size:11px;color:#bbb;margin-top:2px;">목표 ${wonKr(totTgt)}</div>
+        <div style="font-size:11px;font-weight:700;color:#555;margin-top:2px;">목표 ${wonKr(totTgt)}</div>
       </div>
       <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
-        <div style="font-size:11px;color:#999;margin-bottom:5px;">잔여 목표</div>
-        <div style="font-size:17px;font-weight:700;color:${remainColor};">${wonKr(Math.abs(remain))}</div>
-        <div style="font-size:11px;color:#bbb;margin-top:2px;">${remain<=0?'목표 초과':'남은 금액'}</div>
+        <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">전월 대비</div>
+        <div style="font-size:17px;font-weight:700;color:${momColor};">${momStr}</div>
+        <div style="font-size:11px;font-weight:700;color:#555;margin-top:2px;">${prevMon||'-'} 비교</div>
       </div>
       <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
-        <div style="font-size:11px;color:#999;margin-bottom:5px;">객단가</div>
+        <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">객단가</div>
         <div style="font-size:17px;font-weight:700;color:#2d2926;">${aovStr}</div>
-        <div style="font-size:11px;color:#bbb;margin-top:2px;">원</div>
+        <div style="font-size:11px;font-weight:700;color:#555;margin-top:2px;">원</div>
       </div>
     </div>
   </div>`;
@@ -1734,19 +1740,22 @@ function buildMonthlyGoal(){
   const mon=s0.rightMon||CUR_MON;
   const chs=VISIBLE_CHS;
   const totTgt=chs.reduce((a,ch)=>a+(D.targets[ch]?D.targets[ch][mon]||0:0),0);
-  el.innerHTML=`<div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:12px;padding:14px 16px;">
+  el.innerHTML=`<div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:12px;padding:14px 16px;height:100%;box-sizing:border-box;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
       <div style="font-size:13px;font-weight:700;color:#2d2926;">채널별 월목표</div>
-      <select onchange="s0_rightMon(this.value)" style="padding:3px 22px 3px 8px;border:0.5px solid #ccc;border-radius:6px;font-size:12px;background:#faf9f7;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'10\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23888\' stroke-width=\'2\'><path d=\'M6 9l6 6 6-6\'/></svg>');background-repeat:no-repeat;background-position:right 5px center;color:#2d2926;">
-        ${MONTHS.filter(m=>hasMon(m)).map(m=>`<option value="${m}" ${mon===m?'selected':''}>${m}</option>`).join('')}
-      </select>
+      <div style="position:relative;display:inline-block;">
+        <select onchange="s0_rightMon(this.value)" style="padding:3px 22px 3px 8px;border:1px solid #bbb;border-radius:6px;font-size:12px;background:#fff;cursor:pointer;appearance:none;-webkit-appearance:none;color:#2d2926;font-weight:700;">
+          ${MONTHS.filter(m=>hasMon(m)).map(m=>`<option value="${m}" ${mon===m?'selected':''}>${m}</option>`).join('')}
+        </select>
+        <span style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:9px;color:#444;pointer-events:none;font-weight:700;">▼</span>
+      </div>
     </div>
     <div>
       ${chs.map(ch=>{
         const tgt=D.targets[ch]?D.targets[ch][mon]||0:0;
         const sel=s0.achFilterCh===ch;
         return`<div onclick="s0_achFilterCh('${ch}')" style="display:flex;justify-content:space-between;align-items:center;padding:7px 8px;border-radius:6px;cursor:pointer;transition:background .12s;margin-bottom:1px;${sel?'background:#e6f0fb;':''}" onmouseover="if(!${sel})this.style.background='#f5f3f0'" onmouseout="this.style.background='${sel?'#e6f0fb':'transparent'}'">
-          <span style="font-size:13px;color:${sel?'#185FA5':'#666'};">${dn(ch)}</span>
+          <span style="font-size:13px;font-weight:700;color:${sel?'#185FA5':'#2d2926'};">${dn(ch)}</span>
           <span style="font-size:13px;${sel?'color:#185FA5;font-weight:700;':'color:#2d2926;'}">${wonKr(tgt)}</span>
         </div>`;
       }).join('')}
@@ -2083,9 +2092,9 @@ function renderTab1(){
 
   <div style="background:transparent;border:none;border-radius:0;padding:0;margin-bottom:24px;">
     <div style="margin-bottom:12px;">
-      <div class="section-title">📅 월별 달성률 · 전년동기 신장률 요약</div>
+      <div class="section-title">📅 월별목표 및 요약</div>
     </div>
-    <div style="display:grid;grid-template-columns:200px minmax(0,560px);gap:12px;align-items:start;">
+    <div style="display:grid;grid-template-columns:200px minmax(0,560px);gap:12px;align-items:stretch;">
       <div id="s0goal-card"></div>
       <div>
         <div id="s0ach-cards" style="display:flex;flex-direction:column;gap:8px;"></div>
