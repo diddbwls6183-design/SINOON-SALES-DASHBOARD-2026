@@ -6355,8 +6355,7 @@ function _applyFreshData(fresh) {
   if (fresh.PROMO_DATA) D.PROMO_DATA = fresh.PROMO_DATA;
 
   // ── D.dates / D.weeks / D.months / D.month_to_dates / D.month_to_weeks 재계산 ──
-  // in-place 업데이트 (const MONTHS=D.months;
-const ALL_MONTHS=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] 등 참조 유지를 위해 splice 사용)
+  // in-place 업데이트 (const MONTHS=D.months 등 참조 유지를 위해 splice 사용)
   const _nd = Object.keys(D.daily26 || {}).filter(d => /^2026-/.test(d)).sort();
   const _pwFn = s => { const _m = s.match(/(\d+)월(\d+)주/); return _m ? parseInt(_m[1])*100 + parseInt(_m[2]) : 0; };
   const _nw = Object.keys(D.weekly26 || {}).sort((a, b) => _pwFn(a) - _pwFn(b));
