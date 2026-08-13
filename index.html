@@ -558,6 +558,7 @@ const COST_MAP={"HM2GCAE001BL":1500,"HM2GCAE001CR":1500,"HM2GCFS001BL":9745,"HM2
 
 function dn(ch){return ch==='NUGU_일본'?'NUGU_일본(퇴점)':ch;}
 const MONTHS=D.months;
+const ALL_MONTHS=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 function hasData(d){const v=D.daily26[d];return !!(v&&Object.values(v).some(c=>(c.s||0)>0));}
 function hasMon(m){return !!(D.monthly26[m]&&Object.values(D.monthly26[m]).some(v=>(v.s||0)>0));}
 function hasWeek(w){return (D.week_to_dates[w]||[]).some(d=>hasData(d));}
@@ -1700,34 +1701,34 @@ function buildAchGraph(){
   const mom=prevMon&&totPrev?parseFloat(((totNet-totPrev)/totPrev*100).toFixed(1)):null;
   const momColor=mom===null?'#999':mom>=0?'#1e7a4a':'#c0392b';
   const momStr=mom===null?'-':`${mom>=0?'+':''}${mom.toFixed(1)}%`;
-  el.innerHTML=`<div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:10px;padding:16px 20px;height:100%;box-sizing:border-box;">
+  el.innerHTML=`<div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:10px;padding:16px 20px;height:100%;box-sizing:border-box;">
     <div style="font-size:13px;font-weight:700;color:#2d2926;margin-bottom:12px;">${label}</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-      <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">누적 순매출</div>
         <div style="font-size:17px;font-weight:700;color:#2d2926;">${wonKr(totNet)}</div>
       </div>
-      <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">누적 반품률</div>
         <div style="font-size:17px;font-weight:700;color:${retColor};">${retRate}%</div>
         <div style="font-size:11px;font-weight:700;color:#555;margin-top:2px;">판매 대비</div>
       </div>
-      <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
-        <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">YoY 신장률</div>
-        <div style="font-size:17px;font-weight:700;color:${yoyColor};">${yoyStr}</div>
-        <div style="font-size:11px;font-weight:700;color:#555;margin-top:2px;">vs 2025</div>
-      </div>
-      <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">목표 달성률</div>
         <div style="font-size:17px;font-weight:700;color:${achColor};">${achStr}</div>
         <div style="font-size:11px;font-weight:700;color:#555;margin-top:2px;">목표 ${wonKr(totTgt)}</div>
       </div>
-      <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+        <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">YoY 신장률</div>
+        <div style="font-size:17px;font-weight:700;color:${yoyColor};">${yoyStr}</div>
+        <div style="font-size:11px;font-weight:700;color:#555;margin-top:2px;">vs 2025</div>
+      </div>
+      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">전월 대비</div>
         <div style="font-size:17px;font-weight:700;color:${momColor};">${momStr}</div>
         <div style="font-size:11px;font-weight:700;color:#555;margin-top:2px;">${prevMon||'-'} 비교</div>
       </div>
-      <div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">객단가</div>
         <div style="font-size:17px;font-weight:700;color:#2d2926;">${aovStr}</div>
         <div style="font-size:11px;font-weight:700;color:#555;margin-top:2px;">원</div>
@@ -1745,7 +1746,7 @@ function buildMonthlyGoal(){
       <div style="font-size:13px;font-weight:700;color:#2d2926;">채널별 월목표</div>
       <div style="position:relative;display:inline-block;">
         <select onchange="s0_rightMon(this.value)" style="padding:3px 22px 3px 8px;border:1px solid #bbb;border-radius:6px;font-size:12px;background:#fff;cursor:pointer;appearance:none;-webkit-appearance:none;color:#2d2926;font-weight:700;">
-          ${MONTHS.filter(m=>hasMon(m)).map(m=>`<option value="${m}" ${mon===m?'selected':''}>${m}</option>`).join('')}
+          ${ALL_MONTHS.map(m=>`<option value="${m}" ${mon===m?'selected':''}>${m}</option>`).join('')}
         </select>
         <span style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:9px;color:#444;pointer-events:none;font-weight:700;">▼</span>
       </div>
@@ -1754,9 +1755,10 @@ function buildMonthlyGoal(){
       ${chs.map(ch=>{
         const tgt=D.targets[ch]?D.targets[ch][mon]||0:0;
         const sel=s0.achFilterCh===ch;
+        const tgtStr=tgt?wonKr(tgt):'<span style="font-size:11px;color:#bbb;">미설정</span>';
         return`<div onclick="s0_achFilterCh('${ch}')" style="display:flex;justify-content:space-between;align-items:center;padding:7px 8px;border-radius:6px;cursor:pointer;transition:background .12s;margin-bottom:1px;${sel?'background:#e6f0fb;':''}" onmouseover="if(!${sel})this.style.background='#f5f3f0'" onmouseout="this.style.background='${sel?'#e6f0fb':'transparent'}'">
           <span style="font-size:13px;font-weight:700;color:${sel?'#185FA5':'#2d2926'};">${dn(ch)}</span>
-          <span style="font-size:13px;${sel?'color:#185FA5;font-weight:700;':'color:#2d2926;'}">${wonKr(tgt)}</span>
+          <span style="font-size:13px;${sel?'color:#185FA5;font-weight:700;':'color:#2d2926;'}">${tgtStr}</span>
         </div>`;
       }).join('')}
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 8px;border-top:0.5px solid #e8e0d8;margin-top:4px;">
@@ -6353,7 +6355,8 @@ function _applyFreshData(fresh) {
   if (fresh.PROMO_DATA) D.PROMO_DATA = fresh.PROMO_DATA;
 
   // ── D.dates / D.weeks / D.months / D.month_to_dates / D.month_to_weeks 재계산 ──
-  // in-place 업데이트 (const MONTHS=D.months 등 참조 유지를 위해 splice 사용)
+  // in-place 업데이트 (const MONTHS=D.months;
+const ALL_MONTHS=['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] 등 참조 유지를 위해 splice 사용)
   const _nd = Object.keys(D.daily26 || {}).filter(d => /^2026-/.test(d)).sort();
   const _pwFn = s => { const _m = s.match(/(\d+)월(\d+)주/); return _m ? parseInt(_m[1])*100 + parseInt(_m[2]) : 0; };
   const _nw = Object.keys(D.weekly26 || {}).sort((a, b) => _pwFn(a) - _pwFn(b));
