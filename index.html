@@ -204,8 +204,8 @@ body{-webkit-text-size-adjust:100%;}
 .s1-chan-tbl tbody tr:nth-child(even) td:first-child { background:#f4f2ef; }
 .s1-chan-tbl tbody tr:last-child td { background:#2d2926 !important; color:#f0ece7 !important; font-weight:700; border-bottom:none; }
 .s1-chan-tbl tbody tr:last-child td:first-child { background:#1e1c1a !important; }
-.s1-chan-tbl tbody tr:hover td { background:#fff3e0 !important; }
-.s1-chan-tbl tbody tr:hover td:first-child { background:#ffe9c0 !important; }
+.s1-chan-tbl tbody tr:hover td { background:#f5f3f0 !important; }
+.s1-chan-tbl tbody tr:hover td:first-child { background:#f0ede8 !important; }
 .s1-chan-tbl .sum-col { background:#f0ede8 !important; border-left:2px solid #c8c0b8 !important; }
 .s1-chan-tbl tbody tr:last-child .sum-col { background:#1e1c1a !important; }
 .neg-val { color:var(--neg) !important; }
@@ -1604,7 +1604,7 @@ function s0Filter(){
   let allSelected=false;
   if(g==='월별') allSelected=MONTHS.every(m=>s0.selMonths.includes(m));
   else if(g==='주차별') allSelected=(D.month_to_weeks[s0.wkMon]||[]).every(w=>s0.selWeeks.includes(w));
-  else allSelected=(D.month_to_dates[s0.dyMon]||[]).every(d=>s0.selDays.includes(d));
+  else allSelected=MONTHS.filter(m=>(D.month_to_dates[m]||[]).some(d=>hasData(d))).every(m=>(D.month_to_dates[m]||[]).filter(d=>hasData(d)).every(d=>s0.selDays.includes(d)));
 
   const allBtn=`<button class="pill ${allSelected?'active':''}" onclick="s0_toggleAll()" style="font-weight:700;">전체</button>`;
 
@@ -1614,8 +1614,7 @@ function s0Filter(){
     const wks=D.month_to_weeks[s0.wkMon]||[];
     el.innerHTML=MONTHS.filter(m=>(D.month_to_weeks[m]||[]).some(w=>hasWeek(w))).map(m=>`<button class="pill ${s0.wkMon===m?'active':''}" onclick="s0_wkMon('${m}')">${m}</button>`).join('')+'<div style="width:100%;height:4px;"></div>'+allBtn+wks.filter(w=>hasWeek(w)).map(w=>`<button class="pill ${s0.selWeeks.includes(w)?'active':''}" onclick="s0_tWeek('${w}')">${wkLabel(w)}</button>`).join('');
   } else {
-    const ds=D.month_to_dates[s0.dyMon]||[];
-    el.innerHTML=MONTHS.filter(m=>(D.month_to_dates[m]||[]).some(d=>hasData(d))).map(m=>`<button class="pill ${s0.dyMon===m?'active':''}" onclick="s0_dyMon('${m}')">${m}</button>`).join('')+'<div style="width:100%;height:4px;"></div>'+allBtn+ds.filter(d=>hasData(d)).map(d=>{const p=d.slice(5).replace('-','/');return`<button class="pill ${s0.selDays.includes(d)?'active':''}" onclick="s0_tDay('${d}')">${p}</button>`}).join('')+'</div>';
+    el.innerHTML=MONTHS.filter(m=>(D.month_to_dates[m]||[]).some(d=>hasData(d))).map(m=>{const ds=(D.month_to_dates[m]||[]).filter(d=>hasData(d));return'<div class="filter-row"><span class="filter-label">'+m+':</span>'+ds.map(d=>`<button class="pill ${s0.selDays.includes(d)?'active':''}" onclick="s0_tDay('${d}')">${d.slice(8)}일</button>`).join('')+'</div>';}).join('');
   }
 }
 
@@ -1706,27 +1705,27 @@ function buildAchGraph(){
     <div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:8px;flex:1;align-items:stretch;">
       <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">누적 순매출</div>
-        <div style="font-size:17px;font-weight:700;color:#2d2926;">${wonKr(totNet)}</div>
+        <div style="font-size:21px;font-weight:700;color:#2d2926;">${wonKr(totNet)}</div>
       </div>
       <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">누적 반품률</div>
-        <div style="font-size:17px;font-weight:700;color:${retColor};">${retRate}%</div>
+        <div style="font-size:21px;font-weight:700;color:${retColor};">${retRate}%</div>
       </div>
       <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">목표 달성률</div>
-        <div style="font-size:17px;font-weight:700;color:${achColor};">${achStr}</div>
+        <div style="font-size:21px;font-weight:700;color:${achColor};">${achStr}</div>
       </div>
       <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">YoY 신장률</div>
-        <div style="font-size:17px;font-weight:700;color:${yoyColor};">${yoyStr}</div>
+        <div style="font-size:21px;font-weight:700;color:${yoyColor};">${yoyStr}</div>
       </div>
       <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">전월 대비</div>
-        <div style="font-size:17px;font-weight:700;color:${momColor};">${momStr}</div>
+        <div style="font-size:21px;font-weight:700;color:${momColor};">${momStr}</div>
       </div>
       <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">객단가</div>
-        <div style="font-size:17px;font-weight:700;color:#2d2926;">${aovStr}</div>
+        <div style="font-size:21px;font-weight:700;color:#2d2926;">${aovStr}</div>
       </div>
     </div>
   </div>`;
@@ -1788,7 +1787,7 @@ function s0GetData(ch){
       if(hasWeek(w)){tgt+=D.weekly_target[w]?D.weekly_target[w][ch]||0:0;}
     });
   } else {
-    const sel=s0.selDays.length?s0.selDays:D.month_to_dates[s0.dyMon]||[];
+    const sel=s0.selDays.length?s0.selDays:D.month_to_dates[CUR_MON]||[];
     sel.forEach(d=>{
       const v=D.daily26[d]?D.daily26[d][ch]||{}:{};
       s26+=(v.s||0)-(v.r||0);
@@ -2203,7 +2202,7 @@ function s1PF(){
   const g=s1.gran;
   if(g==='월별'){el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+MONTHS.filter(m=>hasMon(m)).map(m=>`<button class="pill ${s1.selMonths.includes(m)?'active':''}" onclick="s1_tM('${m}')">${m}</button>`).join('')+'</div>';}
   else if(g==='주차별'){const wks=D.month_to_weeks[s1.wkMon]||[];el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+MONTHS.filter(m=>(D.month_to_weeks[m]||[]).length>0).map(m=>`<button class="pill ${s1.wkMon===m?'active':''}" onclick="s1_wkMon('${m}')">${m}</button>`).join('')+'</div><div class="filter-row"><span class="filter-label">주차:</span>'+wks.map(w=>`<button class="pill ${s1.selWeeks.includes(w)?'active':''}" onclick="s1_tW('${w}')">${wkLabel(w)}</button>`).join('')+'</div>';}
-  else{const ds=D.month_to_dates[s1.dyMon]||[];el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+MONTHS.filter(m=>(D.month_to_dates[m]||[]).length>0).map(m=>`<button class="pill ${s1.dyMon===m?'active':''}" onclick="s1_dyMon('${m}')">${m}</button>`).join('')+'</div><div class="filter-row"><span class="filter-label">일:</span>'+ds.map(d=>`<button class="pill ${s1.selDays.includes(d)?'active':''}" onclick="s1_tD('${d}')">${d.slice(5).replace('-','/')}</button>`).join('')+'</div>';}
+  else{el.innerHTML=MONTHS.filter(m=>(D.month_to_dates[m]||[]).some(d=>hasData(d))).map(m=>{const ds=(D.month_to_dates[m]||[]).filter(d=>hasData(d));return'<div class="filter-row"><span class="filter-label">'+m+':</span>'+ds.map(d=>`<button class="pill ${s1.selDays.includes(d)?'active':''}" onclick="s1_tD('${d}')">${d.slice(8)}일</button>`).join('')+'</div>';}).join('');}
 }
 function s1_tM(m){const a=s1.selMonths,i=a.indexOf(m);i>=0?a.splice(i,1):a.push(m);s1PF();s1Table();s1Charts();}
 function s1_wkMon(m){s1.wkMon=m;s1.selWeeks=[];s1PF();s1Table();s1Charts();}
@@ -2215,7 +2214,7 @@ function s1Periods(){
   const g=s1.gran;
   if(g==='월별'){const sel=s1.selMonths.length?s1.selMonths:MONTHS;return MONTHS.filter(m=>sel.includes(m));}
   if(g==='주차별'){const sel=s1.selWeeks.length?s1.selWeeks:(D.month_to_weeks[s1.wkMon]||[]);return D.weeks.filter(w=>sel.includes(w));}
-  const sel=s1.selDays.length?s1.selDays:(D.month_to_dates[s1.dyMon]||[]);return D.dates.filter(d=>sel.includes(d));
+  const sel=s1.selDays.length?s1.selDays:(D.month_to_dates[CUR_MON]||[]);return D.dates.filter(d=>sel.includes(d));
 }
 
 function s1D(p,ch){
