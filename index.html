@@ -1678,7 +1678,7 @@ function buildTop3(){
     if(!top3[i]){el.innerHTML='';continue;}
     const p=top3[i];
     const imgSrc=IMG_MAP[p.code]||(()=>{const k=Object.keys(IMG_MAP).find(k=>k.startsWith(p.code));return k?IMG_MAP[k]:''})();
-    const imgHtml=imgSrc?('<img src="'+imgSrc+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;\'>&#128; </div>'">'):'<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;">&#128;</div>';
+        const imgHtml=imgSrc?('<img src="'+imgSrc+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" onerror="this.style.display=\'none\'">'):'<div style="font-size:22px;display:flex;align-items:center;justify-content:center;width:100%;height:100%;">&#128;</div>';
     el.innerHTML='<div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:12px;padding:12px 12px 14px;height:100%;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;">'
       +'<div style="position:absolute;top:10px;left:10px;width:22px;height:22px;border-radius:50%;background:'+rankBg[i]+';color:'+rankTx[i]+';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;">'+(i+1)+'</div>'
       +'<div style="width:100%;aspect-ratio:1/1;border-radius:8px;background:#faf9f7;border:0.5px solid #e8e0d8;overflow:hidden;display:flex;align-items:center;justify-content:center;">'+imgHtml+'</div>'
