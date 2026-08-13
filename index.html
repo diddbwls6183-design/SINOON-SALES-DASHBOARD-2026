@@ -1668,9 +1668,10 @@ function buildTop3(){
   const mon=s0.rightMon||CUR_MON;
   const rankBg=['#FFD700','#C0C0C0','#CD7F32'];
   const rankTx=['#7a5800','#444','#5a3000'];
-  const scored=D.products.filter(p=>p.by_mon&&p.by_mon[mon]).map(p=>{
+  if(!D.ps_data)return;
+  const scored=Object.entries(D.ps_data).filter(([code,p])=>p.by_mon&&p.by_mon[mon]).map(([code,p])=>{
     const bm=p.by_mon[mon];
-    return{code:p.code,name:p.name,q:(bm.q||0)-(bm.rq||0),s:(bm.s||0)-(bm.r||0)};
+    return{code:code,name:p.name,q:(bm.q||0)-(bm.rq||0),s:(bm.s||0)-(bm.r||0)};
   }).filter(p=>p.q>0).sort((a,b)=>b.q-a.q);
   const top3=scored.slice(0,3);
   for(let i=0;i<3;i++){
