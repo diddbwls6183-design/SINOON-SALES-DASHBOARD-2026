@@ -1701,30 +1701,30 @@ function buildAchGraph(){
   const mom=prevMon&&totPrev?parseFloat(((totNet-totPrev)/totPrev*100).toFixed(1)):null;
   const momColor=mom===null?'#999':mom>=0?'#1e7a4a':'#c0392b';
   const momStr=mom===null?'-':`${mom>=0?'+':''}${mom.toFixed(1)}%`;
-  el.innerHTML=`<div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:10px;padding:16px 20px;height:100%;box-sizing:border-box;">
+  el.innerHTML=`<div style="background:#fff;border:0.5px solid #e8e0d8;border-radius:10px;padding:16px 20px;height:100%;box-sizing:border-box;display:flex;flex-direction:column;">
     <div style="font-size:13px;font-weight:700;color:#2d2926;margin-bottom:12px;">${label}</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:8px;flex:1;align-items:stretch;">
+      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">누적 순매출</div>
         <div style="font-size:17px;font-weight:700;color:#2d2926;">${wonKr(totNet)}</div>
       </div>
-      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">누적 반품률</div>
         <div style="font-size:17px;font-weight:700;color:${retColor};">${retRate}%</div>
       </div>
-      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">목표 달성률</div>
         <div style="font-size:17px;font-weight:700;color:${achColor};">${achStr}</div>
       </div>
-      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">YoY 신장률</div>
         <div style="font-size:17px;font-weight:700;color:${yoyColor};">${yoyStr}</div>
       </div>
-      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">전월 대비</div>
         <div style="font-size:17px;font-weight:700;color:${momColor};">${momStr}</div>
       </div>
-      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:11px;text-align:center;">
+      <div style="background:#faf9f7;border:0.5px solid #e8e0d8;border-radius:8px;padding:8px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;">
         <div style="font-size:11px;font-weight:700;color:#2d2926;margin-bottom:5px;">객단가</div>
         <div style="font-size:17px;font-weight:700;color:#2d2926;">${aovStr}</div>
       </div>
@@ -2091,7 +2091,7 @@ function renderTab1(){
     <div style="margin-bottom:12px;">
       <div class="section-title">📅 월별목표 및 요약</div>
     </div>
-    <div style="display:grid;grid-template-columns:200px minmax(0,560px);gap:12px;align-items:stretch;">
+    <div style="display:grid;grid-template-columns:200px minmax(0,480px);gap:12px;align-items:stretch;">
       <div id="s0goal-card" style="height:100%;"></div>
       <div style="height:100%;display:flex;flex-direction:column;">
         <div id="s0ach-cards" style="flex:1;"></div>
