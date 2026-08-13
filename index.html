@@ -205,7 +205,12 @@ body{-webkit-text-size-adjust:100%;}
 .s1-chan-tbl tbody tr:last-child td { background:#2d2926 !important; color:#f0ece7 !important; font-weight:700; border-bottom:none; }
 .s1-chan-tbl tbody tr:last-child td:first-child { background:#1e1c1a !important; }
 
-.s1-chan-tbl tbody tr:hover td { background:inherit !important; }
+.s1-chan-tbl tbody tr:hover td { background:transparent !important; }
+.s1-chan-tbl tbody tr:hover td:first-child { background:#fafaf8 !important; }
+.s1-chan-tbl tbody tr:nth-child(even):hover td { background:#faf8f6 !important; }
+.s1-chan-tbl tbody tr:nth-child(even):hover td:first-child { background:#f4f2ef !important; }
+.s1-chan-tbl tbody tr:last-child:hover td { background:#2d2926 !important; }
+.s1-chan-tbl tbody tr:last-child:hover td:first-child { background:#1e1c1a !important; }
 .s1-chan-tbl .sum-col { background:#f0ede8 !important; border-left:2px solid #c8c0b8 !important; }
 .s1-chan-tbl tbody tr:last-child .sum-col { background:#1e1c1a !important; }
 .neg-val { color:var(--neg) !important; }
@@ -1614,7 +1619,7 @@ function s0Filter(){
     const wks=D.month_to_weeks[s0.wkMon]||[];
     el.innerHTML=MONTHS.filter(m=>(D.month_to_weeks[m]||[]).some(w=>hasWeek(w))).map(m=>`<button class="pill ${s0.wkMon===m?'active':''}" onclick="s0_wkMon('${m}')">${m}</button>`).join('')+'<div style="width:100%;height:4px;"></div>'+allBtn+wks.filter(w=>hasWeek(w)).map(w=>`<button class="pill ${s0.selWeeks.includes(w)?'active':''}" onclick="s0_tWeek('${w}')">${wkLabel(w)}</button>`).join('');
   } else {
-    const availMons0=MONTHS.filter(m=>(D.month_to_dates[m]||[]).some(d=>hasData(d)));const ds0=(D.month_to_dates[s0.dyMon]||[]).filter(d=>hasData(d));el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+availMons0.map(m=>{const hasSel0=(D.month_to_dates[m]||[]).some(d=>s0.selDays.includes(d));return`<button class="pill ${s0.dyMon===m?'active':''}" onclick="s0_dyMon('${m}')" style="${hasSel0?'position:relative;':''}">${m}${hasSel0?'<span style="position:absolute;top:2px;right:3px;width:5px;height:5px;background:#e74c3c;border-radius:50%;display:inline-block;"></span>':''}</button>`;}).join('')+'</div><div class="filter-row"><span class="filter-label">일:</span>'+ds0.map(d=>`<button class="pill ${s0.selDays.includes(d)?'active':''}" onclick="s0_tDay('${d}')">${d.slice(8)}일</button>`).join('')+'</div>';
+    const availMons0=MONTHS.filter(m=>(D.month_to_dates[m]||[]).some(d=>hasData(d)));const ds0=(D.month_to_dates[s0.dyMon]||[]).filter(d=>hasData(d));el.innerHTML='<div class="filter-row" style="width:100%"><span class="filter-label">월:</span>'+availMons0.map(m=>{const hasSel0=(D.month_to_dates[m]||[]).some(d=>s0.selDays.includes(d));return`<button class="pill ${s0.dyMon===m?'active':''}" onclick="s0_dyMon('${m}')" style="${hasSel0?'position:relative;':''}">${m}${hasSel0?'<span style="position:absolute;top:2px;right:3px;width:5px;height:5px;background:#e74c3c;border-radius:50%;display:inline-block;"></span>':''}</button>`;}).join('')+'</div><div class="filter-row" style="width:100%"><span class="filter-label">일:</span>'+ds0.map(d=>`<button class="pill ${s0.selDays.includes(d)?'active':''}" onclick="s0_tDay('${d}')">${d.slice(8)}일</button>`).join('')+'</div>';
   }
 }
 
@@ -2202,7 +2207,7 @@ function s1PF(){
   const g=s1.gran;
   if(g==='월별'){el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+MONTHS.filter(m=>hasMon(m)).map(m=>`<button class="pill ${s1.selMonths.includes(m)?'active':''}" onclick="s1_tM('${m}')">${m}</button>`).join('')+'</div>';}
   else if(g==='주차별'){const wks=D.month_to_weeks[s1.wkMon]||[];el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+MONTHS.filter(m=>(D.month_to_weeks[m]||[]).length>0).map(m=>`<button class="pill ${s1.wkMon===m?'active':''}" onclick="s1_wkMon('${m}')">${m}</button>`).join('')+'</div><div class="filter-row"><span class="filter-label">주차:</span>'+wks.map(w=>`<button class="pill ${s1.selWeeks.includes(w)?'active':''}" onclick="s1_tW('${w}')">${wkLabel(w)}</button>`).join('')+'</div>';}
-  else{const availMons=MONTHS.filter(m=>(D.month_to_dates[m]||[]).some(d=>hasData(d)));const ds=(D.month_to_dates[s1.dyMon]||[]).filter(d=>hasData(d));el.innerHTML='<div class="filter-row"><span class="filter-label">월:</span>'+availMons.map(m=>{const hasSel=(D.month_to_dates[m]||[]).some(d=>s1.selDays.includes(d));return`<button class="pill ${s1.dyMon===m?'active':''}" onclick="s1_dyMon('${m}')" style="${hasSel?'position:relative;':''}">${m}${hasSel?'<span style="position:absolute;top:2px;right:3px;width:5px;height:5px;background:#e74c3c;border-radius:50%;display:inline-block;"></span>':''}</button>`;}).join('')+'</div><div class="filter-row"><span class="filter-label">일:</span>'+ds.map(d=>`<button class="pill ${s1.selDays.includes(d)?'active':''}" onclick="s1_tD('${d}')">${d.slice(8)}일</button>`).join('')+'</div>';}
+  else{const availMons=MONTHS.filter(m=>(D.month_to_dates[m]||[]).some(d=>hasData(d)));const ds=(D.month_to_dates[s1.dyMon]||[]).filter(d=>hasData(d));el.innerHTML='<div class="filter-row" style="width:100%"><span class="filter-label">월:</span>'+availMons.map(m=>{const hasSel=(D.month_to_dates[m]||[]).some(d=>s1.selDays.includes(d));return`<button class="pill ${s1.dyMon===m?'active':''}" onclick="s1_dyMon('${m}')" style="${hasSel?'position:relative;':''}">${m}${hasSel?'<span style="position:absolute;top:2px;right:3px;width:5px;height:5px;background:#e74c3c;border-radius:50%;display:inline-block;"></span>':''}</button>`;}).join('')+'</div><div class="filter-row" style="width:100%"><span class="filter-label">일:</span>'+ds.map(d=>`<button class="pill ${s1.selDays.includes(d)?'active':''}" onclick="s1_tD('${d}')">${d.slice(8)}일</button>`).join('')+'</div>';}
 }
 function s1_tM(m){const a=s1.selMonths,i=a.indexOf(m);i>=0?a.splice(i,1):a.push(m);s1PF();s1Table();s1Charts();}
 function s1_wkMon(m){s1.wkMon=m;s1.selWeeks=[];s1PF();s1Table();s1Charts();}
