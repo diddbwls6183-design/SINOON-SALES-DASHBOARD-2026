@@ -1663,43 +1663,68 @@ function buildAchGraph(){
   const mon=s0.rightMon||CUR_MON;
   const filterCh=s0.achFilterCh;
   const chs=filterCh?[filterCh]:VISIBLE_CHS;
-  el.innerHTML=chs.map(ch=>{
-    const gross=m26s(mon,ch);
-    const ret=m26r(mon,ch);
-    const net=gross-ret;
-    const tgt=D.targets[ch]?D.targets[ch][mon]||0:0;
-    const ach=tgt?parseFloat((net/tgt*100).toFixed(1)):null;
-    const achColor=ach===null?'rgba(255,255,255,.4)':ach>=100?'#4ecb7e':ach>=80?'#f5a623':'#e74c3c';
-    const achStr=ach===null?'-':ach.toFixed(1)+'%';
+  const label=filterCh?dn(filterCh):(mon+' 전체 채널');
+  // 집계
+  let totGross=0,totRet=0,totTgt=0,totV25=0;
+  chs.forEach(ch=>{
+    totGross+=m26s(mon,ch);
+    totRet+=m26r(mon,ch);
+    totTgt+=D.targets[ch]?D.targets[ch][mon]||0:0;
     let v25=_isIncompleteMon(mon)?_yoy_same_period(mon,ch):m25s(mon,ch);
     if(!v25) v25=m25s(mon,ch);
-    const yoy=v25?parseFloat(((net-v25)/v25*100).toFixed(1)):null;
-    const yoyColor=yoy===null?'rgba(255,255,255,.4)':yoy>=0?'#4ecb7e':'#e74c3c';
-    const yoyStr=yoy===null?'-':`${yoy>=0?'+':''}${yoy.toFixed(1)}%`;
-    if(filterCh){
-      const retRate=gross?(ret/gross*100).toFixed(1):'0.0';
-      return`<div style="background:#2d2926;border-radius:10px;padding:16px 20px;">
-        <div style="font-size:16px;color:#fff;font-weight:700;margin-bottom:14px;">${dn(ch)}</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-          <div style="text-align:center;"><div style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;">판매액</div><div style="font-size:15px;font-weight:700;color:#fff;">${wonKr(gross)}</div></div>
-          <div style="text-align:center;"><div style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;">순매출</div><div style="font-size:15px;font-weight:700;color:#fff;">${wonKr(net)}</div></div>
-          <div style="text-align:center;"><div style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;">반품률</div><div style="font-size:15px;font-weight:700;color:#f5a623;">${retRate}%</div></div>
-          <div style="text-align:center;"><div style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;">목표</div><div style="font-size:15px;font-weight:700;color:#fff;">${wonKr(tgt)}</div></div>
-          <div style="text-align:center;"><div style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;">달성률</div><div style="font-size:15px;font-weight:700;color:${achColor};">${achStr}</div></div>
-          <div style="text-align:center;"><div style="font-size:11px;color:rgba(255,255,255,.55);margin-bottom:4px;">신장률</div><div style="font-size:15px;font-weight:700;color:${yoyColor};">${yoyStr}</div></div>
-        </div>
-      </div>`;
-    }
-    return`<div style="background:#2d2926;border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="font-size:15px;color:#fff;font-weight:700;white-space:nowrap;">${dn(ch)}</span>
-      <span style="color:rgba(255,255,255,.3);font-size:15px;">ㅣ</span>
-      <span style="font-size:14px;color:#fff;font-weight:600;">달성률</span>
-      <span style="font-size:17px;font-weight:700;color:${achColor};white-space:nowrap;">${achStr}</span>
-      <span style="color:rgba(255,255,255,.3);font-size:15px;">ㅣ</span>
-      <span style="font-size:14px;color:#fff;font-weight:600;">신장률</span>
-      <span style="font-size:17px;font-weight:700;color:${yoyColor};white-space:nowrap;">${yoyStr}</span>
-    </div>`;
-  }).join('');
+    totV25+=v25;
+  });
+  const totNet=totGross-totRet;
+  const retRate=totGross?(totRet/totGross*100).toFixed(1):'0.0';
+  const retColor=parseFloat(retRate)>20?'#e74c3c':parseFloat(retRate)>15?'#f5a623':'#4ecb7e';
+  const ach=totTgt?parseFloat((totNet/totTgt*100).toFixed(1)):null;
+  const achColor=ach===null?'rgba(255,255,255,.4)':ach>=100?'#4ecb7e':ach>=80?'#f5a623':'#e74c3c';
+  const achStr=ach===null?'-':ach.toFixed(1)+'%';
+  const yoy=totV25?parseFloat(((totNet-totV25)/totV25*100).toFixed(1)):null;
+  const yoyColor=yoy===null?'rgba(255,255,255,.4)':yoy>=0?'#4ecb7e':'#e74c3c';
+  const yoyStr=yoy===null?'-':`${yoy>=0?'+':''}${yoy.toFixed(1)}%`;
+  // 객단가: 필터채널이면 그 채널, 전체면 가중평균 대신 MONTHLY_AOV 합산/채널수
+  let aov=0;
+  if(filterCh){
+    aov=(MONTHLY_AOV[filterCh]&&MONTHLY_AOV[filterCh][mon])||0;
+  } else {
+    const aovChs=chs.filter(ch=>MONTHLY_AOV[ch]&&MONTHLY_AOV[ch][mon]);
+    aov=aovChs.length?Math.round(aovChs.reduce((a,ch)=>a+(MONTHLY_AOV[ch][mon]||0),0)/aovChs.length):0;
+  }
+  const aovStr=aov?aov.toLocaleString('ko-KR'):'−';
+  el.innerHTML=`<div style="background:#2d2926;border-radius:10px;padding:16px 20px;">
+    <div style="font-size:14px;color:rgba(255,255,255,.6);margin-bottom:14px;">${label}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px;text-align:center;">
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;">누적 판매액</div>
+        <div style="font-size:18px;font-weight:700;color:#fff;">${wonKr(totGross)}</div>
+      </div>
+      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px;text-align:center;">
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;">누적 순매출</div>
+        <div style="font-size:18px;font-weight:700;color:#fff;">${wonKr(totNet)}</div>
+      </div>
+      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px;text-align:center;">
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;">누적 반품률</div>
+        <div style="font-size:18px;font-weight:700;color:${retColor};">${retRate}%</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;">판매 대비</div>
+      </div>
+      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px;text-align:center;">
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;">YoY 신장률</div>
+        <div style="font-size:18px;font-weight:700;color:${yoyColor};">${yoyStr}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;">vs 2025</div>
+      </div>
+      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px;text-align:center;">
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;">목표 달성률</div>
+        <div style="font-size:18px;font-weight:700;color:${achColor};">${achStr}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;">목표 ${wonKr(totTgt)}</div>
+      </div>
+      <div style="background:rgba(255,255,255,.06);border-radius:8px;padding:12px;text-align:center;">
+        <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px;">객단가</div>
+        <div style="font-size:18px;font-weight:700;color:#fff;">${aovStr}</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;">원</div>
+      </div>
+    </div>
+  </div>`;
 }
 function buildMonthlyGoal(){
   const el=document.getElementById('s0goal-card');if(!el)return;
