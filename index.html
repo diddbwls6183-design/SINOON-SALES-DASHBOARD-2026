@@ -3007,7 +3007,14 @@ function s2GetTop(){
       // 주차 데이터
       if(targetWks){
         targetWks.forEach(w=>{
-          const arr=(D.week_top15&&D.week_top15[w])?(D.week_top15[w][ch]||D.week_top15[w]['전체']||[]):[];
+          let arr=[];
+          if(D.week_top15&&D.week_top15[w]){
+            arr=D.week_top15[w][ch]||D.week_top15[w]['전체']||[];
+          } else {
+            // week_top15 없으면 해당 월 month_top15로 폴백
+            const wkMon=w.replace(/\d+주$/,'');
+            arr=(D.month_top15&&D.month_top15[wkMon])?(D.month_top15[wkMon][ch]||[]):[];
+          }
           arr.forEach(addP);
         });
       }
@@ -3058,7 +3065,13 @@ function s2GetRet(){
     if(hasFilter){
       if(targetWks){
         targetWks.forEach(w=>{
-          const arr=(D.week_top15&&D.week_top15[w])?(D.week_top15[w][ch]||D.week_top15[w]['전체']||[]):[];
+          let arr=[];
+          if(D.week_top15&&D.week_top15[w]){
+            arr=D.week_top15[w][ch]||D.week_top15[w]['전체']||[];
+          } else {
+            const wkMon=w.replace(/\d+주$/,'');
+            arr=(D.month_top15&&D.month_top15[wkMon])?(D.month_top15[wkMon][ch]||[]):[];
+          }
           arr.forEach(addP);
         });
       }
