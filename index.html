@@ -3018,13 +3018,7 @@ function s2GetTop(){
           arr.forEach(addP);
         });
       }
-      // 월 데이터
-      if(targetMons){
-        targetMons.forEach(m=>{
-          const arr=(D.month_top15&&D.month_top15[m])?(D.month_top15[m][ch]||[]):[];
-          arr.forEach(addP);
-        });
-      }
+      // 월 데이터 → ps_data.by_mon 에서 처리 (아래)
     } else {
       // 전체(연간) - 모든 월 month_top15 합산
       const allMons=D.months||[];
@@ -3034,6 +3028,21 @@ function s2GetTop(){
       });
     }
   });
+  // 월 필터: ps_data.by_mon 기준 (buildTop3와 동일 — 12자리 코드, 색상별 정확)
+  if(targetMons&&D.ps_data){
+    targetMons.forEach(m=>{
+      Object.entries(D.ps_data).forEach(([code,p])=>{
+        const bm=p.by_mon&&p.by_mon[m];
+        if(!bm||(!bm.s&&!bm.q))return;
+        // 채널 필터: 전체가 아닐 때 by_ch로 근사
+        if(s2.selChs.length<VISIBLE_CHS.length){
+          const hasCh=s2.selChs.some(ch=>p.by_ch&&p.by_ch[ch]&&((p.by_ch[ch].s||0)+(p.by_ch[ch].q||0))>0);
+          if(!hasCh)return;
+        }
+        addP({code,name:p.name,s:bm.s||0,q:bm.q||0,r:bm.r||0,rq:bm.rq||0,item:p.item||'',season:p.season||'',cost:p.cost||0,stock:p.stock||0});
+      });
+    });
+  }
   return Object.values(map).sort((a,b)=>s2.topSort==='수량'?b.q-a.q:b.s-a.s).slice(0,20);
 }
 
