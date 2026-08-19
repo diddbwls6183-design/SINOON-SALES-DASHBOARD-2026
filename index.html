@@ -1672,19 +1672,19 @@ function buildTop3(){
   const rankTx=['#7a5800','#444','#5a3000'];
   let top3=[];
   if(filterCh){
-    // 채널 선택 시: month_top15[mon][ch] 활용
-    const chList=D.month_top15&&D.month_top15[mon]&&D.month_top15[mon][filterCh];
-    if(chList){
-      top3=chList.map(p=>({code:p.code,name:p.name,q:(p.q||0)-(p.rq||0),s:(p.s||0)-(p.r||0)}))
-        .filter(p=>p.q>0).sort((a,b)=>b.q-a.q).slice(0,3);
-    }
+    // 채널 선택 시: ps_data by_ch 활용 (s2GetTop과 동일 소스)
+    if(!D.ps_data)return;
+    top3=Object.entries(D.ps_data).filter(([code,p])=>p.by_mon&&p.by_mon[mon]&&p.by_ch&&p.by_ch[filterCh]).map(([code,p])=>{
+      const bm=p.by_mon[mon];
+      return{code:code,name:p.name,q:bm.q||0,s:bm.s||0,r:bm.r||0,rq:bm.rq||0};
+    }).filter(p=>p.s>0).sort((a,b)=>b.s-a.s).slice(0,3);
   } else {
     // 전체: ps_data by_mon 활용
     if(!D.ps_data)return;
     top3=Object.entries(D.ps_data).filter(([code,p])=>p.by_mon&&p.by_mon[mon]).map(([code,p])=>{
       const bm=p.by_mon[mon];
-      return{code:code,name:p.name,q:(bm.q||0)-(bm.rq||0),s:(bm.s||0)-(bm.r||0)};
-    }).filter(p=>p.q>0).sort((a,b)=>b.q-a.q).slice(0,3);
+      return{code:code,name:p.name,q:bm.q||0,s:bm.s||0,r:bm.r||0,rq:bm.rq||0};
+    }).filter(p=>p.s>0).sort((a,b)=>b.s-a.s).slice(0,3);
   }
   for(let i=0;i<3;i++){
     const el=document.getElementById('s0top'+(i+1)+'-card');if(!el)continue;
