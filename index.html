@@ -3116,7 +3116,7 @@ function _s2CellMap(p,col){
   const memo=s2Memo[p.code]||'';
   return {
     code:`<td style="text-align:center">${p.code}</td>`,
-    season:(()=>{const co=p.co||(D.ps_data&&D.ps_data[p.code]&&D.ps_data[p.code].co)||'';if(co){const c=co==='신규캐리오버'?'#5B8CF7':'#888';return`<td style="text-align:center;color:${c};font-weight:600">${co}</td>`;}const _seas=p.season||(/^SN2G[37]/.test(p.code)?'26 AUTUMN':'')||'-';return`<td style="text-align:center">${_seas}</td>`;})(),
+    season:(()=>{const co=p.co||(D.ps_data&&D.ps_data[p.code]&&D.ps_data[p.code].co)||'';if(co){const c=co==='신규캐리오버'?'#5B8CF7':'#888';return`<td style="text-align:center;color:${c};font-weight:600">${co}</td>`;}const _seas=p.season||(/^SN2G3/.test(p.code)||['SN2G7AA070AP','SN2G7AA070BK','SN2G7AA070BR','SN2G7AA070IV','SN2G7AA070MG'].includes(p.code)?'26 AUTUMN':'')||'-';return`<td style="text-align:center">${_seas}</td>`;})(),
     item:`<td style="text-align:center">${p.item||'-'}</td>`,
     name:(()=>{
       const nm=p.name||'';
