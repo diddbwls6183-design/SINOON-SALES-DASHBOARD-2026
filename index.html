@@ -6401,9 +6401,14 @@ const _GS_URL = 'https://script.google.com/macros/s/AKfycbwT8FxyM5_JwrEHylnSPuSj
 // ── 구글시트 데이터 적용 헬퍼 ──
 function _applyFreshData(fresh) {
   if (!fresh || fresh.error) return;
-  ['monthly26','daily26','weekly26','month_top15','week_top15','top20_all','ch_top20','STOCK_MAP','MONTHLY_AOV'].forEach(k=>{
+  ['monthly26','daily26','weekly26','month_top15','week_top15','top20_all','ch_top20','MONTHLY_AOV'].forEach(k=>{
     if (fresh[k] !== undefined) D[k] = fresh[k];
   });
+  if (fresh.STOCK_MAP) {
+    D.STOCK_MAP = fresh.STOCK_MAP;
+    Object.keys(STOCK_MAP).forEach(k=>delete STOCK_MAP[k]);
+    Object.assign(STOCK_MAP, fresh.STOCK_MAP);
+  }
   if (fresh.ps_data) {
     for (const code in fresh.ps_data) {
       if (D.ps_data && D.ps_data[code]) {
