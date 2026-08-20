@@ -6406,8 +6406,22 @@ function _applyFreshData(fresh) {
   });
   if (fresh.STOCK_MAP) {
     D.STOCK_MAP = fresh.STOCK_MAP;
+    const flatStk = {}, flatCst = {};
+    for (const k in fresh.STOCK_MAP) {
+      const v = fresh.STOCK_MAP[k];
+      if (v && typeof v === 'object') {
+        flatStk[k] = v.stock || 0;
+        if (v.cost) flatCst[k] = v.cost;
+      } else {
+        flatStk[k] = v || 0;
+      }
+    }
     Object.keys(STOCK_MAP).forEach(k=>delete STOCK_MAP[k]);
-    Object.assign(STOCK_MAP, fresh.STOCK_MAP);
+    Object.assign(STOCK_MAP, flatStk);
+    if (Object.keys(flatCst).length) {
+      Object.keys(COST_MAP).forEach(k=>delete COST_MAP[k]);
+      Object.assign(COST_MAP, flatCst);
+    }
   }
   if (fresh.ps_data) {
     for (const code in fresh.ps_data) {
