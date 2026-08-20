@@ -2614,10 +2614,14 @@ function s2SetQuickPeriod(type){
     const already=s2.wkFilter.length===1&&s2.wkFilter[0]===curWk&&!s2.monFilter.length;
     s2.wkFilter=already?[]:[curWk];
     s2.monFilter=[];
+  } else if(type==='상반기'){
+    const h1=['1월','2월','3월','4월','5월','6월'].filter(m=>months.includes(m));
+    s2.monFilter=h1;s2.wkFilter=[];
+  } else if(type==='하반기'){
+    const h2=['7월','8월','9월','10월','11월','12월'].filter(m=>months.includes(m));
+    s2.monFilter=h2;s2.wkFilter=[];
   } else if(type==='초기화'){
-    s2.monFilter=[];s2.wkFilter=[];s2.dateFrom='';s2.dateTo='';s2._dateOpen=false;s2._monAllOff=false;
-    const df=document.getElementById('s2df');const dt=document.getElementById('s2dt');
-    if(df)df.value='';if(dt)dt.value='';
+    s2.monFilter=[];s2.wkFilter=[];s2._monAllOff=false;
   }
   s2._refreshFilterBar(); s2Top(); s2Ret();
 }
@@ -2690,6 +2694,10 @@ function s2RenderColCtrl(){
   const isThisMon=!hasWkSel&&mf.length===1&&mf[0]===CUR_MON;
   const isPrevMon=!hasWkSel&&!!prevMon&&mf.length===1&&mf[0]===prevMon;
   const isThisWkActive=hasWkSel&&s2.wkFilter.length===1&&s2.wkFilter[0]===curWk;
+  const _h1Mons=['1월','2월','3월','4월','5월','6월'].filter(m=>(D.months||[]).includes(m));
+  const _h2Mons=['7월','8월','9월','10월','11월','12월'].filter(m=>(D.months||[]).includes(m));
+  const isH1=_h1Mons.length>0&&s2.monFilter.length===_h1Mons.length&&_h1Mons.every(m=>s2.monFilter.includes(m))&&!s2.wkFilter.length;
+  const isH2=_h2Mons.length>0&&s2.monFilter.length===_h2Mons.length&&_h2Mons.every(m=>s2.monFilter.includes(m))&&!s2.wkFilter.length;
   const isAllMon=!s2._monAllOff&&!mf.length&&!hasWkSel;
   const monItems=months.map(m=>{
     const chk=!s2._monAllOff&&(isAllMon||mf.includes(m));// _monAllOff 시 모두 unchecked
@@ -2744,19 +2752,8 @@ function s2RenderColCtrl(){
     '<button style="'+qBtnSt(isPrevMon)+'" onclick="s2SetQuickPeriod(\'지난달\')">지난달</button>'+
     '<button style="'+qBtnSt(isThisMon)+'" onclick="s2SetQuickPeriod(\'이번달\')">이번달</button>'+
     '<button style="'+qBtnSt(isThisWkActive)+'" onclick="s2SetQuickPeriod(\'이번주차\')">이번주</button>'+
-    '<div style="position:relative;display:flex;align-items:center;gap:3px;">'+
-    '<button onclick="s2ToggleDateRange(event)" style="'+qBtnSt(!!(s2.dateFrom||s2.dateTo))+'">'+((s2.dateFrom||s2.dateTo)?((s2.dateFrom||'시작')+' ~ '+(s2.dateTo||'종료')):'직접선택')+'</button>'+
-    '<div id="s2date-popup" onclick="event.stopPropagation()" style="display:'+(s2._dateOpen?'block':'none')+';position:absolute;right:0;top:calc(100% + 8px);z-index:600;background:#fff;border:1px solid #e0dbd5;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:16px 18px;min-width:240px;">'+
-    '<div style="font-size:13px;font-weight:700;color:#222;margin-bottom:12px;">📅 기간 직접 선택</div>'+
-    '<div style="display:flex;flex-direction:column;gap:10px;">'+
-    '<label style="font-size:12px;color:#666;font-weight:600;">시작일<input type="date" id="s2df" value="'+(s2.dateFrom||'')+"'"+
-    ' style="display:block;width:100%;margin-top:4px;padding:5px 8px;border-radius:7px;border:1px solid #ddd;font-size:12px;font-family:inherit;color:#222;"></label>'+
-    '<label style="font-size:12px;color:#666;font-weight:600;">종료일<input type="date" id="s2dt" value="'+(s2.dateTo||'')+"'"+
-    ' style="display:block;width:100%;margin-top:4px;padding:5px 8px;border-radius:7px;border:1px solid #ddd;font-size:12px;font-family:inherit;color:#222;"></label>'+
-    '<div style="display:flex;gap:6px;margin-top:4px;">'+
-    '<button onclick="s2ApplyDateRange()" style="flex:1;padding:6px;border-radius:7px;border:none;background:#2d2926;color:#fff;cursor:pointer;font-size:12px;font-family:inherit;font-weight:700;">적용</button>'+
-    '<button onclick="s2ClearDateRange()" style="flex:1;padding:6px;border-radius:7px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-size:12px;font-family:inherit;">초기화</button>'+
-    '</div></div></div></div>'+
+    '<button style="'+qBtnSt(isH1)+'" onclick="s2SetQuickPeriod(\'상반기\')">상반기</button>'+
+    '<button style="'+qBtnSt(isH2)+'" onclick="s2SetQuickPeriod(\'하반기\')">하반기</button>'+
     '<button onclick="s2SetQuickPeriod(\'초기화\')" style="padding:4px 10px;border-radius:7px;border:1px solid var(--border);background:#f5f5f5;color:var(--sub);font-size:11px;cursor:pointer;font-family:inherit;">초기화</button>'+
     '</div>';
 
@@ -3056,7 +3053,6 @@ function s2GetRetSrc(ch){
 }
 
 function s2GetRet(){
-  // 판매순과 동일 필터 로직 - 반품금액 기준 TOP20
   const map={};
   if(s2._monAllOff&&!(s2.wkFilter&&s2.wkFilter.length))return [];
   const targetMons=(s2.monFilter&&s2.monFilter.length)?s2.monFilter:null;
@@ -3064,38 +3060,46 @@ function s2GetRet(){
   const hasFilter=targetMons||targetWks;
   function addP(p){
     const stk=STOCK_MAP[p.code]??p.stock??0;const cst=COST_MAP[p.code]??p.cost??0;
-    if(!map[p.code])map[p.code]={code:p.code,item:p.item||'-',name:p.name,season:p.season,s:0,r:0,q:0,rq:0,rr:0,cost:cst,stock:stk};
+    if(!map[p.code])map[p.code]={code:p.code,item:p.item||'-',name:p.name,season:p.season||'',s:0,r:0,q:0,rq:0,rr:0,cost:cst,stock:stk};
     map[p.code].s+=p.s||0;map[p.code].r+=p.r||0;map[p.code].q+=p.q||0;map[p.code].rq+=p.rq||0;
   }
-  s2.selChs.forEach(ch=>{
-    if(hasFilter){
-      if(targetWks){
-        targetWks.forEach(w=>{
-          let arr=[];
-          if(D.week_top15&&D.week_top15[w]){
-            arr=D.week_top15[w][ch]||D.week_top15[w]['전체']||[];
-          } else {
-            const wkMon=w.replace(/\d+주$/,'');
-            arr=(D.month_top15&&D.month_top15[wkMon])?(D.month_top15[wkMon][ch]||[]):[];
-          }
-          arr.forEach(addP);
-        });
-      }
-      if(targetMons){
-        targetMons.forEach(m=>{
-          const arr=(D.month_top15&&D.month_top15[m])?(D.month_top15[m][ch]||[]):[];
-          arr.forEach(addP);
-        });
-      }
-    } else {
-      // 전체(연간) - 모든 월 month_top15 합산
-      const allMons=D.months||[];
-      allMons.forEach(m=>{
-        const arr=(D.month_top15&&D.month_top15[m]&&D.month_top15[m][ch])||[];
-        arr.forEach(addP);
+  // 전체(연간)
+  if(!hasFilter){
+    s2.selChs.forEach(ch=>{
+      (D.months||[]).forEach(m=>{
+        ((D.month_top15&&D.month_top15[m]&&D.month_top15[m][ch])||[]).forEach(addP);
       });
-    }
-  });
+    });
+  }
+  // 주차 필터: ps_data.by_wk 기준
+  if(targetWks&&D.ps_data){
+    Object.entries(D.ps_data).forEach(([code,p])=>{
+      const bwArr=targetWks.map(w=>p.by_wk&&p.by_wk[w]).filter(Boolean);
+      if(!bwArr.length)return;
+      const agg={s:0,q:0,r:0,rq:0};
+      bwArr.forEach(bw=>{agg.s+=bw.s||0;agg.q+=bw.q||0;agg.r+=bw.r||0;agg.rq+=bw.rq||0;});
+      if(!agg.r)return;
+      if(s2.selChs.length<VISIBLE_CHS.length){
+        const hasCh=s2.selChs.some(c=>p.by_ch&&p.by_ch[c]&&((p.by_ch[c].r||0))>0);
+        if(!hasCh)return;
+      }
+      addP({code,name:p.name,s:agg.s,q:agg.q,r:agg.r,rq:agg.rq,item:p.item||'',season:p.season||'',cost:p.cost||0,stock:p.stock||0});
+    });
+  }
+  // 월 필터: ps_data.by_mon 기준
+  if(targetMons&&D.ps_data){
+    targetMons.forEach(m=>{
+      Object.entries(D.ps_data).forEach(([code,p])=>{
+        const bm=p.by_mon&&p.by_mon[m];
+        if(!bm||!bm.r)return;
+        if(s2.selChs.length<VISIBLE_CHS.length){
+          const hasCh=s2.selChs.some(ch=>p.by_ch&&p.by_ch[ch]&&(p.by_ch[ch].r||0)>0);
+          if(!hasCh)return;
+        }
+        addP({code,name:p.name,s:bm.s||0,q:bm.q||0,r:bm.r||0,rq:bm.rq||0,item:p.item||'',season:p.season||'',cost:p.cost||0,stock:p.stock||0});
+      });
+    });
+  }
   return Object.values(map)
     .map(p=>({...p,rr:p.s?+(p.r/p.s*100).toFixed(1):0}))
     .filter(p=>(p.r||0)>0)
@@ -3112,7 +3116,7 @@ function _s2CellMap(p,col){
   const memo=s2Memo[p.code]||'';
   return {
     code:`<td style="text-align:center">${p.code}</td>`,
-    season:(()=>{const co=p.co||(D.ps_data&&D.ps_data[p.code]&&D.ps_data[p.code].co)||'';if(co){const c=co==='신규캐리오버'?'#5B8CF7':'#888';return`<td style="text-align:center;color:${c};font-weight:600">${co}</td>`;}return`<td style="text-align:center">${p.season||'-'}</td>`;})(),
+    season:(()=>{const co=p.co||(D.ps_data&&D.ps_data[p.code]&&D.ps_data[p.code].co)||'';if(co){const c=co==='신규캐리오버'?'#5B8CF7':'#888';return`<td style="text-align:center;color:${c};font-weight:600">${co}</td>`;}const _seas=p.season||(/^SN2G[37]/.test(p.code)?'26 AUTUMN':'')||'-';return`<td style="text-align:center">${_seas}</td>`;})(),
     item:`<td style="text-align:center">${p.item||'-'}</td>`,
     name:(()=>{
       const nm=p.name||'';
