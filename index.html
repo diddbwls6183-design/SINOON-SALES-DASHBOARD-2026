@@ -3010,7 +3010,7 @@ function s2GetTop(){
   }
   // 주차 필터
   if(targetWks){
-    const isAllCh=s2.selChs.length>=VISIBLE_CHS.length;
+    const isAllCh=VISIBLE_CHS.every(ch=>s2.selChs.includes(ch));
     if(isAllCh&&D.ps_data){
       Object.entries(D.ps_data).forEach(([code,p])=>{
         const bwArr=targetWks.map(w=>p.by_wk&&p.by_wk[w]).filter(Boolean);
@@ -3053,7 +3053,7 @@ function s2GetTop(){
   }
   // 월 필터
   if(targetMons){
-    const isAllCh=s2.selChs.length>=VISIBLE_CHS.length;
+    const isAllCh=VISIBLE_CHS.every(ch=>s2.selChs.includes(ch));
     if(isAllCh&&D.ps_data){
       // 전체 채널: ps_data.by_mon 사용
       targetMons.forEach(m=>{
@@ -3116,7 +3116,7 @@ function s2GetRet(){
   }
   // 주차 필터
   if(targetWks){
-    const isAllCh=s2.selChs.length>=VISIBLE_CHS.length;
+    const isAllCh=VISIBLE_CHS.every(ch=>s2.selChs.includes(ch));
     if(isAllCh&&D.ps_data){
       Object.entries(D.ps_data).forEach(([code,p])=>{
         const bwArr=targetWks.map(w=>p.by_wk&&p.by_wk[w]).filter(Boolean);
@@ -3159,7 +3159,7 @@ function s2GetRet(){
   }
   // 월 필터
   if(targetMons){
-    const isAllCh=s2.selChs.length>=VISIBLE_CHS.length;
+    const isAllCh=VISIBLE_CHS.every(ch=>s2.selChs.includes(ch));
     if(isAllCh&&D.ps_data){
       targetMons.forEach(m=>{
         Object.entries(D.ps_data).forEach(([code,p])=>{
