@@ -3035,15 +3035,17 @@ function s2GetTop(){
       if(Object.keys(chMap).length){
         Object.values(chMap).forEach(addP);
       }else if(D.ps_data){
-        // week_top15 없으면 ps_data.by_wk + by_ch 필터 폴백
+        // week_top15 없으면 ps_data.by_wk_ch (채널별 주차) 폴백
         Object.entries(D.ps_data).forEach(([code,p])=>{
-          const hasCh=s2.selChs.some(ch=>p.by_ch&&p.by_ch[ch]);
-          if(!hasCh)return;
-          const bwArr=targetWks.map(w=>p.by_wk&&p.by_wk[w]).filter(Boolean);
-          if(!bwArr.length)return;
           const agg={s:0,q:0,r:0,rq:0};
-          bwArr.forEach(bw=>{agg.s+=bw.s||0;agg.q+=bw.q||0;agg.r+=bw.r||0;agg.rq+=bw.rq||0;});
-          if(!agg.s&&!agg.q)return;
+          let hasData=false;
+          targetWks.forEach(w=>{
+            s2.selChs.forEach(ch=>{
+              const wc=p.by_wk_ch&&p.by_wk_ch[w]&&p.by_wk_ch[w][ch];
+              if(wc){agg.s+=wc.s||0;agg.q+=wc.q||0;agg.r+=wc.r||0;agg.rq+=wc.rq||0;hasData=true;}
+            });
+          });
+          if(!hasData||(!agg.s&&!agg.q))return;
           addP({code,name:p.name,s:agg.s,q:agg.q,r:agg.r,rq:agg.rq,item:p.item||'',season:p.season||'',cost:p.cost||0,stock:p.stock||0});
         });
       }
@@ -3141,15 +3143,17 @@ function s2GetRet(){
       if(Object.keys(chMap).length){
         Object.values(chMap).filter(p=>p.r>0).forEach(addP);
       }else if(D.ps_data){
-        // week_top15 없으면 ps_data.by_wk + by_ch 필터 폴백
+        // week_top15 없으면 ps_data.by_wk_ch (채널별 주차) 폴백
         Object.entries(D.ps_data).forEach(([code,p])=>{
-          const hasCh=s2.selChs.some(ch=>p.by_ch&&p.by_ch[ch]);
-          if(!hasCh)return;
-          const bwArr=targetWks.map(w=>p.by_wk&&p.by_wk[w]).filter(Boolean);
-          if(!bwArr.length)return;
           const agg={s:0,q:0,r:0,rq:0};
-          bwArr.forEach(bw=>{agg.s+=bw.s||0;agg.q+=bw.q||0;agg.r+=bw.r||0;agg.rq+=bw.rq||0;});
-          if(!agg.r)return;
+          let hasData=false;
+          targetWks.forEach(w=>{
+            s2.selChs.forEach(ch=>{
+              const wc=p.by_wk_ch&&p.by_wk_ch[w]&&p.by_wk_ch[w][ch];
+              if(wc){agg.s+=wc.s||0;agg.q+=wc.q||0;agg.r+=wc.r||0;agg.rq+=wc.rq||0;hasData=true;}
+            });
+          });
+          if(!hasData||!agg.r)return;
           addP({code,name:p.name,s:agg.s,q:agg.q,r:agg.r,rq:agg.rq,item:p.item||'',season:p.season||'',cost:p.cost||0,stock:p.stock||0});
         });
       }
