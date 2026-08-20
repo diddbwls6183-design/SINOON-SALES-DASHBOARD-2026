@@ -3002,32 +3002,29 @@ function s2GetTop(){
     else{if(!map[code].item&&_item)map[code].item=_item;if(!map[code].season&&_season)map[code].season=_season;if(!map[code].co&&_co)map[code].co=_co;}
     map[code].s+=p.s||0;map[code].r+=p.r||0;map[code].q+=p.q||0;map[code].rq+=p.rq||0;
   }
-  s2.selChs.forEach(ch=>{
-    if(hasFilter){
-      // 주차 데이터
-      if(targetWks){
-        targetWks.forEach(w=>{
-          let arr=[];
-          if(D.week_top15&&D.week_top15[w]){
-            arr=D.week_top15[w][ch]||D.week_top15[w]['전체']||[];
-          } else {
-            // week_top15 없으면 해당 월 month_top15로 폴백
-            const wkMon=w.replace(/\d+주$/,'');
-            arr=(D.month_top15&&D.month_top15[wkMon])?(D.month_top15[wkMon][ch]||[]):[];
-          }
-          arr.forEach(addP);
-        });
-      }
-      // 월 데이터 → ps_data.by_mon 에서 처리 (아래)
-    } else {
-      // 전체(연간) - 모든 월 month_top15 합산
-      const allMons=D.months||[];
-      allMons.forEach(m=>{
-        const arr=(D.month_top15&&D.month_top15[m]&&D.month_top15[m][ch])||[];
-        arr.forEach(addP);
+  // 전체(연간): 채널별 month_top15 합산
+  if(!hasFilter){
+    s2.selChs.forEach(ch=>{
+      (D.months||[]).forEach(m=>{
+        ((D.month_top15&&D.month_top15[m]&&D.month_top15[m][ch])||[]).forEach(addP);
       });
-    }
-  });
+    });
+  }
+  // 주차 필터: ps_data.by_wk 기준 (채널 루프 없음 — 중복 방지)
+  if(targetWks&&D.ps_data){
+    Object.entries(D.ps_data).forEach(([code,p])=>{
+      const bwArr=targetWks.map(w=>p.by_wk&&p.by_wk[w]).filter(Boolean);
+      if(!bwArr.length)return;
+      const agg={s:0,q:0,r:0,rq:0};
+      bwArr.forEach(bw=>{agg.s+=bw.s||0;agg.q+=bw.q||0;agg.r+=bw.r||0;agg.rq+=bw.rq||0;});
+      if(!agg.s&&!agg.q)return;
+      if(s2.selChs.length<VISIBLE_CHS.length){
+        const hasCh=s2.selChs.some(c=>p.by_ch&&p.by_ch[c]&&((p.by_ch[c].s||0)+(p.by_ch[c].q||0))>0);
+        if(!hasCh)return;
+      }
+      addP({code,name:p.name,s:agg.s,q:agg.q,r:agg.r,rq:agg.rq,item:p.item||'',season:p.season||'',cost:p.cost||0,stock:p.stock||0});
+    });
+  }
   // 월 필터: ps_data.by_mon 기준 (buildTop3와 동일 — 12자리 코드, 색상별 정확)
   if(targetMons&&D.ps_data){
     targetMons.forEach(m=>{
