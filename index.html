@@ -3021,7 +3021,7 @@ function s2GetTop(){
         addP({code,name:p.name,s:agg.s,q:agg.q,r:agg.r,rq:agg.rq,item:p.item||'',season:p.season||'',cost:p.cost||0,stock:p.stock||0});
       });
     } else {
-      // 특정 채널: week_top15[w][ch] 사용
+      // 특정 채널: week_top15[w][ch] → 없으면 ps_data.by_wk+by_ch 폴백
       const chMap={};
       targetWks.forEach(w=>{
         s2.selChs.forEach(ch=>{
@@ -3034,7 +3034,21 @@ function s2GetTop(){
           });
         });
       });
-      Object.values(chMap).forEach(addP);
+      if(Object.keys(chMap).length){
+        Object.values(chMap).forEach(addP);
+      }else if(D.ps_data){
+        // week_top15 없으면 ps_data.by_wk + by_ch 필터 폴백
+        Object.entries(D.ps_data).forEach(([code,p])=>{
+          const hasCh=s2.selChs.some(ch=>p.by_ch&&p.by_ch[ch]);
+          if(!hasCh)return;
+          const bwArr=targetWks.map(w=>p.by_wk&&p.by_wk[w]).filter(Boolean);
+          if(!bwArr.length)return;
+          const agg={s:0,q:0,r:0,rq:0};
+          bwArr.forEach(bw=>{agg.s+=bw.s||0;agg.q+=bw.q||0;agg.r+=bw.r||0;agg.rq+=bw.rq||0;});
+          if(!agg.s&&!agg.q)return;
+          addP({code,name:p.name,s:agg.s,q:agg.q,r:agg.r,rq:agg.rq,item:p.item||'',season:p.season||'',cost:p.cost||0,stock:p.stock||0});
+        });
+      }
     }
   }
   // 월 필터
@@ -3113,6 +3127,7 @@ function s2GetRet(){
         addP({code,name:p.name,s:agg.s,q:agg.q,r:agg.r,rq:agg.rq,item:p.item||'',season:p.season||'',cost:p.cost||0,stock:p.stock||0});
       });
     } else {
+      // 특정 채널: week_top15[w][ch] → 없으면 ps_data.by_wk+by_ch 폴백
       const chMap={};
       targetWks.forEach(w=>{
         s2.selChs.forEach(ch=>{
@@ -3125,7 +3140,21 @@ function s2GetRet(){
           });
         });
       });
-      Object.values(chMap).filter(p=>p.r>0).forEach(addP);
+      if(Object.keys(chMap).length){
+        Object.values(chMap).filter(p=>p.r>0).forEach(addP);
+      }else if(D.ps_data){
+        // week_top15 없으면 ps_data.by_wk + by_ch 필터 폴백
+        Object.entries(D.ps_data).forEach(([code,p])=>{
+          const hasCh=s2.selChs.some(ch=>p.by_ch&&p.by_ch[ch]);
+          if(!hasCh)return;
+          const bwArr=targetWks.map(w=>p.by_wk&&p.by_wk[w]).filter(Boolean);
+          if(!bwArr.length)return;
+          const agg={s:0,q:0,r:0,rq:0};
+          bwArr.forEach(bw=>{agg.s+=bw.s||0;agg.q+=bw.q||0;agg.r+=bw.r||0;agg.rq+=bw.rq||0;});
+          if(!agg.r)return;
+          addP({code,name:p.name,s:agg.s,q:agg.q,r:agg.r,rq:agg.rq,item:p.item||'',season:p.season||'',cost:p.cost||0,stock:p.stock||0});
+        });
+      }
     }
   }
   // 월 필터
