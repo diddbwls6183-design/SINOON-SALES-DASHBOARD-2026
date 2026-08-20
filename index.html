@@ -2880,23 +2880,21 @@ function s2_wkMon(m){
 // 다중 채널 선택 (전채널 = 전체 토글)
 function s2_tCh2(ch){
   if(ch==='전채널'){
-    if(s2.selChs.length===VISIBLE_CHS.length){s2.selChs=['자사몰'];}
-    else{s2.selChs=[...VISIBLE_CHS];}
+    s2.selChs=[...VISIBLE_CHS]; // 전채널: 항상 전체 선택
   } else {
-    const i=s2.selChs.indexOf(ch);
-    if(i>=0){if(s2.selChs.length>1)s2.selChs.splice(i,1);}
-    else s2.selChs.push(ch);
+    // 라디오 방식: 해당 채널만 선택 / 이미 단독이면 전체 복원
+    if(s2.selChs.length===1&&s2.selChs[0]===ch){s2.selChs=[...VISIBLE_CHS];}
+    else{s2.selChs=[ch];}
   }
   s2_updateTabBtns('s2ch-tabs');s2._refreshFilterBar();if(s2.view==='반품순')s2Ret();else s2Top();
 }
 function s2_rCh2(ch){
   if(ch==='전채널'){
-    if(s2.selChs.length===VISIBLE_CHS.length){s2.selChs=['자사몰'];}
-    else{s2.selChs=[...VISIBLE_CHS];}
+    s2.selChs=[...VISIBLE_CHS]; // 전채널: 항상 전체 선택
   } else {
-    const i=s2.selChs.indexOf(ch);
-    if(i>=0){if(s2.selChs.length>1)s2.selChs.splice(i,1);}
-    else s2.selChs.push(ch);
+    // 라디오 방식: 해당 채널만 선택 / 이미 단독이면 전체 복원
+    if(s2.selChs.length===1&&s2.selChs[0]===ch){s2.selChs=[...VISIBLE_CHS];}
+    else{s2.selChs=[ch];}
   }
   s2_updateTabBtns('s2ch-tabs');if(s2.view==='반품순')s2Ret();else s2Top();
 }
