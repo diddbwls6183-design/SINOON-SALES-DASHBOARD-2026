@@ -2520,7 +2520,7 @@ function s1Charts(){
 }
 
 // TAB 2
-let s2={selChs:[...VISIBLE_CHS],_dateOpen:false,_monAllOff:false,topCh:'전채널',retCh:'전채널',gran:'월별',selMon:'',selWk:'',selWkMon:CUR_MON,view:'판매순',topSort:'금액',topSortCol:'s',topSortDir:'desc',retSortCol:'r',retSortDir:'desc',topShow:5,retShow:5,showImg:true,monFilter:[CUR_MON],wkFilter:[],dateFrom:'',dateTo:''};
+let s2={selChs:[...VISIBLE_CHS],_dateOpen:false,_monAllOff:false,topCh:'전채널',retCh:'전채널',gran:'월별',selMon:'',selWk:'',selWkMon:CUR_MON,view:'판매순',topSort:'금액',topSortCol:'s',topSortDir:'desc',retSortCol:'r',retSortDir:'desc',topShow:5,retShow:5,showImg:true,monFilter:[CUR_MON],wkFilter:[],dateFrom:'',dateTo:'',selSeason:'',selCat:''};
 
 // ── 상품분석 통합 컬럼 설정 ──────────────────────────────────
 // 0=품번 1=시즌 2=카테고리 3=상품명 4=판매금액 5=판매수량 6=반품금액 7=객단가 8=반품수량 9=반품률 10=원가 11=잔여재고 12=비고
@@ -2623,7 +2623,7 @@ function s2SetQuickPeriod(type){
     const h2=['7월','8월','9월','10월','11월','12월'].filter(m=>months.includes(m));
     s2.monFilter=h2;s2.wkFilter=[];
   } else if(type==='초기화'){
-    s2.monFilter=[];s2.wkFilter=[];s2._monAllOff=false;
+    s2.monFilter=[];s2.wkFilter=[];s2._monAllOff=false;s2.selSeason='';s2.selCat='';
   }
   s2._refreshFilterBar(); s2Top(); s2Ret();
 }
@@ -2749,6 +2749,30 @@ function s2RenderColCtrl(){
     '<input type="checkbox" '+((chs.length===VISIBLE_CHS.length)?'checked':'')+' onchange="if(this.checked){s2.selChs=[...VISIBLE_CHS];}else{s2.selChs=[];}s2._refreshFilterBar();s2_updateTabBtns();s2Top();s2Ret();" style="accent-color:#2d7a5e;width:13px;height:13px;"> 전체 채널</label>'+
     chItems+
     '</div></div>'+
+    // ── 시즌 드롭다운
+    (()=>{
+      const allSzn=[...new Set(Object.values(PRODUCT_SEASON_MAP))].sort();
+      const sznItems=allSzn.map(s=>'<label style="display:flex;align-items:center;gap:6px;padding:4px 12px;cursor:pointer;font-size:12px;" onmouseenter="this.style.background=\'#f5f5f5\'" onmouseleave="this.style.background=\'transparent\'">'+'<input type="radio" name="s2szn" '+(s2.selSeason===s?'checked':'')+' onchange="s2ToggleSeason(\''+s.replace(/'/g,"\\'")+'\')" style="accent-color:#7c4dbb;width:13px;height:13px;">'+s+'</label>').join('');
+      const sznBtnTxt=s2.selSeason?'시즌 <b style="color:#7c4dbb;">'+s2.selSeason+'</b>':'시즌 전체';
+      return '<div style="position:relative;">'+
+        '<button onclick="s2DdToggle(\'s2szn-dd\',event)" style="'+btnSt+'">🎯 '+sznBtnTxt+' ▾</button>'+
+        '<div id="s2szn-dd" onclick="event.stopPropagation()" style="display:none;position:absolute;top:110%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:150px;max-height:300px;overflow-y:auto;">'+
+        '<label style="display:flex;align-items:center;gap:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-weight:600;border-bottom:1px solid #f0ebe5;margin-bottom:2px;" onmouseenter="this.style.background=\'#f5f5f5\'" onmouseleave="this.style.background=\'transparent\'">'+'<input type="radio" name="s2szn" '+(s2.selSeason===''?'checked':'')+' onchange="s2ToggleSeason(\'\')" style="accent-color:#7c4dbb;width:13px;height:13px;"> 전체</label>'+
+        sznItems+
+        '</div></div>';
+    })()+
+    // ── 카테고리 드롭다운
+    (()=>{
+      const allCats=[...new Set(Object.values(D.ps_data||{}).map(p=>p.item||'').filter(Boolean))].sort();
+      const catItems=allCats.map(c=>'<label style="display:flex;align-items:center;gap:6px;padding:4px 12px;cursor:pointer;font-size:12px;" onmouseenter="this.style.background=\'#f5f5f5\'" onmouseleave="this.style.background=\'transparent\'">'+'<input type="radio" name="s2cat" '+(s2.selCat===c?'checked':'')+' onchange="s2ToggleCat(\''+c.replace(/'/g,"\\'")+'\')" style="accent-color:#1a7a5e;width:13px;height:13px;">'+c+'</label>').join('');
+      const catBtnTxt=s2.selCat?'카테고리 <b style="color:#1a7a5e;">'+s2.selCat+'</b>':'카테고리 전체';
+      return '<div style="position:relative;">'+
+        '<button onclick="s2DdToggle(\'s2cat-dd\',event)" style="'+btnSt+'">📂 '+catBtnTxt+' ▾</button>'+
+        '<div id="s2cat-dd" onclick="event.stopPropagation()" style="display:none;position:absolute;top:110%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:140px;max-height:300px;overflow-y:auto;">'+
+        '<label style="display:flex;align-items:center;gap:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-weight:600;border-bottom:1px solid #f0ebe5;margin-bottom:2px;" onmouseenter="this.style.background=\'#f5f5f5\'" onmouseleave="this.style.background=\'transparent\'">'+'<input type="radio" name="s2cat" '+(s2.selCat===''?'checked':'')+' onchange="s2ToggleCat(\'\')" style="accent-color:#1a7a5e;width:13px;height:13px;"> 전체</label>'+
+        catItems+
+        '</div></div>';
+    })()+
     // ── 우측: 기간 퀵버튼 + 직접선택 + 초기화
     '<div style="margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">'+
     '<button style="'+qBtnSt(isPrevMon)+'" onclick="s2SetQuickPeriod(\'지난달\')">지난달</button>'+
@@ -2773,6 +2797,8 @@ function s2ToggleColPanel(e){
 function s2ColDragEnter(e){e.preventDefault();e.currentTarget.style.background='#e8e0d8';}
 function s2ColDragLeave(e){e.currentTarget.style.background='';}
 function s2ToggleImg(){s2.showImg=!s2.showImg;s2RenderColCtrl();s2Top();}
+function s2ToggleSeason(s){s2.selSeason=s;s2._refreshFilterBar();if(s2.view==='반품순')s2Ret();else s2Top();}
+function s2ToggleCat(c){s2.selCat=c;s2._refreshFilterBar();if(s2.view==='반품순')s2Ret();else s2Top();}
 
 function s2ShowLightbox(src){var lb=document.getElementById('s2-lightbox');var img=document.getElementById('s2-lightbox-img');if(!lb||!img)return;img.src=src;lb.classList.add('open');}
 function s2CloseLightbox(){var lb=document.getElementById('s2-lightbox');if(lb)lb.classList.remove('open');}
@@ -3081,7 +3107,10 @@ function s2GetTop(){
       });
     }
   }
-  return Object.values(map).sort((a,b)=>s2.topSort==='수량'?b.q-a.q:b.s-a.s).slice(0,100);
+  let _res=Object.values(map);
+  if(s2.selSeason)_res=_res.filter(p=>(PRODUCT_SEASON_MAP[p.code]||p.season||'')===s2.selSeason);
+  if(s2.selCat)_res=_res.filter(p=>(p.item||'')===s2.selCat);
+  return _res.sort((a,b)=>s2.topSort==='수량'?b.q-a.q:b.s-a.s).slice(0,100);
 }
 
 function s2GetRetSrc(ch){
@@ -3191,6 +3220,8 @@ function s2GetRet(){
   return Object.values(map)
     .map(p=>({...p,rr:p.s?+(p.r/p.s*100).toFixed(1):0}))
     .filter(p=>(p.r||0)>0)
+    .filter(p=>!s2.selSeason||(PRODUCT_SEASON_MAP[p.code]||p.season||'')===s2.selSeason)
+    .filter(p=>!s2.selCat||(p.item||'')===s2.selCat)
     .sort((a,b)=>b.r-a.r)
     .slice(0,100);
 }
