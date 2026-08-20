@@ -3203,7 +3203,7 @@ function _s2CellMap(p,col){
   const memo=s2Memo[p.code]||'';
   return {
     code:`<td style="text-align:center">${p.code}</td>`,
-    season:(()=>{const co=p.co||(D.ps_data&&D.ps_data[p.code]&&D.ps_data[p.code].co)||'';if(co){const c=co==='신규캐리오버'?'#5B8CF7':'#888';return`<td style="text-align:center;color:${c};font-weight:600">${co}</td>`;}const _seas=p.season||(/^SN2G3/.test(p.code)||['SN2G7AA070AP','SN2G7AA070BK','SN2G7AA070BR','SN2G7AA070IV','SN2G7AA070MG'].includes(p.code)?'26 AUTUMN':'')||'-';return`<td style="text-align:center">${_seas}</td>`;})(),
+    season:`<td style="text-align:center">${p.season||'-'}</td>`,
     item:(()=>{const _it=p.item||(AU26_ITEM_MAP&&(AU26_ITEM_MAP[p.code]||AU26_ITEM_MAP[p.code&&p.code.slice(0,10)]))||'-';return`<td style="text-align:center">${_it}</td>`;})(),
     name:(()=>{
       const nm=p.name||'';
@@ -3698,7 +3698,7 @@ function psRenderResult(){
         <div class="ps-hero-nameline"><span class="ps-hero-name">${_nameMain}</span>${_nameSub}</div>
         <div class="ps-hero-code">${cardCode}</div>
         <div class="ps-hero-chips">
-          ${(cardProd.season||p.season||(/^SN2G3/.test(cardProd.code)||['SN2G7AA070AP','SN2G7AA070BK','SN2G7AA070BR','SN2G7AA070IV','SN2G7AA070MG'].includes(cardProd.code)?'26 AUTUMN':''))?`<span class="ps-chip" style="background:#f0ebe5;color:#6b4f3a;font-weight:600;">${cardProd.season||p.season||(/^SN2G3/.test(cardProd.code)||['SN2G7AA070AP','SN2G7AA070BK','SN2G7AA070BR','SN2G7AA070IV','SN2G7AA070MG'].includes(cardProd.code)?'26 AUTUMN':'')}</span>`:''}
+          ${p.season?`<span class="ps-chip" style="background:#f0ebe5;color:#6b4f3a;font-weight:600;">${p.season}</span>`:''}
           ${(cardProd.item||p.item)?`<span class="ps-chip">${cardProd.item||p.item}</span>`:''}
           ${(cardProd.cost||p.cost)?`<span class="ps-chip">원가 ${(cardProd.cost||p.cost||0).toLocaleString()}원</span>`:''}
           ${PRICE_MAP[selCode||p.code]?`<span class="ps-chip">판매가 ${PRICE_MAP[selCode||p.code].toLocaleString()}원</span>`:''}
@@ -3829,7 +3829,7 @@ function _psColorBreakdown(){
       onmouseout="this.style.background='${isActive?'#f0ebe5':''}'">
       <td style="text-align:center;padding:6px 8px;user-select:none;">${imgEl}</td>
       <td style="padding:6px 8px;font-weight:${isActive?'700':'600'};white-space:nowrap;text-align:center;user-select:text;">${colorName}${isActive?'<span style="margin-left:5px;font-size:10px;color:var(--accent);">●</span>':''}</td>
-      <td style="padding:6px 8px;font-size:11px;color:#6b4f3a;text-align:center;white-space:nowrap;">${prod.season||(/^SN2G3/.test(code)||['SN2G7AA070AP','SN2G7AA070BK','SN2G7AA070BR','SN2G7AA070IV','SN2G7AA070MG'].includes(code)?'26 AUTUMN':'')||'-'}</td>
+      <td style="padding:6px 8px;font-size:11px;color:#6b4f3a;text-align:center;white-space:nowrap;">${prod.season||'-'}</td>
       <td style="padding:6px 8px;font-size:11px;color:var(--text);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;user-select:text;">${prod.name||'-'}</td>
       <td style="padding:6px 8px;font-size:10px;color:var(--sub);white-space:nowrap;text-align:center;user-select:text;cursor:text;">${code}</td>
       <td style="padding:6px 12px;text-align:center;white-space:nowrap;user-select:text;">${netQ.toLocaleString()}개<span style="color:var(--sub);font-size:10px;margin-left:4px;">↩${kpi.rq.toLocaleString()}</span></td>
