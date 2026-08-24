@@ -2653,13 +2653,13 @@ function s2DdToggle(id,e){
   const el=document.getElementById(id);if(!el)return;
   const isOpen=el.style.display!=='none';
   // 모든 s2 필터 드롭다운 닫기
-  ['s2mon-dd','s2ch-dd'].forEach(i=>{const d=document.getElementById(i);if(d)d.style.display='none';});
+  ['s2mon-dd','s2ch-dd','s2szn-dd','s2cat-dd'].forEach(i=>{const d=document.getElementById(i);if(d)d.style.display='none';});
   if(!isOpen){el.style.display='block';_s2FilterDdOpen=id;}
   else _s2FilterDdOpen=null;
 }
 document.addEventListener('click',function(e){
   if(!e.target.closest('#s2col-ctrl'))
-    ['s2mon-dd','s2ch-dd'].forEach(i=>{const d=document.getElementById(i);if(d)d.style.display='none';});
+    ['s2mon-dd','s2ch-dd','s2szn-dd','s2cat-dd'].forEach(i=>{const d=document.getElementById(i);if(d)d.style.display='none';});
 });
 
 s2._refreshFilterBar=function(){
@@ -2797,8 +2797,8 @@ function s2ToggleColPanel(e){
 function s2ColDragEnter(e){e.preventDefault();e.currentTarget.style.background='#e8e0d8';}
 function s2ColDragLeave(e){e.currentTarget.style.background='';}
 function s2ToggleImg(){s2.showImg=!s2.showImg;s2RenderColCtrl();s2Top();}
-function s2ToggleSeason(s){s2.selSeason=s;s2._refreshFilterBar();if(s2.view==='반품순')s2Ret();else s2Top();}
-function s2ToggleCat(c){s2.selCat=c;s2._refreshFilterBar();if(s2.view==='반품순')s2Ret();else s2Top();}
+function s2ToggleSeason(s){s2.selSeason=s;_s2FilterDdOpen=null;['s2szn-dd'].forEach(i=>{const d=document.getElementById(i);if(d)d.style.display='none';});s2._refreshFilterBar();if(s2.view==='반품순')s2Ret();else s2Top();}
+function s2ToggleCat(c){s2.selCat=c;_s2FilterDdOpen=null;['s2cat-dd'].forEach(i=>{const d=document.getElementById(i);if(d)d.style.display='none';});s2._refreshFilterBar();if(s2.view==='반품순')s2Ret();else s2Top();}
 
 function s2ShowLightbox(src){var lb=document.getElementById('s2-lightbox');var img=document.getElementById('s2-lightbox-img');if(!lb||!img)return;img.src=src;lb.classList.add('open');}
 function s2CloseLightbox(){var lb=document.getElementById('s2-lightbox');if(lb)lb.classList.remove('open');}
