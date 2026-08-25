@@ -539,7 +539,7 @@ const CUST_DATA=[
   {w:"5월",n:1499,r:561},
   {w:"6월",n:157,r:185},
   {w:"7월",n:515,r:430},
-  {w:"8월",n:162,r:40}
+  {w:"8월",n:227,r:73}
 ];
 var CUST_EXTRA=[];
 function loadCustData(){return[...CUST_DATA];}
@@ -552,7 +552,7 @@ const CONV_DATA=[
   {w:"5월",v:172776,b:2023,o:2205,r:1.17},
   {w:"6월",v:74533,b:326,o:357,r:0.44},
   {w:"7월",v:124584,b:934,o:956,r:0.75},
-  {w:"8월",v:52773,b:201,o:207,r:0.39}
+  {w:"8월",v:77829,b:298,o:309,r:0.38}
 ];
 function loadConvData(){return[...CONV_DATA];}
 var CONV_EXTRA=[];
@@ -4262,14 +4262,14 @@ var FUNNEL_DATA={
       {stage:'결제 완료',s:911,cr:0.8,churn:0.0,churn_n:911,cr_chg:0.2}
     ]},
   '8월':{
-    period:'2026-08-01 ~ 2026-08-19',
+    period:'2026-08-01 ~ 2026-08-25',
     steps:[
-      {stage:'방문',s:52606,cr:100.0,churn:41.6,churn_n:21858,cr_chg:null},
-      {stage:'상세페이지 조회',s:30748,cr:58.4,churn:96.8,churn_n:29753,cr_chg:6.0},
-      {stage:'장바구니 추가',s:995,cr:1.9,churn:68.3,churn_n:680,cr_chg:null},
-      {stage:'주문서 작성',s:315,cr:0.6,churn:34.9,churn_n:110,cr_chg:-0.6},
-      {stage:'주문 완료',s:205,cr:0.4,churn:0.5,churn_n:1,cr_chg:null},
-      {stage:'결제 완료',s:204,cr:0.4,churn:0.0,churn_n:204,cr_chg:-0.4}
+      {stage:'방문',s:77604,cr:100.0,churn:42.2,churn_n:32759,cr_chg:null},
+      {stage:'상세페이지 조회',s:44845,cr:57.8,churn:96.9,churn_n:43456,cr_chg:6.3},
+      {stage:'장바구니 추가',s:1389,cr:1.8,churn:68.2,churn_n:947,cr_chg:null},
+      {stage:'주문서 작성',s:442,cr:0.6,churn:31.0,churn_n:137,cr_chg:-0.5},
+      {stage:'주문 완료',s:305,cr:0.4,churn:0.3,churn_n:1,cr_chg:null},
+      {stage:'결제 완료',s:304,cr:0.4,churn:0.0,churn_n:304,cr_chg:-0.4}
     ]
   }
 };
