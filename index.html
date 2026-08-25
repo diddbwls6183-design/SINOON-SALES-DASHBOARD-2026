@@ -2810,6 +2810,10 @@ function s2GetCurWeek(){
     const dates=(D.week_to_dates||{})[weeks[i]]||[];
     if(dates.length&&dates[0]<=today)return weeks[i];
   }
+  // 폴백: week_to_dates에 현재 월 데이터 없는 경우 → 현재 월의 마지막 주차 반환
+  const curM=(new Date().getMonth()+1)+'월';
+  const curMonWks=weeks.filter(w=>w.startsWith(curM));
+  if(curMonWks.length)return curMonWks[curMonWks.length-1];
   return weeks[weeks.length-1]||'';
 }
 function s2PeriodLabel(){
