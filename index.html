@@ -2650,7 +2650,7 @@ function s2SetQuickPeriod(type){
     const h2=['7월','8월','9월','10월','11월','12월'].filter(m=>months.includes(m));
     s2.monFilter=h2;s2.wkFilter=[];
   } else if(type==='초기화'){
-    s2.monFilter=[];s2.wkFilter=[];s2._monAllOff=false;s2.selSeason='';s2.selCat='';
+    s2.monFilter=[];s2.wkFilter=[];s2._monAllOff=false;s2.selSeasons=[];s2.selCats=[];
   }
   s2._refreshFilterBar(); s2Top(); s2Ret();
 }
@@ -2779,24 +2779,24 @@ function s2RenderColCtrl(){
     // ── 시즌 드롭다운
     (()=>{
       const allSzn=[...new Set(Object.values(PRODUCT_SEASON_MAP))].sort();
-      const sznItems=allSzn.map(s=>'<label style="display:flex;align-items:center;gap:6px;padding:4px 12px;cursor:pointer;font-size:12px;" onmouseenter="this.style.background=\'#f5f5f5\'" onmouseleave="this.style.background=\'transparent\'">'+'<input type="radio" name="s2szn" '+(s2.selSeason===s?'checked':'')+' onchange="s2ToggleSeason(\''+s.replace(/'/g,"\\'")+'\')" style="accent-color:#7c4dbb;width:13px;height:13px;">'+s+'</label>').join('');
-      const sznBtnTxt=s2.selSeason?'시즌 <b style="color:#7c4dbb;">'+s2.selSeason+'</b>':'시즌 전체';
+      const sznItems=allSzn.map(s=>'<label style="display:flex;align-items:center;gap:6px;padding:4px 12px;cursor:pointer;font-size:12px;" onmouseenter="this.style.background=\'#f5f5f5\'" onmouseleave="this.style.background=\'transparent\'">'+'<input type="checkbox" '+((s2.selSeasons||[]).includes(s)?'checked':'')+' onchange="s2ToggleSeason(\''+s.replace(/'/g,"\\'")+'\')" style="accent-color:#7c4dbb;width:13px;height:13px;">'+s+'</label>').join('');
+      const sznBtnTxt=(s2.selSeasons&&s2.selSeasons.length)?'시즌 <b style="color:#7c4dbb;">('+s2.selSeasons.length+'개)</b>':'시즌 전체';
       return '<div style="position:relative;">'+
         '<button onclick="s2DdToggle(\'s2szn-dd\',event)" style="'+btnSt+'">🎯 '+sznBtnTxt+' ▾</button>'+
         '<div id="s2szn-dd" onclick="event.stopPropagation()" style="display:none;position:absolute;top:110%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:150px;max-height:300px;overflow-y:auto;">'+
-        '<label style="display:flex;align-items:center;gap:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-weight:600;border-bottom:1px solid #f0ebe5;margin-bottom:2px;" onmouseenter="this.style.background=\'#f5f5f5\'" onmouseleave="this.style.background=\'transparent\'">'+'<input type="radio" name="s2szn" '+(s2.selSeason===''?'checked':'')+' onchange="s2ToggleSeason(\'\')" style="accent-color:#7c4dbb;width:13px;height:13px;"> 전체</label>'+
+        '<label style="display:flex;align-items:center;gap:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-weight:600;border-bottom:1px solid #f0ebe5;margin-bottom:2px;" onmouseenter="this.style.background=\'#f5f5f5\'" onmouseleave="this.style.background=\'transparent\'">'+'<input type="checkbox" '+(!(s2.selSeasons&&s2.selSeasons.length)?'checked':'')+' onchange="s2.selSeasons=[];s2._refreshFilterBar();if(s2.view===\'반품순\')s2Ret();else s2Top();" style="accent-color:#7c4dbb;width:13px;height:13px;"> 전체</label>'+
         sznItems+
         '</div></div>';
     })()+
     // ── 카테고리 드롭다운
     (()=>{
       const allCats=[...new Set(Object.values(D.ps_data||{}).map(p=>p.item||'').filter(Boolean))].sort();
-      const catItems=allCats.map(c=>'<label style="display:flex;align-items:center;gap:6px;padding:4px 12px;cursor:pointer;font-size:12px;" onmouseenter="this.style.background=\'#f5f5f5\'" onmouseleave="this.style.background=\'transparent\'">'+'<input type="radio" name="s2cat" '+(s2.selCat===c?'checked':'')+' onchange="s2ToggleCat(\''+c.replace(/'/g,"\\'")+'\')" style="accent-color:#1a7a5e;width:13px;height:13px;">'+c+'</label>').join('');
-      const catBtnTxt=s2.selCat?'카테고리 <b style="color:#1a7a5e;">'+s2.selCat+'</b>':'카테고리 전체';
+      const catItems=allCats.map(c=>'<label style="display:flex;align-items:center;gap:6px;padding:4px 12px;cursor:pointer;font-size:12px;" onmouseenter="this.style.background=\'#f5f5f5\'" onmouseleave="this.style.background=\'transparent\'">'+'<input type="checkbox" '+((s2.selCats||[]).includes(c)?'checked':'')+' onchange="s2ToggleCat(\''+c.replace(/'/g,"\\'")+'\')" style="accent-color:#1a7a5e;width:13px;height:13px;">'+c+'</label>').join('');
+      const catBtnTxt=(s2.selCats&&s2.selCats.length)?'카테고리 <b style="color:#1a7a5e;">('+s2.selCats.length+'개)</b>':'카테고리 전체';
       return '<div style="position:relative;">'+
         '<button onclick="s2DdToggle(\'s2cat-dd\',event)" style="'+btnSt+'">📂 '+catBtnTxt+' ▾</button>'+
         '<div id="s2cat-dd" onclick="event.stopPropagation()" style="display:none;position:absolute;top:110%;left:0;z-index:200;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);padding:6px 0;min-width:140px;max-height:300px;overflow-y:auto;">'+
-        '<label style="display:flex;align-items:center;gap:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-weight:600;border-bottom:1px solid #f0ebe5;margin-bottom:2px;" onmouseenter="this.style.background=\'#f5f5f5\'" onmouseleave="this.style.background=\'transparent\'">'+'<input type="radio" name="s2cat" '+(s2.selCat===''?'checked':'')+' onchange="s2ToggleCat(\'\')" style="accent-color:#1a7a5e;width:13px;height:13px;"> 전체</label>'+
+        '<label style="display:flex;align-items:center;gap:6px;padding:4px 12px;cursor:pointer;font-size:12px;font-weight:600;border-bottom:1px solid #f0ebe5;margin-bottom:2px;" onmouseenter="this.style.background=\'#f5f5f5\'" onmouseleave="this.style.background=\'transparent\'">'+'<input type="checkbox" '+(!(s2.selCats&&s2.selCats.length)?'checked':'')+' onchange="s2.selCats=[];s2._refreshFilterBar();if(s2.view===\'반품순\')s2Ret();else s2Top();" style="accent-color:#1a7a5e;width:13px;height:13px;"> 전체</label>'+
         catItems+
         '</div></div>';
     })()+
@@ -2824,8 +2824,8 @@ function s2ToggleColPanel(e){
 function s2ColDragEnter(e){e.preventDefault();e.currentTarget.style.background='#e8e0d8';}
 function s2ColDragLeave(e){e.currentTarget.style.background='';}
 function s2ToggleImg(){s2.showImg=!s2.showImg;s2RenderColCtrl();s2Top();}
-function s2ToggleSeason(s){s2.selSeason=s;_s2FilterDdOpen=null;['s2szn-dd'].forEach(i=>{const d=document.getElementById(i);if(d)d.style.display='none';});s2._refreshFilterBar();if(s2.view==='반품순')s2Ret();else s2Top();}
-function s2ToggleCat(c){s2.selCat=c;_s2FilterDdOpen=null;['s2cat-dd'].forEach(i=>{const d=document.getElementById(i);if(d)d.style.display='none';});s2._refreshFilterBar();if(s2.view==='반품순')s2Ret();else s2Top();}
+function s2ToggleSeason(s){if(!s2.selSeasons)s2.selSeasons=[];const idx=s2.selSeasons.indexOf(s);if(idx>=0)s2.selSeasons.splice(idx,1);else s2.selSeasons.push(s);s2._refreshFilterBar();if(s2.view==='반품순')s2Ret();else s2Top();}
+function s2ToggleCat(c){if(!s2.selCats)s2.selCats=[];const idx=s2.selCats.indexOf(c);if(idx>=0)s2.selCats.splice(idx,1);else s2.selCats.push(c);s2._refreshFilterBar();if(s2.view==='반품순')s2Ret();else s2Top();}
 
 function s2ShowLightbox(src){var lb=document.getElementById('s2-lightbox');var img=document.getElementById('s2-lightbox-img');if(!lb||!img)return;img.src=src;lb.classList.add('open');}
 function s2CloseLightbox(){var lb=document.getElementById('s2-lightbox');if(lb)lb.classList.remove('open');}
@@ -3134,8 +3134,8 @@ function s2GetTop(){
     }
   }
   let _res=Object.values(map);
-  if(s2.selSeason)_res=_res.filter(p=>(PRODUCT_SEASON_MAP[p.code]||p.season||'')===s2.selSeason);
-  if(s2.selCat)_res=_res.filter(p=>(p.item||'')===s2.selCat);
+  if(s2.selSeasons&&s2.selSeasons.length)_res=_res.filter(p=>s2.selSeasons.includes(PRODUCT_SEASON_MAP[p.code]||p.season||''));
+  if(s2.selCats&&s2.selCats.length)_res=_res.filter(p=>s2.selCats.includes(p.item||''));
   return _res.sort((a,b)=>s2.topSort==='수량'?b.q-a.q:b.s-a.s).slice(0,100);
 }
 
@@ -3241,8 +3241,8 @@ function s2GetRet(){
   return Object.values(map)
     .map(p=>({...p,rr:p.s?+(p.r/p.s*100).toFixed(1):0}))
     .filter(p=>(p.r||0)>0)
-    .filter(p=>!s2.selSeason||(PRODUCT_SEASON_MAP[p.code]||p.season||'')===s2.selSeason)
-    .filter(p=>!s2.selCat||(p.item||'')===s2.selCat)
+    .filter(p=>!s2.selSeasons||!s2.selSeasons.length||s2.selSeasons.includes(PRODUCT_SEASON_MAP[p.code]||p.season||''))
+    .filter(p=>!s2.selCats||!s2.selCats.length||s2.selCats.includes(p.item||''))
     .sort((a,b)=>b.r-a.r)
     .slice(0,100);
 }
