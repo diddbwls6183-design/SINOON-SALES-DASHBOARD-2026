@@ -445,11 +445,9 @@ function _jbApplyData(d){
   JB_KEYS.forEach(function(k){if(d[k])localStorage.setItem(k,d[k]);});
   // 열너비·행높이 메모리 변수 갱신 후 테이블 즉시 반영
   try{
-    var cw=localStorage.getItem('sinoon_s4_col_w');
-    var rh=localStorage.getItem('sinoon_s4_row_h');
-    if(cw)s4ColWidths=JSON.parse(cw);
-    if(rh)s4RowHeights=JSON.parse(rh);
-    s4ApplyResizeSizes();
+    localStorage.removeItem('sinoon_s4_col_w');
+    localStorage.removeItem('sinoon_s4_row_h');
+    s4ColWidths={};s4RowHeights={};
   }catch(e){}
   try{s4LoadFullPromo();}catch(e){}
   try{mktLoad();}catch(e){}
@@ -486,10 +484,9 @@ function jsonbinLoad(callback){
       _fbLastHash=_fbGetHash();
       // 열너비·행높이 메모리 변수 갱신
       try{
-        var cw=localStorage.getItem('sinoon_s4_col_w');
-        var rh=localStorage.getItem('sinoon_s4_row_h');
-        if(cw)s4ColWidths=JSON.parse(cw);
-        if(rh)s4RowHeights=JSON.parse(rh);
+        localStorage.removeItem('sinoon_s4_col_w');
+        localStorage.removeItem('sinoon_s4_row_h');
+        s4ColWidths={};s4RowHeights={};
       }catch(e){}
     }
     if(callback)callback();
