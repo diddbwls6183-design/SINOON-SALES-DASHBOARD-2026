@@ -77,7 +77,7 @@ tbody tr:last-child td{}
 .tbl-wrap{-webkit-overflow-scrolling:touch;}
 body{-webkit-text-size-adjust:100%;}
 
-.s0-tbl{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;}
+.s0-tbl{width:100%;border-collapse:collapse;font-size:13px;table-layout:auto;}
 .s0-tbl thead tr{background:#f5f2ef;border-bottom:2px solid #d4c9bc;}
 .s0-tbl th{padding:10px 0;font-weight:600;color:#111;font-size:14px;white-space:nowrap;text-align:center;width:16.66%;}
 .s0-tbl th:nth-child(1){text-align:left;padding-left:16px;}
@@ -1368,7 +1368,7 @@ function s0Promo(){
 
     rows+=''
       +'<div style="border:1px solid #e8e4df;border-radius:10px;margin-bottom:10px;background:#fff;overflow:hidden;">'
-      +'<table style="width:100%;border-collapse:collapse;table-layout:fixed;">'
+      +'<table style="width:100%;border-collapse:collapse;table-layout:auto;">'
       +'<colgroup><col style="width:57%"><col style="width:43%"></colgroup>'
       +'<tbody>'
 
@@ -5555,7 +5555,7 @@ function s4Render(){
         <span style="font-size:15px;font-weight:700;color:#111">${dn(ch)}</span>
         <span style="font-size:13px;color:#555">${items.length}개 프로모션</span>
       </div>
-      <div class="tbl-wrap" style="overflow-x:auto;"><table class="s4-resizable" style="width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;" id="s4tbl-${ch}">
+      <div class="tbl-wrap" style="overflow-x:auto;"><table class="s4-resizable" style="width:100%;border-collapse:collapse;font-size:12px;table-layout:auto;" id="s4tbl-${ch}">
         
         <thead><tr style="background:#000000;border-bottom:2px solid #000000;">
           ${s4Unlocked?'<th style="padding:9px 8px;text-align:center;font-weight:700;color:#ffffff;background:#000000;width:36px;min-width:36px;">↕</th>':''}
