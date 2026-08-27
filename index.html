@@ -312,11 +312,19 @@ body{-webkit-text-size-adjust:100%;}
 .s4-cell-wrap *,
 .s4-cell-wrap div,
 .s4-cell-wrap span,
-.s4-cell-wrap p {
+.s4-cell-wrap p,
+.s4-cell-wrap b,
+.s4-cell-wrap font {
   text-align: center !important;
 }
 table.s4-resizable td {
   vertical-align: middle !important;
+  text-align: center !important;
+}
+#s4-table [contenteditable] {
+  text-align: center !important;
+}
+#s4-table [contenteditable] * {
   text-align: center !important;
 }
 </style>
@@ -5559,15 +5567,15 @@ function s4Render(){
         
         <thead><tr style="background:#000000;border-bottom:2px solid #000000;">
           ${s4Unlocked?'<th style="padding:9px 8px;text-align:center;font-weight:700;color:#ffffff;background:#000000;width:36px;min-width:36px;">↕</th>':''}
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;width:12%;min-width:120px;">프로모션<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;width:8%;min-width:85px;">목표 매출<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;width:7%;min-width:75px;">기간<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;width:6%;min-width:65px;">판매수량<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;width:8%;min-width:85px;">판매금액<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;width:5%;min-width:58px;">달성률<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;width:18%;min-width:150px;">스킴<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;width:18%;min-width:150px;">광고/운영<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
-          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;width:18%;min-width:150px;">리뷰<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;min-width:120px;">프로모션<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;min-width:85px;">목표 매출<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;min-width:75px;">기간<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;min-width:65px;">판매수량<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;min-width:85px;">판매금액<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;min-width:58px;">달성률<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;min-width:150px;">스킴<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;min-width:150px;">광고/운영<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
+          <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;min-width:150px;">리뷰<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
         </tr></thead>
         <tbody>`;
     items.forEach(p=>{
