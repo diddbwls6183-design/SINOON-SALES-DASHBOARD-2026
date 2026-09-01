@@ -3276,13 +3276,28 @@ function s2GetTop(){
     else{if(!map[code].item&&_item)map[code].item=_item;if(!map[code].season&&_season)map[code].season=_season;if(!map[code].co&&_co)map[code].co=_co;}
     map[code].s+=p.s||0;map[code].r+=p.r||0;map[code].q+=p.q||0;map[code].rq+=p.rq||0;
   }
-  // 전체(연간): 채널별 month_top15 합산
+  // 전체(연간): ps_data 직접 사용 (month_top15 TOP15 제한 우회 → 정확도 향상)
   if(!hasFilter){
-    s2.selChs.forEach(ch=>{
-      (D.months||[]).forEach(m=>{
-        ((D.month_top15&&D.month_top15[m]&&D.month_top15[m][ch])||[]).forEach(addP);
+    const isAllCh=VISIBLE_CHS.every(ch=>s2.selChs.includes(ch));
+    if(D.ps_data){
+      Object.entries(D.ps_data).forEach(([code,p])=>{
+        if(isAllCh){
+          if(!p.q&&!p.s)return;
+          addP({code,name:p.name,s:p.s||0,q:p.q||0,r:p.r||0,rq:p.rq||0,item:p.item||'',season:p.season||'',cost:p.cost||0,stock:p.stock||0});
+        } else {
+          let ts=0,tq=0,tr=0,trq=0;
+          s2.selChs.forEach(ch=>{const bc=p.by_ch&&p.by_ch[ch];if(bc){ts+=bc.s||0;tq+=bc.q||0;tr+=bc.r||0;trq+=bc.rq||0;}});
+          if(ts||tq)addP({code,name:p.name,s:ts,q:tq,r:tr,rq:trq,item:p.item||'',season:p.season||'',cost:p.cost||0,stock:p.stock||0});
+        }
       });
-    });
+    } else {
+      // ps_data 없으면 month_top15 폴백
+      s2.selChs.forEach(ch=>{
+        (D.months||[]).forEach(m=>{
+          ((D.month_top15&&D.month_top15[m]&&D.month_top15[m][ch])||[]).forEach(addP);
+        });
+      });
+    }
   }
   // 주차 필터
   if(targetWks){
