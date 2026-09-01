@@ -5778,7 +5778,7 @@ function s4Render(){
       <div class="tbl-wrap" style="overflow-x:auto;"><table class="s4-resizable" style="width:100%;border-collapse:collapse;font-size:12px;table-layout:auto;" id="s4tbl-${ch}">
         
         <thead><tr style="background:#000000;border-bottom:2px solid #000000;">
-          ${s4Unlocked?'<th style="padding:9px 8px;text-align:center;font-weight:700;color:#ffffff;background:#000000;width:36px;min-width:36px;">↕</th>':''}
+          
           <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;min-width:120px;">프로모션<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
           <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;min-width:85px;">목표 매출<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
           <th style="padding:9px 12px;text-align:center;font-weight:700;color:#ffffff;background:#000000;position:relative;overflow:visible;min-width:75px;">기간<span class="s4-col-resize" onmousedown="s4ColResizeStart(event,this)"></span></th>
@@ -5801,7 +5801,7 @@ function s4Render(){
       const ce=s4Unlocked?'true':'false';
       const ceCursor=s4Unlocked?'text':'default';
       html+=`<tr style="border-bottom:1px solid #ede8e1;" onmouseover="this.style.background='#faf8f5'" onmouseout="this.style.background=''" >
-        ${s4Unlocked?`<td style="${tdStyle}width:36px;min-width:36px;text-align:center;vertical-align:middle;"><div style="display:flex;flex-direction:column;gap:2px;align-items:center;"><button onmousedown="event.preventDefault()" onclick="s4MoveRow(${gi},-1)" style="padding:2px 5px;background:#2d2926;color:#fff;border:none;border-radius:3px;font-size:10px;cursor:pointer;line-height:1;">▲</button><button onmousedown="event.preventDefault()" onclick="s4MoveRow(${gi},1)" style="padding:2px 5px;background:#2d2926;color:#fff;border:none;border-radius:3px;font-size:10px;cursor:pointer;line-height:1;">▼</button></div></td>`:''}
+        
         <td style="${tdStyle}${p.highlight?'background:#fffbea;':''}"><div class="s4-cell-wrap" style="${innerBaseStyle}font-weight:600;color:#111;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="name" onblur="s4SaveCell(this)">${p.name}</div></td>
         <td style="${tdStyle}background:#ffffff;"><div class="s4-cell-wrap" style="${innerBaseStyle}cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="tgt_raw" onfocus="s4NumFocus(this)" onblur="s4SaveCell(this)">${p.tgt?p.tgt.toLocaleString():'—'}</div></td>
         <td style="${tdStyle}background:#ffffff;"><div class="s4-cell-wrap" style="${innerBaseStyle}font-size:11px;color:#111;cursor:${ceCursor};" contenteditable="${ce}" data-idx="${gi}" data-key="period" onblur="s4SaveCell(this)">${p.period||''}</div></td>
