@@ -6638,6 +6638,28 @@ function renderTabMkt(){
     }).join('')
     +'<td style="'+spendTdS+'background:#2d2926;">'+(spendGrand?spendGrand.toLocaleString('ko-KR'):'')+'</td></tr>';
 
+  // 실매출 행 (D.monthly26 자동 연동)
+  var realTdS='padding:7px 8px;font-size:12px;border:1px solid #2d2926;text-align:center;font-weight:600;background:#1c3a2a;white-space:nowrap;color:#a5d6a7;vertical-align:middle;';
+  var realSalesVals=MKT_MONS.map(function(m){
+    if(!D.monthly26||!D.monthly26[m])return 0;
+    return VISIBLE_CHS.reduce(function(a,ch){var d=D.monthly26[m][ch]||{};return a+((d.s||0)-(d.r||0));},0);
+  });
+  var realSalesGrand=realSalesVals.reduce(function(a,v){return a+v;},0);
+  bRows+='<tr><td style="padding:7px 10px;font-size:12px;border:1px solid #2d2926;font-weight:700;background:#1c3a2a;white-space:nowrap;color:#a5d6a7;vertical-align:middle;text-align:center;">실매출</td>'
+    +realSalesVals.map(function(v){return '<td style="'+realTdS+'">'+(v?v.toLocaleString('ko-KR'):'')+'</td>';}).join('')
+    +'<td style="'+realTdS+'">'+(realSalesGrand?realSalesGrand.toLocaleString('ko-KR'):'')+'</td></tr>';
+
+  // 실매출 대비 광고사용비율 행
+  var adRatioTdS='padding:7px 8px;font-size:12px;border:1px solid #2d2926;text-align:center;font-weight:700;background:#1c3a2a;white-space:nowrap;color:#ffcc80;vertical-align:middle;';
+  bRows+='<tr><td style="padding:7px 10px;font-size:12px;border:1px solid #2d2926;font-weight:700;background:#1c3a2a;white-space:nowrap;color:#ffcc80;vertical-align:middle;text-align:center;">실매출 대비 광고비율</td>'
+    +spendMonVals.map(function(v,i){
+      var real=realSalesVals[i]||0;
+      var ratio=real?(v/real*100).toFixed(1):'';
+      var color=ratio&&parseFloat(ratio)>15?'#ff8a65':ratio&&parseFloat(ratio)>10?'#ffcc80':'#a5d6a7';
+      return '<td style="'+adRatioTdS+'color:'+color+';">'+(ratio?ratio+'%':'')+'</td>';
+    }).join('')
+    +'<td style="'+adRatioTdS+'color:'+(realSalesGrand&&spendGrand?(parseFloat((spendGrand/realSalesGrand*100).toFixed(1))>15?'#ff8a65':parseFloat((spendGrand/realSalesGrand*100).toFixed(1))>10?'#ffcc80':'#a5d6a7'):'#ffcc80')+'">'+(realSalesGrand?(spendGrand/realSalesGrand*100).toFixed(1)+'%':'')+'</td></tr>';
+
   var tgtThS='padding:8px 10px;background:#2d2926;font-size:12px;font-weight:600;color:#90caf9;border:1px solid #2d2926;text-align:center;white-space:nowrap;vertical-align:middle;';
   var thead='<thead>'
     +'<tr><th style="'+thS+'text-align:center;min-width:145px;background:#2d2926;color:#90caf9;">온라인 월 매출목표</th>'
