@@ -6642,13 +6642,13 @@ function renderTabMkt(){
   bRows+='<tr><td colspan="'+(MKT_MONS.length+2)+'" style="height:10px;background:#f0ebe5;border:none;padding:0;"></td></tr>';
 
   // 실매출 행 (D.monthly26 자동 연동)
-  var realTdS='padding:7px 8px;font-size:12px;border:1px solid #2d2926;text-align:center;font-weight:600;background:#2d2926;white-space:nowrap;color:#a5d6a7;vertical-align:middle;';
+  var realTdS='padding:7px 8px;font-size:12px;border:1px solid #2d2926;text-align:center;font-weight:700;background:#2d2926;white-space:nowrap;color:#ffffff;vertical-align:middle;';
   var realSalesVals=MKT_MONS.map(function(m){
     if(!D.monthly26||!D.monthly26[m])return 0;
     return (D.channels||VISIBLE_CHS).reduce(function(a,ch){var d=D.monthly26[m][ch]||{};return a+((d.s||0)-(d.r||0));},0);
   });
   var realSalesGrand=realSalesVals.reduce(function(a,v){return a+v;},0);
-  bRows+='<tr><td style="padding:7px 10px;font-size:12px;border:1px solid #2d2926;font-weight:700;background:#2d2926;white-space:nowrap;color:#a5d6a7;vertical-align:middle;text-align:center;">실매출</td>'
+  bRows+='<tr><td style="padding:7px 10px;font-size:12px;border:1px solid #2d2926;font-weight:700;background:#2d2926;white-space:nowrap;color:#ffffff;vertical-align:middle;text-align:center;">실매출</td>'
     +realSalesVals.map(function(v){return '<td style="'+realTdS+'">'+(v?v.toLocaleString('ko-KR'):'')+'</td>';}).join('')
     +'<td style="'+realTdS+'">'+(realSalesGrand?realSalesGrand.toLocaleString('ko-KR'):'')+'</td></tr>';
 
