@@ -7021,6 +7021,7 @@ const MT_TOP20_DB = {
   ]
 };
 var MT_TOP20_MONTH_MAP = {'8월':'20260821-20260827'};
+var MT_TOP20_IMGS = 'mt_top20.pdf';
 const MT_MEETINGS_DEFAULT = {'20260831': `SINOON × MANTOVA
 만토바 주간회의록
 회의명 만토바(MANTOVA) 주간회의
@@ -7197,21 +7198,16 @@ function mtRenderTop20(){
   var el=document.getElementById('mt-top20-content');if(!el)return;
   var sm=Object.keys(MANTOVA.months).filter(function(m){return MT_STATE.selected[m]&&MT_STATE.selected[m].size>0;}),k=null;
   for(var i=sm.length-1;i>=0;i--){if(MT_TOP20_MONTH_MAP[sm[i]]){k=MT_TOP20_MONTH_MAP[sm[i]];break;}}
-  var data=k?MT_TOP20_DB[k]:null;
-  if(!data){el.innerHTML='<div style="text-align:center;padding:40px;color:#aaa;"><div style="font-size:32px;margin-bottom:10px;">📄</div><div style="font-size:14px;font-weight:600;">해당 기간의 BEST 20 데이터가 없습니다.</div><div style="font-size:12px;margin-top:6px;color:#bbb;">PDF 파일 공유 시 추가하겠습니다.</div></div>';return;}
+  if(!k||!MT_TOP20_IMGS){el.innerHTML='<div style="text-align:center;padding:40px;color:#aaa;"><div style="font-size:14px;font-weight:600;">해당 기간의 BEST 20 데이터가 없습니다.</div></div>';return;}
   var lbl=k.replace(/(\d{4})(\d{2})(\d{2})-(\d{4})(\d{2})(\d{2})/,'$1.$2.$3-$5.$6');
-  var CC2={TOPS:'#ff6900',BOTTOMS:'#1565c0',ACC:'#7b1fa2',HOMEWEAR:'#388e3c'};
   var html='<div style="font-size:12px;color:#888;margin-bottom:12px;">DATA '+lbl+'</div>';
-  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;">';
-  data.forEach(function(item){var c=CC2[item.cat]||'#555';html+='<div style="background:#f9f9f9;border-radius:12px;border:1px solid #eee;padding:12px 10px;text-align:center;"><div style="font-size:18px;font-weight:900;color:'+c+';margin-bottom:4px;">TOP '+item.rank+'</div><div style="display:inline-block;padding:2px 7px;border-radius:20px;background:'+c+'22;color:'+c+';font-size:10px;font-weight:700;margin-bottom:5px;">'+item.cat+'</div><div style="font-size:11px;font-weight:600;color:#2d2926;margin-bottom:3px;">'+item.desc+'</div><div style="font-size:11px;color:#888;">¥'+item.price+' · <b>'+item.qty+'개</b></div></div>';});
-  html+='</div>';el.innerHTML=html;
+  html+='<iframe src="'+MT_TOP20_IMGS+'" style="width:100%;height:580px;border:none;border-radius:10px;" title="BEST 20"></iframe>';
+  el.innerHTML=html;
 }
-
 function mtRenderMeeting(){
   var btnEl=document.getElementById('mt-meeting-week-btns');if(!btnEl)return;
   var keys=new Set(Object.keys(MT_MEETINGS_DEFAULT));
-  Object.keys(MT_FB_MEETINGS).forEach(function(k){if(MT_FB_MEETINGS[k])keys.add(k);});
-  for(var i=0;i<localStorage.length;i++){var lk=localStorage.key(i);if(lk&&lk.startsWith('mt_meeting_'))keys.add(lk.replace('mt_meeting_',''));}
+  }
   var sk=Array.from(keys).sort().reverse();
   if(!MT_MEETING_KEY&&sk.length)MT_MEETING_KEY=sk[0];
   var html=sk.map(function(k){var s=k===MT_MEETING_KEY;return'<button data-k="'+k+'" onclick="mtSelectMeetingKey(this.dataset.k)" style="padding:6px 14px;border-radius:8px;border:1.5px solid '+(s?'#2d2926':'#ddd')+';background:'+(s?'#2d2926':'#f5f5f5')+';color:'+(s?'#fff':'#555')+';font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">'+k+'</button>';}).join('');
