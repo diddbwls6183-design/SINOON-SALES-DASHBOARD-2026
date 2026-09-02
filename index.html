@@ -7155,13 +7155,20 @@ function mtRenderFilterPanel(){
     var md=MANTOVA.months[m],exp=MT_STATE.expandedMonths[m];
     var allS=MT_STATE.selected[m]&&MT_STATE.selected[m].size===md.weeks.length;
     var somS=MT_STATE.selected[m]&&MT_STATE.selected[m].size>0;
-    html+='<div style="margin-bottom:8px;"><button onclick="mtToggleMonth(event,''+m+'')" style="padding:7px 16px;border-radius:8px;border:2px solid #2d2926;font-weight:700;font-size:13px;font-family:inherit;cursor:pointer;background:'+(allS?'#2d2926':(somS?'#f5f0eb':'#fff'))+';color:'+(allS?'#fff':'#2d2926')+';width:100%;text-align:left;">'+m+' '+(exp?'▴':'▾')+'</button>';
-    if(exp){html+='<div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 4px 4px;">';md.weeks.forEach(function(w){var s=MT_STATE.selected[m]&&MT_STATE.selected[m].has(w);html+='<button onclick="mtToggleWeek(event,''+m+'',''+w+'')" style="padding:5px 10px;border-radius:6px;border:1.5px solid '+(s?'#2d2926':'#ccc')+';font-size:12px;font-family:inherit;cursor:pointer;background:'+(s?'#a5d6a7':'#f5f5f5')+';color:'+(s?'#1b5e20':'#555')+';font-weight:600;">'+w+'</button>';});html+='</div>';}
+    html+='<div style="margin-bottom:8px;">';
+    html+='<button data-m="'+m+'" onclick="mtToggleMonth(event,this.dataset.m)" style="padding:7px 16px;border-radius:8px;border:2px solid #2d2926;font-weight:700;font-size:13px;font-family:inherit;cursor:pointer;background:'+(allS?'#2d2926':(somS?'#f5f0eb':'#fff'))+';color:'+(allS?'#fff':'#2d2926')+';width:100%;text-align:left;">'+m+' '+(exp?'▴':'▾')+'</button>';
+    if(exp){
+      html+='<div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 4px 4px;">';
+      md.weeks.forEach(function(w){
+        var s=MT_STATE.selected[m]&&MT_STATE.selected[m].has(w);
+        html+='<button data-m="'+m+'" data-w="'+w+'" onclick="mtToggleWeek(event,this.dataset.m,this.dataset.w)" style="padding:5px 10px;border-radius:6px;border:1.5px solid '+(s?'#2d2926':'#ccc')+';font-size:12px;font-family:inherit;cursor:pointer;background:'+(s?'#a5d6a7':'#f5f5f5')+';color:'+(s?'#1b5e20':'#555')+';font-weight:600;">'+w+'</button>';
+      });
+      html+='</div>';
+    }
     html+='</div>';
   });
   el.innerHTML=html;
 }
-
 function mtToggleMonth(e,m){if(e)e.stopPropagation();var md=MANTOVA.months[m],exp=MT_STATE.expandedMonths[m];if(!exp){MT_STATE.expandedMonths[m]=true;MT_STATE.selected[m]=new Set(md.weeks);}else{var a=MT_STATE.selected[m]&&MT_STATE.selected[m].size===md.weeks.length;MT_STATE.selected[m]=a?new Set():new Set(md.weeks);}mtRenderFilterPanel();mtUpdateFilterLabel();mtRenderSalesTable();mtRenderTop20();}
 function mtToggleWeek(e,m,w){if(e)e.stopPropagation();if(!MT_STATE.selected[m])MT_STATE.selected[m]=new Set();if(MT_STATE.selected[m].has(w))MT_STATE.selected[m].delete(w);else MT_STATE.selected[m].add(w);mtRenderFilterPanel();mtUpdateFilterLabel();mtRenderSalesTable();mtRenderTop20();}
 function mtUpdateFilterLabel(){var p=[];Object.keys(MANTOVA.months).forEach(function(m){if(MT_STATE.selected[m]&&MT_STATE.selected[m].size>0)p.push(m);});var e=document.getElementById('mt-filter-label');if(e)e.textContent=p.length?p.join(', '):'기간 선택';}
@@ -7207,7 +7214,7 @@ function mtRenderMeeting(){
   for(var i=0;i<localStorage.length;i++){var lk=localStorage.key(i);if(lk&&lk.startsWith('mt_meeting_'))keys.add(lk.replace('mt_meeting_',''));}
   var sk=Array.from(keys).sort().reverse();
   if(!MT_MEETING_KEY&&sk.length)MT_MEETING_KEY=sk[0];
-  var html=sk.map(function(k){var s=k===MT_MEETING_KEY;return'<button onclick="mtSelectMeetingKey(''+k+'')" style="padding:6px 14px;border-radius:8px;border:1.5px solid '+(s?'#2d2926':'#ddd')+';background:'+(s?'#2d2926':'#f5f5f5')+';color:'+(s?'#fff':'#555')+';font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">'+k+'</button>';}).join('');
+  var html=sk.map(function(k){var s=k===MT_MEETING_KEY;return'<button data-k="'+k+'" onclick="mtSelectMeetingKey(this.dataset.k)" style="padding:6px 14px;border-radius:8px;border:1.5px solid '+(s?'#2d2926':'#ddd')+';background:'+(s?'#2d2926':'#f5f5f5')+';color:'+(s?'#fff':'#555')+';font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">'+k+'</button>';}).join('');
   if(!html)html='<span style="font-size:12px;color:#aaa;">저장된 회의록 없음</span>';
   btnEl.innerHTML=html;mtRenderMeetingContent(MT_MEETING_KEY);
 }
@@ -7221,7 +7228,7 @@ function mtRenderMeetingContent(key){
   var esc=function(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;');};
   if(MT_MEETING_EDIT){
     el.innerHTML='<textarea id="mt-memo-ta" style="width:100%;height:420px;padding:14px;border:1.5px solid #ddd;border-radius:10px;font-size:13px;font-family:inherit;resize:vertical;line-height:1.7;box-sizing:border-box;">'+esc(saved)+'</textarea>'
-    +'<div style="display:flex;gap:8px;margin-top:10px;"><button onclick="mtSaveMemo(''+key+'')" style="padding:9px 20px;background:#2d2926;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px;font-family:inherit;">💾 저장 (전직원 동기화)</button>'
+    +'<div style="display:flex;gap:8px;margin-top:10px;"><button data-key2="'+key+'" onclick="mtSaveMemo(this.dataset.key2)" style="padding:9px 20px;background:#2d2926;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px;font-family:inherit;">💾 저장 (전직원 동기화)</button>'
     +'<button onclick="MT_MEETING_EDIT=false;mtRenderMeeting();" style="padding:9px 20px;background:#f5f5f5;color:#555;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;font-family:inherit;">취소</button></div>';
   }else if(saved){
     el.innerHTML='<div style="position:relative;"><pre style="font-size:13px;line-height:1.8;color:#333;white-space:pre-wrap;font-family:inherit;background:#fafafa;padding:16px;border-radius:10px;border:1px solid #f0f0f0;margin:0;">'+esc(saved)+'</pre>'
