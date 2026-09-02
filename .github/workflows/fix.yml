@@ -1,21 +1,26 @@
 name: Fix Dashboard SyntaxError
-on: workflow_dispatch
+on:
+  workflow_dispatch:
 jobs:
   fix:
-      runs-on: ubuntu-latest
-          permissions:
-                contents: write
-                    steps:
-                          - uses: actions/checkout@v4
-                                - name: Fix
-                                        run: |
-                                                  sed -i "/Object.keys(MT_FB_MEETINGS).forEach.*keys.add/d" index.html
-                                                            sed -i "/lk.startsWith.*mt_meeting_/d" index.html
-                                                                      echo done $(wc -l < index.html)
-                                                                            - name: Commit
-                                                                                    run: |
-                                                                                              git config user.email "bot@github.com"
-                                                                                                        git config user.name "bot"
-                                                                                                                  git add index.html
-                                                                                                                            git commit -m "fix: FB/LS lines" || echo skip
-                                                                                                                                      git push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore good base
+        run: git checkout 9893bb4 -- index.html
+      - name: Remove FB and LS lines
+        run: |
+          sed -i "/Object.keys(MT_FB_MEETINGS).forEach/d" index.html
+          sed -i "/lk.startsWith.*mt_meeting_/d" index.html
+          echo "Done: $(wc -l < index.html) lines"
+      - name: Commit and push
+        run: |
+          git config user.email "bot@github.com"
+          git config user.name "bot"
+          git add index.html
+          git commit -m "fix: restore 9893bb4 and remove FB/LS lines" || echo skip
+          git push
