@@ -5,33 +5,33 @@ with open('index.html', 'r', encoding='utf-8') as f:
 
 print("Original length:", len(content))
 
-# ===== 1. CUST_DATA: update 8월, add 9월 =====
-content = re.sub(r'\{w:"8월",n:\d+,r:\d+\}', '{w:"8월",n:315,r:106}', content)
-if re.search(r'\{w:"9월",n:\d+,r:\d+\}', content):
-    content = re.sub(r'\{w:"9월",n:\d+,r:\d+\}', '{w:"9월",n:15,r:5}', content)
+# ===== 1. CUST_DATA: update 8月, add 9月 =====
+content = re.sub(r'\{w:"8月",n:\d+,r:\d+\}', '{w:"8月",n:315,r:106}', content)
+if re.search(r'\{w:"9月",n:\d+,r:\d+\}', content):
+    content = re.sub(r'\{w:"9月",n:\d+,r:\d+\}', '{w:"9月",n:15,r:5}', content)
 else:
     content = re.sub(
-        r'(\{w:"8월",n:315,r:106\})',
-        r'\1,\n  {w:"9월",n:15,r:5}',
+        r'(\{w:"8月",n:315,r:106\})',
+        r'\1,\n  {w:"9月",n:15,r:5}',
         content
     )
 print("CUST_DATA updated")
 
-# ===== 2. CONV_DATA: update 8월, add 9월 =====
-content = re.sub(r'\{w:"8월",v:\d+,b:\d+,o:\d+,r:[\d.]+\}',
-                 '{w:"8월",v:100816,b:1792,o:427,r:0.42}', content)
-if re.search(r'\{w:"9월",v:\d+,b:\d+,o:\d+,r:[\d.]+\}', content):
-    content = re.sub(r'\{w:"9월",v:\d+,b:\d+,o:\d+,r:[\d.]+\}',
-                     '{w:"9월",v:4395,b:62,o:21,r:0.46}', content)
+# ===== 2. CONV_DATA: update 8月, add 9月 =====
+content = re.sub(r'\{w:"8月",v:\d+,b:\d+,o:\d+,r:[\d.]+\}',
+                 '{w:"8月",v:100816,b:1792,o:427,r:0.42}', content)
+if re.search(r'\{w:"9月",v:\d+,b:\d+,o:\d+,r:[\d.]+\}', content):
+    content = re.sub(r'\{w:"9月",v:\d+,b:\d+,o:\d+,r:[\d.]+\}',
+                     '{w:"9月",v:4395,b:62,o:21,r:0.46}', content)
 else:
     content = re.sub(
-        r'(\{w:"8월",v:100816,b:1792,o:427,r:0\.42\})',
-        r'\1,\n  {w:"9월",v:4395,b:62,o:21,r:0.46}',
+        r'(\{w:"8月",v:100816,b:1792,o:427,r:0\.42\})',
+        r'\1,\n  {w:"9月",v:4395,b:62,o:21,r:0.46}',
         content
     )
 print("CONV_DATA updated")
 
-# ===== 3. CART_BEST: replace 8월 and 9월 =====
+# ===== 3. CART_BEST: replace 8月 and 9月 =====
 CB_8 = [
     {"name":"Initial Necklace","exp":4048,"cart":194,"crate":4.79},
     {"name":"Pear Drop Necklace (Silver)","exp":1084,"cart":107,"crate":9.87},
@@ -225,21 +225,17 @@ function renderFunnelInsights(){
   var detailChurn=detail&&detail.churn!=null?detail.churn.toFixed(1)+'%':'--';
   var order=steps.find(function(s){return s.stage==='주문서 작성';});
   var orderChurn=order&&order.churn!=null?order.churn.toFixed(1)+'%':'--';
-  var box='background:#f5f4f2;border-radius:8px;padding:10px 12px;text-align:center;';
+  var box='background:#fff;border:1px solid #e8e6e4;border-radius:8px;padding:10px 12px;text-align:center;';
   var lbl='font-size:11px;color:#7a7470;font-weight:700;margin-bottom:6px;letter-spacing:.04em;';
   el.innerHTML='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:4px;">'
-    +'<div style="'+box+'">'
-    +'<div style="'+lbl+'">구매 전환율</div>'
+    +'<div style="'+box+'">'+'<div style="'+lbl+'">구매 전환율</div>'
     +'<div style="font-size:22px;font-weight:800;color:#2d2926;">'+convRate+'</div></div>'
-    +'<div style="'+box.replace('#f5f4f2','#fef0ef')+'">'
-    +'<div style="'+lbl+'">최대 이탈 구간</div>'
+    +'<div style="'+box+'">'+'<div style="'+lbl+'">최대 이탈 구간</div>'
     +'<div style="font-size:14px;font-weight:800;color:#c0392b;line-height:1.3;">'+maxChurnStage+'</div>'
     +(maxChurn!=null?'<div style="font-size:11px;color:#c0392b;margin-top:3px;">이탈률 '+maxChurn.toFixed(1)+'%</div>':'')+'</div>'
-    +'<div style="'+box.replace('#f5f4f2','#fff8ef')+'">'
-    +'<div style="'+lbl+'">상세페이지 이탈률</div>'
+    +'<div style="'+box+'">'+'<div style="'+lbl+'">상세페이지 이탈률</div>'
     +'<div style="font-size:22px;font-weight:800;color:#d4830a;">'+detailChurn+'</div></div>'
-    +'<div style="'+box.replace('#f5f4f2','#fff8ef')+'">'
-    +'<div style="'+lbl+'">주문서 이탈률</div>'
+    +'<div style="'+box+'">'+'<div style="'+lbl+'">주문서 이탈률</div>'
     +'<div style="font-size:22px;font-weight:800;color:#d4830a;">'+orderChurn+'</div></div>'
     +'</div>';
 }
@@ -254,9 +250,20 @@ function renderFunnelInsights(){
 last_script = content.rfind('</script>')
 if last_script != -1:
     content = content[:last_script] + INSIGHTS_FUNC + '\n' + content[last_script:]
-    print("renderFunnelInsights inserted before </script>")
+    print("renderFunnelInsights inserted")
 else:
     print("WARNING: </script> not found")
+
+# ===== 7. 카테고리 BEST3 첫화면 노출 =====
+content = content.replace(
+    't3cat-best-body" style="display:none',
+    't3cat-best-body" style="display:block'
+)
+content = content.replace(
+    't3cat-best-arr" style="font-size:11px;color:#7a7470;cursor:pointer;margin-left:4px;">▼',
+    't3cat-best-arr" style="font-size:11px;color:#7a7470;cursor:pointer;margin-left:4px;">▲'
+)
+print("cat-best-body 기본 노출:", 't3cat-best-body" style="display:block' in content)
 
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(content)
