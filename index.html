@@ -7210,6 +7210,9 @@ function mtRenderMeeting(){
   var html=sk.map(function(k){var s=k===MT_MEETING_KEY;return'<button data-k="'+k+'" onclick="mtSelectMeetingKey(this.dataset.k)" style="padding:6px 14px;border-radius:8px;border:1.5px solid '+(s?'#2d2926':'#ddd')+';background:'+(s?'#2d2926':'#f5f5f5')+';color:'+(s?'#fff':'#555')+';font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">'+k+'</button>';}).join('');
   if(!html)html='<span style="font-size:12px;color:#aaa;">저장된 회의록 없음</span>';
   btnEl.innerHTML=html;mtRenderMeetingContent(MT_MEETING_KEY);
+}
+
+function mtSelectMeetingKey(k){MT_MEETING_KEY=k;MT_MEETING_EDIT=false;mtRenderMeeting();}
 
 function mtRenderMeetingContent(key){
   var el=document.getElementById('mt-meeting-content');if(!el)return;
