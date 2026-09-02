@@ -6996,8 +6996,32 @@ const MANTOVA = {
     }
   }
 };
-
-const MT_MEETINGS_DEFAULT = {'8월_8.24-8.31': `SINOON × MANTOVA
+const MT_TOP20_DB = {
+  '20260821-20260827': [
+    {rank:1,  cat:'TOPS',    desc:'S/S T-Shirts',   price:399,  qty:13},
+    {rank:2,  cat:'BOTTOMS', desc:'Skirt',           price:999,  qty:12},
+    {rank:3,  cat:'BOTTOMS', desc:'Jeans',           price:959,  qty:11},
+    {rank:4,  cat:'BOTTOMS', desc:'Skirt',           price:999,  qty:10},
+    {rank:5,  cat:'TOPS',    desc:'L/S T-Shirts',    price:419,  qty:10},
+    {rank:6,  cat:'TOPS',    desc:'Hoodie Sweaters', price:899,  qty:8},
+    {rank:7,  cat:'TOPS',    desc:'Singlet',         price:829,  qty:8},
+    {rank:8,  cat:'TOPS',    desc:'L/S T-Shirts',    price:419,  qty:8},
+    {rank:9,  cat:'ACC',     desc:'HAT',             price:259,  qty:8},
+    {rank:10, cat:'TOPS',    desc:'S/S T-Shirts',    price:329,  qty:7},
+    {rank:11, cat:'TOPS',    desc:'Knitwear',        price:659,  qty:7},
+    {rank:12, cat:'TOPS',    desc:'Knitwear',        price:759,  qty:7},
+    {rank:13, cat:'TOPS',    desc:'Knitwear',        price:759,  qty:7},
+    {rank:14, cat:'BOTTOMS', desc:'Skirt',           price:729,  qty:7},
+    {rank:15, cat:'BOTTOMS', desc:'Skirt',           price:999,  qty:7},
+    {rank:16, cat:'TOPS',    desc:'L/S T-Shirts',    price:419,  qty:7},
+    {rank:17, cat:'TOPS',    desc:'S/S T-Shirts',    price:419,  qty:6},
+    {rank:18, cat:'TOPS',    desc:'S/S T-Shirts',    price:329,  qty:6},
+    {rank:19, cat:'TOPS',    desc:'Cardigan',        price:1459, qty:6},
+    {rank:20, cat:'TOPS',    desc:'Cardigan',        price:699,  qty:6}
+  ]
+};
+var MT_TOP20_MONTH_MAP = {'8월':'20260821-20260827'};
+const MT_MEETINGS_DEFAULT = {'20260831': `SINOON × MANTOVA
 만토바 주간회의록
 회의명 만토바(MANTOVA) 주간회의
 일시 2026. 08. 31 (월) 오전
@@ -7051,387 +7075,173 @@ Q&A
 1) 한국 오프라인 측 구체적 레퍼런스(사진 등) 공유 부탁
 • 시눈측: 레퍼런스는 이미 충분히 전달하고 있음. 문제는 전달한 레퍼를 디벨롭 없이 그대로 사용하거나, 별도 제안 없이 다시 레퍼를 요청하는 상황이 반복되는 점.
 • 레퍼 디벨롭이 이루어지지 않아, 현재는 시눈이 의도하는 무드·뉘앙스를 AI로 구현해 전달하고 있는 상황.
-• 'AI 활용 자제' 요청의 취지: 레퍼와 똑같이 만들어 달라는 의미가 아님.
-  – 구현이 가능하다면 가장 좋으나, 실제 구현 가능 여부는 만토바에서 판단하고, 어려울 경우 레퍼를 참고해 중국 현지에서 구매 또는 제작이 가능한 방향으로 디벨롭하길 희망.
 • 핵심 요청: 레퍼를 이해한 뒤 '구현 가능 여부'에 초점을 두고 디벨롭하여 제안해 줄 것.
-  – '구할 수 없음 / 제작 불가'로 답변을 끝내지 말 것.
-  – 구할 수 없거나 제작이 불가하다면, 시안을 기반으로 ① 구할 수 있는 소재 또는 ② 몰에서 사용 가능한 소재로 대체한 안을 먼저 제안.
-  – "기성품을 이렇게 활용하면 제안 시안과 유사한 연출이 가능할 것 같다" 등 해결을 위해 다방면으로 고민한 제안을 요청.
-2) 자재 샘플 확인 후 디자인 수정 없이 진행 / 리소스 중복 투입 & 추가 비용
-• 시눈측: (위 답변과 이어서) 디자인 수정이 다시 발생하지 않도록, 시안을 폭넓게 확장해 다양한 안을 제안해 줄 것.
-• 선택지를 좁게 전달하지 말고, 한 번에 여러 안을 준비해 최선의 선택을 할 수 있도록 해달라.
-3) 명동·도산 오프라인 매장 VMD 사진 공유 부탁 (추후 중국 매장 오픈 시 통일화)
-시눈측 답변
-• 시눈은 월 단위로 VM을 교체하지 않음.
-• 매장별로 행거링 가능 수량이 다르기 때문에, 시즌 오픈 시 당시즌 상품 + 각 매장에 핏한/방문 고객 구매 동향을 반영한 과시즌 상품을 추가해 1차 구성을 진행하고, 이에 따라 층별·조닝별로 상품 진열을 픽스함.
-• 기본적으로 매장 내부 행거링 및 VM 조닝은 당시즌 상품을 주력으로 판매하기 위해 당시즌 상품으로 스타일링을 진행.
-  – 이후 매장의 정성 정보에 따라 담당자가 주간 가이드를 작성 → 판매 데이터로 검증 → 재변경하거나 주간 VM으로 픽스.
-  – 상품 구성 역시 매출·고객 반응·매장 관리자의 아웃풋에 따라 변경하기도 함.
-• 가이드 전달: 매 시즌 오픈 가이드는 (기존 공유대로) 전달 가능하며, 중국 내 오프라인 방문 고객 성향에 맞춘 조정도 가능함.
-  – 단, 상해 오픈 때 전달했던 피드백처럼 슬리브리스를 이너·아우터 없이 단독으로 거는 등의 연출은 지양 요청.
-추가 문의 (시눈측)
-• 샤오홍슈에 올라온 매장 내 상품 진열 컨디션이 좋지 않은 사진이 다수 확인됨. 매장 관리에 대한 오퍼레이션이 운영되고 있는지 문의.
-  – → 만토바측: 한국과 동일하게 오픈/마감 시 사진 공유 진행 중. 현재 동후루는 VM 변경을 진행하지 않았음.
-4) 한국 세일 폭이 만토바보다 커서 반품 발생 사례 있음. 가격 이원화 방지를 위해 한국 세일 프로모션 운영 방식 공유 문의
-• 만토바측: 현재 모든 상품 세일 미진행 / 세일 프로모션 전략 공유 가능한지 / 최저 할인율 공유 / 온·오프라인 세일 운영 상이 여부
-• 시눈측: 온·오프라인 별개로 가격 운영 중
-  – → 만토바측: 온·오프라인 가격 상이 시, 오프라인 확인 후 실제 구매는 온라인에서 하는 상황 우려 / 한국과 동일 가격대 맞추기는 어려울 듯 → 한국 가격 프로모션 플랜 공유 요청
-  – → 시눈측: 온라인 시즌별 할인율 가이드 (하기 이미지 참고)
-※ 한국 30% 할인 = 중국 7折 (70% 가격만 지불)
 5) 출고 일정 개선: → 시눈측: 한국과 별개로, 중국에서 의도한 런칭 시점 공유 요청
 6) 지역별 상품 운영: 지역별 기후 차이는 RT를 활용해 매장별 제품 적재적소 배치 예정
 7) 이미지 소재 수급 요청(AI·화보·콘텐츠·영상): 중국에서 AI 활용 영상을 만토바 측 자체 제작해도 되는지 확인 요청
-  – → 시눈측: 시눈 대표님 확인 필요 부분
 
 5. 상품기획
 1) SHEET 전달 시 컬러 코드·컬러명 포함 요청 (원단 소재도 함께 공유)
 2) 컬러·원단 변경 시 사진이 아닌 실물 배송으로 직접 확인 가능한지
-• 시눈측: 기준점을 정해 실물 배송은 최후의 수단으로 확인했으면 함 (실물 확인 전 판단 가능한 부분)
-3) 한국 주력 상품 공유해주면 동일하게 맞췄으면 함
-4) 생산 CL 패킹리스트 완성도 필요 (컬러 등 혼재된 아이템 간혹 보임)
-5) GB TEST 미달 부분: 필링은 개선 어려운 점 인지하나, 유해물질 및 처리 관련해서는 함께 소통하고자 함
-6) 캔버스백 관련
 
 6. 마케팅
 1) 한국 홀리데이 마케팅 공유 요청
-• 시눈측: 오픈·콜라보 제외 홀리데이 마케팅용 캠페인 촬영은 별도 진행 안 함. 추후 다른 사항 생기면 공유
 2) 연예인 착용컷 자료 공유 가능한지
-• 시눈측: 대행사 측에 만토바 공유 가능 여부 확인 필요
-• 시눈측: 브랜드 뮤즈 아직 없음
-• 시눈측: 왕홍 대행사 소개 요청
-• 시눈측: 중국 고객 반응 문의 (한국 인플 vs 중국 인플)
   – → 만토바측: 한국 TOP 아이돌 영향력이 더 큼 (특히 제니)
 
 7. 판매데이터 (온/오프라인 혼합)
-자료: 판매 BEST 20위 & 카테고리별 판매 비중
-• 지난주부터 FW 스타일 판매 반응 상승 중 — 긴팔 아이템 반응 상승(가을 진입) / 반팔 티셔츠 판매 속도 둔화
-• 기본 티셔츠보다 디자인 티셔츠 판매 호조
+• 지난주부터 FW 스타일 판매 반응 상승 중 / 반팔 티셔츠 판매 속도 둔화
 • 판매 2·4위 스커트 판매 반응 호조
-• 카테고리별 판매 비중 확인
 • BOTTOM 매출 견인: 스커트 판매 비중 67%
 • ACC 매출 견인: 모자 카테고리
-• HOMEWEAR 판매 하락 추세 (정규 SS·FW·익클에 밀리는 모습)
-• 판매 3위 벌룬팬츠 오프라인 판매 호조, 가을 아이템과 코디해 판매로 이어짐
-  – 국내에서 벌룬팬츠는 중국 고객에게 판매 낮은 아이템 (중국 관광객은 한국 방문 시 시눈 아이덴티티 높은 아이템 구매 경향)
-  – 동후루 매장에서는 벌룬팬츠 판매 높음 → 국외(한국) 구매 패턴과 달리, 일상 착용 가능한 아이템의 판매를 확인할 수 있는 인사이트로 공유
-    · → 만토바측 제안: 에센셜·베이직 아이템 추가 구성
-    · → 시눈측 답변: 동후루 판매 데이터가 더 쌓여야 판단 가능. 이후 수치를 보면서 소통 예정
+• HOMEWEAR 판매 하락 추세
 
 8. 스토어 라이브 방송 재개
 • 만토바 내부 소통 후 관련 사항 공유 예정`};
 
-var MT_STATE = {
-  selected: {},
-  rates: {},
-  showKRW: true,
-  filterOpen: false,
-  expandedMonths: {}
-};
-var MT_MEETING_WEEK = null;
+var MT_FB_URL =  + FB_URL + ;
+var MT_STATE = {selected:{},rates:{},showKRW:true,filterOpen:false,expandedMonths:{}};
+var MT_MEETING_KEY = null;
 var MT_MEETING_EDIT = false;
+var MT_FB_MEETINGS = {};
 
-async function mtFetchRate() {
-  try {
-    var res = await fetch('https://open.er-api.com/v6/latest/CNY');
-    var j = await res.json();
-    return Math.round(j.rates.KRW * 10) / 10;
-  } catch(e) { return 195; }
-}
+async function mtFetchRate(){try{var r=await fetch('https://open.er-api.com/v6/latest/CNY');var j=await r.json();return Math.round(j.rates.KRW*10)/10;}catch(e){return 195;}}
+async function mtGetRate(m){var d=MANTOVA.months[m],today=new Date(),end=new Date(d.endDate),lk='mt_cny_rate_'+m;if(today>end){var s=localStorage.getItem(lk);if(s)return parseFloat(s);var r=await mtFetchRate();if(r)localStorage.setItem(lk,r);return r||195;}return await mtFetchRate();}
 
-async function mtGetRate(monthKey) {
-  var mData = MANTOVA.months[monthKey];
-  var today = new Date();
-  var end = new Date(mData.endDate);
-  var lsKey = 'mt_cny_rate_' + monthKey;
-  if (today > end) {
-    var saved = localStorage.getItem(lsKey);
-    if (saved) return parseFloat(saved);
-    var r = await mtFetchRate();
-    if (r) localStorage.setItem(lsKey, r);
-    return r || 195;
-  } else {
-    return await mtFetchRate();
-  }
-}
-
-function renderTabScm() {
-  var el = document.getElementById('tab6');
-  el.innerHTML = '<div style="max-width:1400px;margin:0 auto;padding:0 4px;">'
-    + '<div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;">'
-    + '<div style="display:flex;align-items:center;gap:10px;">'
-    + '<span style="font-size:28px;">🏮</span>'
-    + '<div><div style="font-size:22px;font-weight:800;color:#2d2926;letter-spacing:-0.5px;">MANTOVA</div>'
-    + '<div style="font-size:12px;color:#888;font-weight:500;">만토바 온라인 매출 & 주간미팅 대시보드</div></div></div>'
-    + '<div style="position:relative;margin-left:auto;" id="mt-filter-wrap">'
-    + '<button onclick="mtToggleFilter(event)" style="display:flex;align-items:center;gap:8px;padding:10px 18px;background:#2d2926;color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;font-family:inherit;">'
-    + '<span>📅</span><span id="mt-filter-label">기간 선택</span><span id="mt-filter-arrow">▾</span></button>'
-    + '<div id="mt-filter-panel" style="display:none;position:absolute;top:48px;right:0;background:#fff;border:1px solid #e0e0e0;border-radius:14px;padding:16px;min-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.12);z-index:100;">'
-    + '<div style="font-size:12px;color:#888;margin-bottom:10px;font-weight:600;">월 클릭 시 주차 버튼 표시, 중복 선택 가능</div>'
-    + '<div id="mt-filter-months"></div></div></div>'
-    + '<div style="display:flex;gap:6px;">'
-    + '<button id="mt-krw-btn" onclick="mtSetCurrency(true)" style="padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:13px;font-family:inherit;background:#a5d6a7;color:#1b5e20;">₩ 원</button>'
-    + '<button id="mt-cny-btn" onclick="mtSetCurrency(false)" style="padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:13px;font-family:inherit;background:#f5f5f5;color:#555;">¥ 위안</button>'
-    + '</div></div>'
-    + '<div style="background:#fff;border-radius:16px;padding:20px;border:1px solid #eee;margin-bottom:20px;overflow-x:auto;">'
-    + '<div style="font-size:15px;font-weight:800;color:#2d2926;margin-bottom:14px;">📊 온라인 주별 매출</div>'
-    + '<div id="mt-sales-table"></div></div>'
-    + '<div style="background:#fff;border-radius:16px;padding:20px;border:1px solid #eee;margin-bottom:20px;">'
-    + '<div style="font-size:15px;font-weight:800;color:#2d2926;margin-bottom:14px;">🏆 BEST 20</div>'
-    + '<div id="mt-top20-content"></div></div>'
-    + '<div style="background:#fff;border-radius:16px;padding:20px;border:1px solid #eee;margin-bottom:20px;">'
-    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">'
-    + '<div style="font-size:15px;font-weight:800;color:#2d2926;">📝 주간 회의록</div>'
-    + '<div style="display:flex;gap:8px;flex-wrap:wrap;" id="mt-meeting-week-btns"></div></div>'
-    + '<div id="mt-meeting-content"></div></div>'
-    + '</div>';
+function renderTabScm(){
+  var el=document.getElementById('tab6');
+  el.innerHTML='<div style="max-width:1400px;margin:0 auto;padding:0 4px;">'
+  +'<div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;">'
+  +'<div style="display:flex;align-items:center;gap:10px;"><span style="font-size:28px;">🏮</span>'
+  +'<div><div style="font-size:22px;font-weight:800;color:#2d2926;">MANTOVA</div>'
+  +'<div style="font-size:12px;color:#888;">만토바 온라인 매출 & 주간미팅 대시보드</div></div></div>'
+  +'<div style="position:relative;margin-left:auto;" id="mt-filter-wrap">'
+  +'<button onclick="mtToggleFilter(event)" style="display:flex;align-items:center;gap:8px;padding:10px 18px;background:#2d2926;color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:14px;font-family:inherit;">'
+  +'<span>📅</span><span id="mt-filter-label">8월</span><span id="mt-filter-arrow">▾</span></button>'
+  +'<div id="mt-filter-panel" style="display:none;position:absolute;top:48px;right:0;background:#fff;border:1px solid #e0e0e0;border-radius:14px;padding:16px;min-width:280px;box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:100;">'
+  +'<div style="font-size:12px;color:#888;margin-bottom:10px;font-weight:600;">월 클릭 시 주차 버튼 표시, 중복 선택 가능</div>'
+  +'<div id="mt-filter-months"></div></div></div>'
+  +'<div style="display:flex;gap:6px;">'
+  +'<button id="mt-krw-btn" onclick="mtSetCurrency(true)" style="padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:13px;font-family:inherit;background:#a5d6a7;color:#1b5e20;">₩ 원</button>'
+  +'<button id="mt-cny-btn" onclick="mtSetCurrency(false)" style="padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:700;font-size:13px;font-family:inherit;background:#f5f5f5;color:#555;">¥ 위안</button>'
+  +'</div></div>'
+  +'<div style="background:#fff;border-radius:16px;padding:20px;border:1px solid #eee;margin-bottom:20px;overflow-x:auto;">'
+  +'<div style="font-size:15px;font-weight:800;color:#2d2926;margin-bottom:14px;">📊 온라인 주별 매출</div><div id="mt-sales-table"></div></div>'
+  +'<div style="background:#fff;border-radius:16px;padding:20px;border:1px solid #eee;margin-bottom:20px;">'
+  +'<div style="font-size:15px;font-weight:800;color:#2d2926;margin-bottom:14px;">🏆 BEST 20</div><div id="mt-top20-content"></div></div>'
+  +'<div style="background:#fff;border-radius:16px;padding:20px;border:1px solid #eee;margin-bottom:20px;">'
+  +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">'
+  +'<div style="font-size:15px;font-weight:800;color:#2d2926;">📝 주간 회의록</div>'
+  +'<div style="display:flex;gap:8px;flex-wrap:wrap;" id="mt-meeting-week-btns"></div></div>'
+  +'<div id="mt-meeting-content"></div></div></div>';
   mtInitTab();
 }
 
-async function mtInitTab() {
-  Object.keys(MANTOVA.months).forEach(function(m) {
-    MT_STATE.selected[m] = new Set(MANTOVA.months[m].weeks);
-    MT_STATE.expandedMonths[m] = false;
+async function mtInitTab(){
+  Object.keys(MANTOVA.months).forEach(function(m){MT_STATE.expandedMonths[m]=false;MT_STATE.selected[m]=new Set();});
+  MT_STATE.selected['8월']=new Set(MANTOVA.months['8월'].weeks);
+  MT_STATE.expandedMonths['8월']=true;
+  for(var m of Object.keys(MANTOVA.months))MT_STATE.rates[m]=await mtGetRate(m);
+  try{var fr=await fetch(MT_FB_URL+'.json');if(fr.ok){var fd=await fr.json();if(fd)MT_FB_MEETINGS=fd;}}catch(e){}
+  mtRenderFilterPanel();mtUpdateFilterLabel();mtRenderSalesTable();mtRenderTop20();mtRenderMeeting();
+  document.addEventListener('click',function(e){var w=document.getElementById('mt-filter-wrap');if(w&&!w.contains(e.target)){var p=document.getElementById('mt-filter-panel');if(p)p.style.display='none';MT_STATE.filterOpen=false;var a=document.getElementById('mt-filter-arrow');if(a)a.textContent='▾';}});
+}
+
+function mtToggleFilter(e){if(e)e.stopPropagation();MT_STATE.filterOpen=!MT_STATE.filterOpen;document.getElementById('mt-filter-panel').style.display=MT_STATE.filterOpen?'block':'none';document.getElementById('mt-filter-arrow').textContent=MT_STATE.filterOpen?'▴':'▾';}
+
+function mtRenderFilterPanel(){
+  var el=document.getElementById('mt-filter-months');if(!el)return;var html='';
+  Object.keys(MANTOVA.months).forEach(function(m){
+    var md=MANTOVA.months[m],exp=MT_STATE.expandedMonths[m];
+    var allS=MT_STATE.selected[m]&&MT_STATE.selected[m].size===md.weeks.length;
+    var somS=MT_STATE.selected[m]&&MT_STATE.selected[m].size>0;
+    html+='<div style="margin-bottom:8px;"><button onclick="mtToggleMonth(event,''+m+'')" style="padding:7px 16px;border-radius:8px;border:2px solid #2d2926;font-weight:700;font-size:13px;font-family:inherit;cursor:pointer;background:'+(allS?'#2d2926':(somS?'#f5f0eb':'#fff'))+';color:'+(allS?'#fff':'#2d2926')+';width:100%;text-align:left;">'+m+' '+(exp?'▴':'▾')+'</button>';
+    if(exp){html+='<div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 4px 4px;">';md.weeks.forEach(function(w){var s=MT_STATE.selected[m]&&MT_STATE.selected[m].has(w);html+='<button onclick="mtToggleWeek(event,''+m+'',''+w+'')" style="padding:5px 10px;border-radius:6px;border:1.5px solid '+(s?'#2d2926':'#ccc')+';font-size:12px;font-family:inherit;cursor:pointer;background:'+(s?'#a5d6a7':'#f5f5f5')+';color:'+(s?'#1b5e20':'#555')+';font-weight:600;">'+w+'</button>';});html+='</div>';}
+    html+='</div>';
   });
-  for (var m of Object.keys(MANTOVA.months)) {
-    MT_STATE.rates[m] = await mtGetRate(m);
-  }
-  mtRenderFilterPanel();
-  mtUpdateFilterLabel();
-  mtRenderSalesTable();
-  mtRenderTop20Content();
-  mtRenderMeeting();
-  document.addEventListener('click', function(e) {
-    var wrap = document.getElementById('mt-filter-wrap');
-    if (wrap && !wrap.contains(e.target)) {
-      var panel = document.getElementById('mt-filter-panel');
-      if (panel) panel.style.display = 'none';
-      MT_STATE.filterOpen = false;
-      var arrow = document.getElementById('mt-filter-arrow');
-      if (arrow) arrow.textContent = '▾';
-    }
-  });
+  el.innerHTML=html;
 }
 
-function mtToggleFilter(e) {
-  if (e) e.stopPropagation();
-  MT_STATE.filterOpen = !MT_STATE.filterOpen;
-  document.getElementById('mt-filter-panel').style.display = MT_STATE.filterOpen ? 'block' : 'none';
-  document.getElementById('mt-filter-arrow').textContent = MT_STATE.filterOpen ? '▴' : '▾';
+function mtToggleMonth(e,m){if(e)e.stopPropagation();var md=MANTOVA.months[m],exp=MT_STATE.expandedMonths[m];if(!exp){MT_STATE.expandedMonths[m]=true;MT_STATE.selected[m]=new Set(md.weeks);}else{var a=MT_STATE.selected[m]&&MT_STATE.selected[m].size===md.weeks.length;MT_STATE.selected[m]=a?new Set():new Set(md.weeks);}mtRenderFilterPanel();mtUpdateFilterLabel();mtRenderSalesTable();mtRenderTop20();}
+function mtToggleWeek(e,m,w){if(e)e.stopPropagation();if(!MT_STATE.selected[m])MT_STATE.selected[m]=new Set();if(MT_STATE.selected[m].has(w))MT_STATE.selected[m].delete(w);else MT_STATE.selected[m].add(w);mtRenderFilterPanel();mtUpdateFilterLabel();mtRenderSalesTable();mtRenderTop20();}
+function mtUpdateFilterLabel(){var p=[];Object.keys(MANTOVA.months).forEach(function(m){if(MT_STATE.selected[m]&&MT_STATE.selected[m].size>0)p.push(m);});var e=document.getElementById('mt-filter-label');if(e)e.textContent=p.length?p.join(', '):'기간 선택';}
+function mtSetCurrency(k){MT_STATE.showKRW=k;var kb=document.getElementById('mt-krw-btn'),cb=document.getElementById('mt-cny-btn');if(kb){kb.style.background=k?'#a5d6a7':'#f5f5f5';kb.style.color=k?'#1b5e20':'#555';}if(cb){cb.style.background=!k?'#90caf9':'#f5f5f5';cb.style.color=!k?'#0d47a1':'#555';}mtRenderSalesTable();}
+function mtFV(v,r){if(!v||v===0)return'<span style="color:#ccc">-</span>';return MT_STATE.showKRW?'₩'+Math.round(v*r).toLocaleString():'¥'+v.toLocaleString();}
+
+function mtRenderSalesTable(){
+  var el=document.getElementById('mt-sales-table');if(!el)return;
+  var cols=[];Object.keys(MANTOVA.months).forEach(function(m){MANTOVA.months[m].weeks.forEach(function(w){if(MT_STATE.selected[m]&&MT_STATE.selected[m].has(w))cols.push({month:m,week:w,rate:MT_STATE.rates[m]||195});});});
+  if(!cols.length){el.innerHTML='<div style="text-align:center;color:#aaa;padding:30px;">기간을 선택하세요.</div>';return;}
+  var CH=['티몰','샤오홍슈','도우인'],CC={'티몰':'#ff6900','샤오홍슈':'#ff2d55','도우인':'#333'};
+  var thS='padding:9px 12px;text-align:center;font-size:12px;font-weight:700;background:#2d2926;color:#fff;white-space:nowrap;';
+  var tdS='padding:8px 12px;text-align:right;font-size:13px;white-space:nowrap;border-bottom:1px solid #f5f5f5;';
+  var pm='',html='<table style="width:100%;border-collapse:collapse;min-width:500px;"><thead><tr><th style="'+thS+'text-align:left;">채널</th>';
+  cols.forEach(function(c){var ml=c.month!==pm?'<div style="font-size:10px;opacity:.7;">'+c.month+'</div>':'';pm=c.month;html+='<th style="'+thS+'">'+ml+c.week+'</th>';});
+  html+='<th style="'+thS+'">합계</th></tr></thead><tbody>';
+  CH.forEach(function(ch){var rt=0,rh='',hd=false;cols.forEach(function(c){var wi=MANTOVA.months[c.month].weeks.indexOf(c.week),v=(MANTOVA.months[c.month].channels[ch]||[])[wi]||0;if(v>0)hd=true;rt+=v;rh+='<td style="'+tdS+'">'+mtFV(v,c.rate)+'</td>';});if(!hd)return;var ar=cols.reduce(function(a,c){return a+(MT_STATE.rates[c.month]||195);},0)/cols.length;html+='<tr><td style="padding:8px 14px;font-size:13px;font-weight:700;border-bottom:1px solid #f5f5f5;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+(CC[ch]||'#999')+';margin-right:6px;"></span>'+ch+'</td>'+rh+'<td style="'+tdS+'font-weight:700;">'+mtFV(rt,ar)+'</td></tr>';});
+  html+='<tr style="background:#f9f9f9;"><td style="padding:9px 14px;font-size:13px;font-weight:800;border-top:2px solid #2d2926;">합계</td>';
+  var gt=0;cols.forEach(function(c){var wi=MANTOVA.months[c.month].weeks.indexOf(c.week),cs=0;CH.forEach(function(ch){cs+=(MANTOVA.months[c.month].channels[ch]||[])[wi]||0;});gt+=cs;html+='<td style="'+tdS+'font-weight:800;border-top:2px solid #2d2926;">'+mtFV(cs,c.rate)+'</td>';});
+  var ar2=cols.reduce(function(a,c){return a+(MT_STATE.rates[c.month]||195);},0)/cols.length;
+  html+='<td style="'+tdS+'font-weight:800;border-top:2px solid #2d2926;">'+mtFV(gt,ar2)+'</td></tr></tbody></table>';
+  el.innerHTML=html;
 }
 
-function mtRenderFilterPanel() {
-  var el = document.getElementById('mt-filter-months');
-  if (!el) return;
-  var html = '';
-  Object.keys(MANTOVA.months).forEach(function(m) {
-    var mData = MANTOVA.months[m];
-    var expanded = MT_STATE.expandedMonths[m];
-    var allSel = MT_STATE.selected[m] && MT_STATE.selected[m].size === mData.weeks.length;
-    var someSel = MT_STATE.selected[m] && MT_STATE.selected[m].size > 0;
-    html += '<div style="margin-bottom:8px;">'
-      + '<button onclick="mtToggleMonth(event,\'' + m + '\')" style="padding:7px 16px;border-radius:8px;border:2px solid #2d2926;font-weight:700;font-size:13px;font-family:inherit;cursor:pointer;background:' + (allSel?'#2d2926':(someSel?'#f5f0eb':'#fff')) + ';color:' + (allSel?'#fff':'#2d2926') + ';width:100%;text-align:left;">'
-      + m + ' ' + (expanded?'▴':'▾') + '</button>';
-    if (expanded) {
-      html += '<div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 4px 4px 4px;">';
-      mData.weeks.forEach(function(w) {
-        var sel = MT_STATE.selected[m] && MT_STATE.selected[m].has(w);
-        html += '<button onclick="mtToggleWeek(event,\'' + m + '\',\'' + w + '\')" style="padding:5px 10px;border-radius:6px;border:1.5px solid ' + (sel?'#2d2926':'#ccc') + ';font-size:12px;font-family:inherit;cursor:pointer;background:' + (sel?'#a5d6a7':'#f5f5f5') + ';color:' + (sel?'#1b5e20':'#555') + ';font-weight:600;">' + w + '</button>';
-      });
-      html += '</div>';
-    }
-    html += '</div>';
-  });
-  el.innerHTML = html;
+function mtRenderTop20(){
+  var el=document.getElementById('mt-top20-content');if(!el)return;
+  var sm=Object.keys(MANTOVA.months).filter(function(m){return MT_STATE.selected[m]&&MT_STATE.selected[m].size>0;}),k=null;
+  for(var i=sm.length-1;i>=0;i--){if(MT_TOP20_MONTH_MAP[sm[i]]){k=MT_TOP20_MONTH_MAP[sm[i]];break;}}
+  var data=k?MT_TOP20_DB[k]:null;
+  if(!data){el.innerHTML='<div style="text-align:center;padding:40px;color:#aaa;"><div style="font-size:32px;margin-bottom:10px;">📄</div><div style="font-size:14px;font-weight:600;">해당 기간의 BEST 20 데이터가 없습니다.</div><div style="font-size:12px;margin-top:6px;color:#bbb;">PDF 파일 공유 시 추가하겠습니다.</div></div>';return;}
+  var lbl=k.replace(/(\d{4})(\d{2})(\d{2})-(\d{4})(\d{2})(\d{2})/,'$1.$2.$3-$5.$6');
+  var CC2={TOPS:'#ff6900',BOTTOMS:'#1565c0',ACC:'#7b1fa2',HOMEWEAR:'#388e3c'};
+  var html='<div style="font-size:12px;color:#888;margin-bottom:12px;">DATA '+lbl+'</div>';
+  html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;">';
+  data.forEach(function(item){var c=CC2[item.cat]||'#555';html+='<div style="background:#f9f9f9;border-radius:12px;border:1px solid #eee;padding:12px 10px;text-align:center;"><div style="font-size:18px;font-weight:900;color:'+c+';margin-bottom:4px;">TOP '+item.rank+'</div><div style="display:inline-block;padding:2px 7px;border-radius:20px;background:'+c+'22;color:'+c+';font-size:10px;font-weight:700;margin-bottom:5px;">'+item.cat+'</div><div style="font-size:11px;font-weight:600;color:#2d2926;margin-bottom:3px;">'+item.desc+'</div><div style="font-size:11px;color:#888;">¥'+item.price+' · <b>'+item.qty+'개</b></div></div>';});
+  html+='</div>';el.innerHTML=html;
 }
 
-function mtToggleMonth(e, m) {
-  if (e) e.stopPropagation();
-  var mData = MANTOVA.months[m];
-  var expanded = MT_STATE.expandedMonths[m];
-  if (!expanded) {
-    // 펼치기 + 전체 선택
-    MT_STATE.expandedMonths[m] = true;
-    MT_STATE.selected[m] = new Set(mData.weeks);
-  } else {
-    var allSel = MT_STATE.selected[m] && MT_STATE.selected[m].size === mData.weeks.length;
-    if (allSel) {
-      // 전체 해제 (닫지는 않음)
-      MT_STATE.selected[m] = new Set();
-    } else {
-      // 전체 선택
-      MT_STATE.selected[m] = new Set(mData.weeks);
-    }
-  }
-  mtRenderFilterPanel();
-  mtUpdateFilterLabel();
-  mtRenderSalesTable();
-  mtRenderTop20Content();
+function mtRenderMeeting(){
+  var btnEl=document.getElementById('mt-meeting-week-btns');if(!btnEl)return;
+  var keys=new Set(Object.keys(MT_MEETINGS_DEFAULT));
+  Object.keys(MT_FB_MEETINGS).forEach(function(k){if(MT_FB_MEETINGS[k])keys.add(k);});
+  for(var i=0;i<localStorage.length;i++){var lk=localStorage.key(i);if(lk&&lk.startsWith('mt_meeting_'))keys.add(lk.replace('mt_meeting_',''));}
+  var sk=Array.from(keys).sort().reverse();
+  if(!MT_MEETING_KEY&&sk.length)MT_MEETING_KEY=sk[0];
+  var html=sk.map(function(k){var s=k===MT_MEETING_KEY;return'<button onclick="mtSelectMeetingKey(''+k+'')" style="padding:6px 14px;border-radius:8px;border:1.5px solid '+(s?'#2d2926':'#ddd')+';background:'+(s?'#2d2926':'#f5f5f5')+';color:'+(s?'#fff':'#555')+';font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">'+k+'</button>';}).join('');
+  if(!html)html='<span style="font-size:12px;color:#aaa;">저장된 회의록 없음</span>';
+  btnEl.innerHTML=html;mtRenderMeetingContent(MT_MEETING_KEY);
 }
 
-function mtToggleWeek(e, m, w) {
-  if (e) e.stopPropagation();
-  if (!MT_STATE.selected[m]) MT_STATE.selected[m] = new Set();
-  if (MT_STATE.selected[m].has(w)) MT_STATE.selected[m].delete(w);
-  else MT_STATE.selected[m].add(w);
-  mtRenderFilterPanel();
-  mtUpdateFilterLabel();
-  mtRenderSalesTable();
-  mtRenderTop20Content();
-}
+function mtSelectMeetingKey(k){MT_MEETING_KEY=k;MT_MEETING_EDIT=false;mtRenderMeeting();}
 
-function mtUpdateFilterLabel() {
-  var parts = [];
-  Object.keys(MANTOVA.months).forEach(function(m) {
-    var cnt = MT_STATE.selected[m] ? MT_STATE.selected[m].size : 0;
-    if (cnt > 0) parts.push(m);
-  });
-  var el = document.getElementById('mt-filter-label');
-  if (el) el.textContent = parts.length ? parts.join(', ') : '기간 선택';
-}
-
-function mtSetCurrency(isKRW) {
-  MT_STATE.showKRW = isKRW;
-  var kb = document.getElementById('mt-krw-btn'), cb = document.getElementById('mt-cny-btn');
-  if (kb) { kb.style.background = isKRW?'#a5d6a7':'#f5f5f5'; kb.style.color = isKRW?'#1b5e20':'#555'; }
-  if (cb) { cb.style.background = !isKRW?'#90caf9':'#f5f5f5'; cb.style.color = !isKRW?'#0d47a1':'#555'; }
-  mtRenderSalesTable();
-}
-
-function mtFmtVal(v, rate) {
-  if (!v || v === 0) return '<span style="color:#ccc">-</span>';
-  if (MT_STATE.showKRW) return '₩' + Math.round(v * rate).toLocaleString();
-  return '¥' + v.toLocaleString();
-}
-
-function mtRenderSalesTable() {
-  var el = document.getElementById('mt-sales-table');
-  if (!el) return;
-  var cols = [];
-  Object.keys(MANTOVA.months).forEach(function(m) {
-    MANTOVA.months[m].weeks.forEach(function(w) {
-      if (MT_STATE.selected[m] && MT_STATE.selected[m].has(w)) {
-        cols.push({month:m, week:w, rate:MT_STATE.rates[m]||195});
-      }
-    });
-  });
-  if (cols.length === 0) {
-    el.innerHTML = '<div style="text-align:center;color:#aaa;padding:30px;">기간을 선택하세요.</div>';
-    return;
-  }
-  var CH = ['티몰','샤오홍슈','도우인'];
-  var CH_CLR = {'티몰':'#ff6900','샤오홍슈':'#ff2d55','도우인':'#333'};
-  var thS = 'padding:9px 12px;text-align:center;font-size:12px;font-weight:700;background:#2d2926;color:#fff;white-space:nowrap;';
-  var tdS = 'padding:8px 12px;text-align:right;font-size:13px;white-space:nowrap;border-bottom:1px solid #f5f5f5;';
-  var prevMon = '';
-  var html = '<table style="width:100%;border-collapse:collapse;min-width:500px;"><thead><tr>'
-    + '<th style="' + thS + 'text-align:left;">채널</th>';
-  cols.forEach(function(c) {
-    var mLabel = c.month !== prevMon ? '<div style="font-size:10px;opacity:0.7;">' + c.month + '</div>' : '';
-    prevMon = c.month;
-    html += '<th style="' + thS + '">' + mLabel + c.week + '</th>';
-  });
-  html += '<th style="' + thS + '">합계</th></tr></thead><tbody>';
-  CH.forEach(function(ch) {
-    var rowTotal = 0; var rowHtml = ''; var hasData = false;
-    cols.forEach(function(c) {
-      var wi = MANTOVA.months[c.month].weeks.indexOf(c.week);
-      var v = (MANTOVA.months[c.month].channels[ch]||[])[wi]||0;
-      if (v>0) hasData=true;
-      rowTotal += v;
-      rowHtml += '<td style="' + tdS + '">' + mtFmtVal(v, c.rate) + '</td>';
-    });
-    if (!hasData) return;
-    var avgRate = cols.reduce(function(a,c){return a+(MT_STATE.rates[c.month]||195);},0)/cols.length;
-    html += '<tr><td style="padding:8px 14px;font-size:13px;font-weight:700;border-bottom:1px solid #f5f5f5;">'
-      + '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + (CH_CLR[ch]||'#999') + ';margin-right:6px;"></span>' + ch + '</td>'
-      + rowHtml + '<td style="' + tdS + 'font-weight:700;">' + mtFmtVal(rowTotal, avgRate) + '</td></tr>';
-  });
-  html += '<tr style="background:#f9f9f9;"><td style="padding:9px 14px;font-size:13px;font-weight:800;border-top:2px solid #2d2926;">합계</td>';
-  var grandTotal = 0;
-  cols.forEach(function(c) {
-    var wi = MANTOVA.months[c.month].weeks.indexOf(c.week);
-    var colSum = 0;
-    CH.forEach(function(ch){ colSum += (MANTOVA.months[c.month].channels[ch]||[])[wi]||0; });
-    grandTotal += colSum;
-    html += '<td style="' + tdS + 'font-weight:800;border-top:2px solid #2d2926;">' + mtFmtVal(colSum, c.rate) + '</td>';
-  });
-  var avgRate2 = cols.reduce(function(a,c){return a+(MT_STATE.rates[c.month]||195);},0)/cols.length;
-  html += '<td style="' + tdS + 'font-weight:800;border-top:2px solid #2d2926;">' + mtFmtVal(grandTotal, avgRate2) + '</td></tr>';
-  html += '</tbody></table>';
-  el.innerHTML = html;
-}
-
-function mtRenderTop20Content() {
-  var el = document.getElementById('mt-top20-content');
-  if (!el) return;
-  // 선택된 기간 표시
-  var parts = [];
-  Object.keys(MANTOVA.months).forEach(function(m) {
-    if (MT_STATE.selected[m] && MT_STATE.selected[m].size > 0) {
-      MT_STATE.selected[m].forEach(function(w){ parts.push(m+' '+w); });
-    }
-  });
-  var periodLabel = parts.length ? parts.join(', ') : '기간 미선택';
-  el.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;">'
-    + '<div style="font-size:32px;margin-bottom:10px;">📄</div>'
-    + '<div style="font-size:14px;font-weight:600;color:#888;">선택 기간: ' + periodLabel + '</div>'
-    + '<div style="font-size:12px;margin-top:8px;color:#bbb;">PDF 파일 공유 시 데이터 추가하겠습니다.</div></div>';
-}
-
-function mtGetAllWeeks() {
-  var allWeeks = [];
-  Object.keys(MANTOVA.months).forEach(function(m) {
-    MANTOVA.months[m].weeks.forEach(function(w) { allWeeks.push({m:m, w:w, key:m+'_'+w}); });
-  });
-  return allWeeks;
-}
-
-function mtRenderMeeting() {
-  var btnEl = document.getElementById('mt-meeting-week-btns');
-  if (!btnEl) return;
-  var allWeeks = mtGetAllWeeks();
-  if (!MT_MEETING_WEEK && allWeeks.length) MT_MEETING_WEEK = allWeeks[allWeeks.length-1].key;
-  var html = allWeeks.map(function(item) {
-    var sel = item.key === MT_MEETING_WEEK;
-    var hasMemo = MT_MEETINGS_DEFAULT[item.key] || localStorage.getItem('mt_meeting_'+item.key);
-    return '<button onclick="mtSelectMeetingWeek(\'' + item.key + '\')" style="padding:6px 12px;border-radius:8px;border:1.5px solid ' + (sel?'#2d2926':'#ddd') + ';background:' + (sel?'#2d2926':'#f5f5f5') + ';color:' + (sel?'#fff':'#555') + ';font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">' + item.m + ' ' + item.w + (hasMemo?' 📝':'') + '</button>';
-  }).join('');
-  btnEl.innerHTML = html;
-  mtRenderMeetingContent(MT_MEETING_WEEK);
-}
-
-function mtSelectMeetingWeek(key) {
-  MT_MEETING_WEEK = key;
-  MT_MEETING_EDIT = false;
-  mtRenderMeeting();
-}
-
-function mtRenderMeetingContent(key) {
-  var el = document.getElementById('mt-meeting-content');
-  if (!el) return;
-  var saved = localStorage.getItem('mt_meeting_'+key) || MT_MEETINGS_DEFAULT[key] || '';
-  if (MT_MEETING_EDIT) {
-    el.innerHTML = '<textarea id="mt-memo-ta" style="width:100%;height:400px;padding:14px;border:1.5px solid #ddd;border-radius:10px;font-size:13px;font-family:inherit;resize:vertical;line-height:1.7;box-sizing:border-box;">' + saved.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</textarea>'
-      + '<div style="display:flex;gap:8px;margin-top:10px;">'
-      + '<button onclick="mtSaveMemo(\'' + key + '\')" style="padding:9px 20px;background:#2d2926;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px;font-family:inherit;">💾 저장</button>'
-      + '<button onclick="MT_MEETING_EDIT=false;mtRenderMeeting();" style="padding:9px 20px;background:#f5f5f5;color:#555;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;font-family:inherit;">취소</button></div>';
-  } else if (saved) {
-    el.innerHTML = '<div style="position:relative;">'
-      + '<pre style="font-size:13px;line-height:1.8;color:#333;white-space:pre-wrap;font-family:inherit;background:#fafafa;padding:16px;border-radius:10px;border:1px solid #f0f0f0;margin:0;">' + saved.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</pre>'
-      + '<button onclick="MT_MEETING_EDIT=true;mtRenderMeeting();" style="position:absolute;top:12px;right:12px;padding:6px 12px;background:#2d2926;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;font-weight:700;">✏️ 편집</button></div>';
-  } else {
-    el.innerHTML = '<div style="text-align:center;padding:40px;color:#aaa;">'
-      + '<div style="font-size:32px;margin-bottom:10px;">📝</div>'
-      + '<div style="font-size:14px;font-weight:600;">이 주차의 회의록이 없습니다.</div>'
-      + '<button onclick="MT_MEETING_EDIT=true;mtRenderMeeting();" style="margin-top:14px;padding:9px 20px;background:#2d2926;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-family:inherit;">+ 회의록 작성</button></div>';
+function mtRenderMeetingContent(key){
+  var el=document.getElementById('mt-meeting-content');if(!el)return;
+  if(!key){el.innerHTML='<div style="color:#aaa;text-align:center;padding:30px;">날짜를 선택하세요.</div>';return;}
+  var saved=MT_FB_MEETINGS[key]||localStorage.getItem('mt_meeting_'+key)||MT_MEETINGS_DEFAULT[key]||'';
+  var esc=function(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;');};
+  if(MT_MEETING_EDIT){
+    el.innerHTML='<textarea id="mt-memo-ta" style="width:100%;height:420px;padding:14px;border:1.5px solid #ddd;border-radius:10px;font-size:13px;font-family:inherit;resize:vertical;line-height:1.7;box-sizing:border-box;">'+esc(saved)+'</textarea>'
+    +'<div style="display:flex;gap:8px;margin-top:10px;"><button onclick="mtSaveMemo(''+key+'')" style="padding:9px 20px;background:#2d2926;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px;font-family:inherit;">💾 저장 (전직원 동기화)</button>'
+    +'<button onclick="MT_MEETING_EDIT=false;mtRenderMeeting();" style="padding:9px 20px;background:#f5f5f5;color:#555;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;font-family:inherit;">취소</button></div>';
+  }else if(saved){
+    el.innerHTML='<div style="position:relative;"><pre style="font-size:13px;line-height:1.8;color:#333;white-space:pre-wrap;font-family:inherit;background:#fafafa;padding:16px;border-radius:10px;border:1px solid #f0f0f0;margin:0;">'+esc(saved)+'</pre>'
+    +'<button onclick="mtCheckPwAndEdit()" style="position:absolute;top:12px;right:12px;padding:6px 12px;background:#2d2926;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;font-weight:700;">✏️ 편집</button></div>';
+  }else{
+    el.innerHTML='<div style="text-align:center;padding:40px;color:#aaa;"><div style="font-size:32px;margin-bottom:10px;">📝</div><div style="font-size:14px;font-weight:600;">이 날짜의 회의록이 없습니다.</div><button onclick="mtCheckPwAndEdit()" style="margin-top:14px;padding:9px 20px;background:#2d2926;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-family:inherit;">+ 회의록 작성</button></div>';
   }
 }
 
-function mtSaveMemo(key) {
-  var val = document.getElementById('mt-memo-ta').value;
-  localStorage.setItem('mt_meeting_'+key, val);
-  MT_MEETING_EDIT = false;
-  mtRenderMeeting();
+function mtCheckPwAndEdit(){var pw=prompt('편집 비밀번호를 입력하세요:');if(pw!=='1111'){alert('비밀번호가 맞지 않습니다.');return;}MT_MEETING_EDIT=true;mtRenderMeetingContent(MT_MEETING_KEY);}
+
+async function mtSaveMemo(key){
+  var val=document.getElementById('mt-memo-ta').value;
+  localStorage.setItem('mt_meeting_'+key,val);
+  try{
+    await fetch(MT_FB_URL+'/'+key+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(val)});
+    MT_FB_MEETINGS[key]=val;
+    alert('저장 완료 ✅ 전직원 동기화됨');
+  }catch(e){alert('로컬 저장 완료 (네트워크 오류로 동기화 실패)');}
+  MT_MEETING_EDIT=false;mtRenderMeeting();
 }
 
 </script>
