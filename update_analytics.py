@@ -144,10 +144,10 @@ FUNNEL_9 = """\n  '9월':{
       {stage:'결제 완료',s:20,cr:0.5,churn:0.0,churn_n:20,cr_chg:-0.6}
     ]}"""
 
-# Remove any existing 9월 FUNNEL block (bad or good)
-content = re.sub(r"\s*,?'9월':\{.*?\]\}", '', content, flags=re.DOTALL)
+# Check if 9월 FUNNEL already exists (remove stale bad version)
+content = re.sub(r"\s*,'9월':\{[^}]*(?:\{[^}]*\}[^}]*)*\}\s*", '', content, flags=re.DOTALL)
+content = re.sub(r"\s*'9월':\{[^}]*(?:\{[^}]*\}[^}]*)*\}\s*(?=\};)", '', content, flags=re.DOTALL)
 
-# Find FUNNEL_DATA and 8월 block
 fd_start = content.find('var FUNNEL_DATA=')
 if fd_start == -1:
     fd_start = content.find('FUNNEL_DATA=')
@@ -180,12 +180,89 @@ if fd_start != -1:
 else:
     print("WARNING: FUNNEL_DATA not found")
 
+# ===== 6. UI RESTRUCTURE =====
+content = content.replace(
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">',
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">'
+)
+print("Grid 3→2 col updated")
+
+content = re.sub(
+    r'\n    <div class="card">\n      <div class="card-title">[^<]*구매전환율[^<]*</div>\n      <div id="t3conv-table"[^>]*></div>\n    </div>',
+    '',
+    content
+)
+print("구매전환율 card removed:", 't3conv-table' not in content)
+
+content = content.replace(
+    '<div id="t3funnel" style="margin-top:8px;"></div>',
+    '<div id="t3funnel-insights" style="margin-bottom:10px;"></div><div id="t3funnel" style="margin-top:8px;"></div>'
+)
+print("t3funnel-insights div added:", 't3funnel-insights' in content)
+
+content = content.replace(
+    'renderConvTable();\n  renderFunnelCard();',
+    'renderFunnelCard();\n  renderFunnelInsights();'
+)
+content = content.replace(
+    'renderSeasonTable();renderConvTable();}',
+    'renderSeasonTable();}'
+)
+print("renderConvTable calls removed")
+
+INSIGHTS_FUNC = r"""
+function renderFunnelInsights(){
+  var el=document.getElementById('t3funnel-insights');if(!el)return;
+  var mon=typeof _funnelPeriod!=='undefined'?_funnelPeriod:null;
+  if(!mon||typeof FUNNEL_DATA==='undefined'||!FUNNEL_DATA[mon]){el.innerHTML='';return;}
+  var steps=FUNNEL_DATA[mon].steps;
+  var visit=steps.find(function(s){return s.stage==='방문';});
+  var pay=steps.find(function(s){return s.stage==='결제 완료';});
+  var convRate=visit&&pay?(pay.s/visit.s*100).toFixed(2)+'%':'--';
+  var maxChurn=null,maxChurnStage='--';
+  steps.forEach(function(s){if(s.churn!=null&&(maxChurn===null||s.churn>maxChurn)){maxChurn=s.churn;maxChurnStage=s.stage;}});
+  var detail=steps.find(function(s){return s.stage==='상세페이지 조회';});
+  var detailChurn=detail&&detail.churn!=null?detail.churn.toFixed(1)+'%':'--';
+  var order=steps.find(function(s){return s.stage==='주문서 작성';});
+  var orderChurn=order&&order.churn!=null?order.churn.toFixed(1)+'%':'--';
+  var box='background:#f5f4f2;border-radius:8px;padding:10px 12px;text-align:center;';
+  var lbl='font-size:11px;color:#7a7470;font-weight:700;margin-bottom:6px;letter-spacing:.04em;';
+  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:4px;">'
+    +'<div style="'+box+'">'
+    +'<div style="'+lbl+'">구매 전환율</div>'
+    +'<div style="font-size:22px;font-weight:800;color:#2d2926;">'+convRate+'</div></div>'
+    +'<div style="'+box.replace('#f5f4f2','#fef0ef')+'">'
+    +'<div style="'+lbl+'">최대 이탈 구간</div>'
+    +'<div style="font-size:14px;font-weight:800;color:#c0392b;line-height:1.3;">'+maxChurnStage+'</div>'
+    +(maxChurn!=null?'<div style="font-size:11px;color:#c0392b;margin-top:3px;">이탈률 '+maxChurn.toFixed(1)+'%</div>':'')+'</div>'
+    +'<div style="'+box.replace('#f5f4f2','#fff8ef')+'">'
+    +'<div style="'+lbl+'">상세페이지 이탈률</div>'
+    +'<div style="font-size:22px;font-weight:800;color:#d4830a;">'+detailChurn+'</div></div>'
+    +'<div style="'+box.replace('#f5f4f2','#fff8ef')+'">'
+    +'<div style="'+lbl+'">주문서 이탈률</div>'
+    +'<div style="font-size:22px;font-weight:800;color:#d4830a;">'+orderChurn+'</div></div>'
+    +'</div>';
+}
+(function(){
+  if(typeof setT3GlobalMon==='function'){
+    var _orig=setT3GlobalMon;
+    window.setT3GlobalMon=function(m){_orig(m);renderFunnelInsights();};
+  }
+})();
+"""
+
+last_script = content.rfind('</script>')
+if last_script != -1:
+    content = content[:last_script] + INSIGHTS_FUNC + '\n' + content[last_script:]
+    print("renderFunnelInsights inserted before </script>")
+else:
+    print("WARNING: </script> not found")
+
 with open('index.html', 'w', encoding='utf-8') as f:
     f.write(content)
 
 print("Done! Final length:", len(content))
 
-# Verify
 if "'9월':{" in content and 'FUNNEL_DATA' in content:
     idx = content.find('FUNNEL_DATA')
     idx9 = content.find("'9월':{", idx)
