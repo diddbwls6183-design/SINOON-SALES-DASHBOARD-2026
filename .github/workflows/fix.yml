@@ -16,11 +16,12 @@ jobs:
         run: |
           sed -i "/Object.keys(MT_FB_MEETINGS).forEach/d" index.html
           sed -i "/lk.startsWith.*mt_meeting_/d" index.html
-          echo "Done: $(wc -l < index.html) lines"
+      - name: Run analytics update
+        run: python3 update_analytics.py
       - name: Commit and push
         run: |
           git config user.email "bot@github.com"
           git config user.name "bot"
           git add index.html
-          git commit -m "fix: restore 9893bb4 and remove FB/LS lines" || echo skip
+          git commit -m "update: analytics 8/9월 데이터 추가" || echo skip
           git push
