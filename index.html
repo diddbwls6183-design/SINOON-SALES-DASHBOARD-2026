@@ -807,7 +807,7 @@ function hasData(d){const v=D.daily26[d];return !!(v&&Object.values(v).some(c=>(
 function hasMon(m){return !!(D.monthly26[m]&&Object.values(D.monthly26[m]).some(v=>(v.s||0)>0));}
 function hasWeek(w){return (D.week_to_dates[w]||[]).some(d=>hasData(d));}
 const _todayMon=(new Date().getMonth()+1)+'월';
-const CUR_MON=(MONTHS.includes(_todayMon)?_todayMon:null)||(MONTHS.slice().reverse().find(m=>D.monthly26&&D.monthly26[m]&&Object.values(D.monthly26[m]).some(v=>(v.s||0)>0)))||MONTHS.slice(-1)[0]||'8월';
+const CUR_MON=(MONTHS.includes(_todayMon)?_todayMon:null)||MONTHS.slice(-1)[0]||'8월';
 
 
 
