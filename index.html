@@ -7026,7 +7026,7 @@ const MT_TOP20_DB = {
   ]
 };
 var MT_TOP20_MONTH_MAP = {'8월':'20260821-20260827'};
-var MT_TOP20_IMGS = 'mt_top20.pdf';
+var MT_TOP20_IMGS = 'images/best20_w34.png';
 const MT_MEETINGS_DEFAULT = {'20260831': `SINOON × MANTOVA
 만토바 주간회의록
 회의명 만토바(MANTOVA) 주간회의
@@ -7205,7 +7205,7 @@ function mtRenderTop20(){
   for(var i=sm.length-1;i>=0;i--){if(MT_TOP20_MONTH_MAP[sm[i]]){k=MT_TOP20_MONTH_MAP[sm[i]];break;}}
   if(!k||!MT_TOP20_IMGS){el.innerHTML='<div style="text-align:center;padding:40px;color:#aaa;">해당 기간의 BEST 20 데이터가 없습니다.</div>';return;}
   var lbl=k.replace(/(\d{4})(\d{2})(\d{2})-(\d{4})(\d{2})(\d{2})/,'$1.$2.$3-$5.$6');
-  el.innerHTML='<div style="font-size:12px;color:#888;margin-bottom:12px;">DATA '+lbl+'</div><iframe src="'+MT_TOP20_IMGS+'" style="width:100%;height:580px;border:none;border-radius:10px;"></iframe>';
+  el.innerHTML='<div style="font-size:12px;color:#888;margin-bottom:12px;">DATA '+lbl+'</div><img src="'+MT_TOP20_IMGS+'" style="width:100%;border-radius:10px;border:1px solid #eee;" />';
 }
 function mtRenderMeeting(){
   var btnEl=document.getElementById('mt-meeting-week-btns');if(!btnEl)return;
