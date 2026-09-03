@@ -2173,12 +2173,14 @@ function s0Cards(){
   </div>`;
   // ──── 월말 예상 실적 계산 (월별·단일월·현재 달 선택 시에만) ────
   let forecastHtml='';
-  if(s0.gran==='월별' && s0.selMonths.length===1 && s0.selMonths[0]===CUR_MON && totS26>0){
-    const fMon=CUR_MON;
+  if(s0.gran==='월별' && s0.selMonths.length===1 && totS26>0){
+    const fMon=s0.selMonths[0];
     const today=new Date();
-    const calDay=today.getDate(); // 이 달의 오늘 날짜 (예: 13)
     const monIdx=MONTHS.indexOf(fMon); // 0=1월
+    const todayMonNum=today.getMonth()+1;
+    const fMonNum=monIdx+1;
     const daysInMonth=new Date(2026,monIdx+1,0).getDate(); // 월 총 달력 일수
+    const calDay=fMonNum===todayMonNum?today.getDate():daysInMonth; // 현재월만 오늘날짜, 과거월은 말일
     if(calDay>0 && calDay<daysInMonth){
       const dailyAvg=totS26/calDay; // 달력 일 기준 일평균
       const fcast=dailyAvg*daysInMonth;
