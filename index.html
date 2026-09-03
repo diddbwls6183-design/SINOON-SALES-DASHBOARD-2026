@@ -6903,8 +6903,8 @@ function _applyFreshData(fresh) {
   }
   const ctrl = new AbortController();
   const timer = setTimeout(()=>ctrl.abort(), 25000);
-  fetch('./data.json?t=' + Date.now(), {signal: ctrl.signal})
-    .then(res => { if(!res.ok) throw new Error('data.json 없음'); return res.json(); })
+  fetch(_GS_URL + '?t=' + Date.now(), {signal: ctrl.signal})
+    .then(res => res.json())
     .then(fresh => {
       clearTimeout(timer);
       _gsHideLoading();
@@ -6928,14 +6928,10 @@ function _applyFreshData(fresh) {
         _gsShowToast('✅ '+(_d.getMonth()+1)+'/'+_d.getDate()+' 기준 최신 데이터 반영 완료');
       }
     })
-    .catch(() => {
-      // data.json 없을 경우 Apps Script URL 직접 폴백
-      const ctrl2 = new AbortController();
-      const timer2 = setTimeout(()=>ctrl2.abort(), 30000);
-      fetch(_GS_URL + '?t=' + Date.now(), {signal: ctrl2.signal})
-        .then(r=>r.json())
-        .then(fresh=>{clearTimeout(timer2);clearTimeout(timer);_gsHideLoading();_applyFreshData(fresh);try{renderHeader();}catch(e){}try{renderTab0();}catch(e){}const _ai=[...document.querySelectorAll('.tab-btn')].findIndex(b=>b.classList.contains('active'));if(_ai===1)try{renderTab1();}catch(e){}if(_ai===2)try{renderTab2();}catch(e){}if(_ai===3)try{renderTab3();}catch(e){}if(_ai===4)try{renderTab4();}catch(e){}if(_ai===5)try{renderTabMkt();}catch(e){}})
-        .catch(e=>{clearTimeout(timer2);clearTimeout(timer);_gsHideLoading();console.warn('데이터 로드 실패:',e.message||e);});
+    .catch(e => {
+      clearTimeout(timer);
+      _gsHideLoading();
+      console.warn('구글시트 연동 실패, 로컬 데이터 유지:', e.message||e);
     });
 
   // 3) 30초마다 Firebase 폴링 (편집 실시간 반영)
