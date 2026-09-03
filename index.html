@@ -6901,37 +6901,40 @@ function _applyFreshData(fresh) {
     if(bar)bar.remove();
     if(tip)tip.remove();
   }
+  const _CDN_URL = 'https://diddbwls6183-design.github.io/SINOON-SALES-DASHBOARD-2026/data.json';
+  function _applyAndRender(fresh) {
+    _gsHideLoading();
+    _applyFreshData(fresh);
+    try{ s4LoadFullPromo(); }catch(e){}
+    try{ mktLoad(); }catch(e){}
+    try{ renderHeader(); }catch(e){}
+    try{ renderTab0(); }catch(e){}
+    const _tabs=[...document.querySelectorAll('.tab-btn')];
+    const _ai=_tabs.findIndex(b=>b.classList.contains('active'));
+    if(_ai===1)try{renderTab1();}catch(e){}
+    if(_ai===2)try{renderTab2();}catch(e){}
+    if(_ai===3)try{renderTab3();}catch(e){}
+    if(_ai===4)try{renderTab4();}catch(e){}
+    if(_ai===5)try{renderTabMkt();}catch(e){}
+    const _latestDate=D.dates&&D.dates.length?D.dates[D.dates.length-1]:'';
+    if(_latestDate){
+      const _d=new Date(_latestDate);
+      _gsShowToast('\u2705 '+(_d.getMonth()+1)+'/'+_d.getDate()+' 기준 최신 데이터 반영 완료');
+    }
+  }
   const ctrl = new AbortController();
-  const timer = setTimeout(()=>ctrl.abort(), 25000);
-  fetch(_GS_URL + '?t=' + Date.now(), {signal: ctrl.signal})
-    .then(res => res.json())
-    .then(fresh => {
+  const timer = setTimeout(()=>ctrl.abort(), 8000);
+  fetch(_CDN_URL + '?t=' + Date.now(), {signal: ctrl.signal})
+    .then(res => { if(!res.ok) throw new Error('CDN '+res.status); return res.json(); })
+    .then(fresh => { clearTimeout(timer); _applyAndRender(fresh); })
+    .catch(() => {
       clearTimeout(timer);
-      _gsHideLoading();
-      _applyFreshData(fresh);
-      // Firebase 편집본 재적용 (구글시트 fetch가 덮어씌운 것 복구)
-      try{ s4LoadFullPromo(); }catch(e){}
-      try{ mktLoad(); }catch(e){}
-      try{ renderHeader(); }catch(e){}
-      try{ renderTab0(); }catch(e){}
-      const _tabs=[...document.querySelectorAll('.tab-btn')];
-      const _ai=_tabs.findIndex(b=>b.classList.contains('active'));
-      if(_ai===1)try{renderTab1();}catch(e){}
-      if(_ai===2)try{renderTab2();}catch(e){}
-      if(_ai===3)try{renderTab3();}catch(e){}
-      if(_ai===4)try{renderTab4();}catch(e){}
-      if(_ai===5)try{renderTabMkt();}catch(e){}
-      // 최신 기준일 토스트
-      const _latestDate=D.dates&&D.dates.length?D.dates[D.dates.length-1]:'';
-      if(_latestDate){
-        const _d=new Date(_latestDate);
-        _gsShowToast('✅ '+(_d.getMonth()+1)+'/'+_d.getDate()+' 기준 최신 데이터 반영 완료');
-      }
-    })
-    .catch(e => {
-      clearTimeout(timer);
-      _gsHideLoading();
-      console.warn('구글시트 연동 실패, 로컬 데이터 유지:', e.message||e);
+      const ctrl2 = new AbortController();
+      const timer2 = setTimeout(()=>ctrl2.abort(), 25000);
+      fetch(_GS_URL + '?t=' + Date.now(), {signal: ctrl2.signal})
+        .then(res => res.json())
+        .then(fresh => { clearTimeout(timer2); _applyAndRender(fresh); })
+        .catch(e => { clearTimeout(timer2); _gsHideLoading(); console.warn('데이터 로드 실패:', e.message||e); });
     });
 
   // 3) 30초마다 Firebase 폴링 (편집 실시간 반영)
