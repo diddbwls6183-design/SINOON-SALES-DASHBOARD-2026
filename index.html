@@ -5206,18 +5206,18 @@ function renderCustTable(){
         <span style="font-size:11px;color:#aaa;">${mLabel} 전체</span>
       </div>
       ${avg?`
-      <div style="height:16px;border-radius:8px;overflow:hidden;display:flex;margin-bottom:10px;">
-        <div style="width:${Math.max(1,Math.min(99,avg.nPct))}%;background:${NC};"></div>
-        <div style="width:${100-Math.max(1,Math.min(99,avg.nPct))}%;background:${RC};"></div>
+      <div style="height:44px;border-radius:10px;overflow:hidden;display:flex;margin-bottom:12px;">
+        <div style="width:${Math.max(1,Math.min(99,avg.nPct))}%;background:${NC};display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0 2px;box-sizing:border-box;"><span style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;">신규 ${avg.nPct}%</span></div>
+        <div style="width:${100-Math.max(1,Math.min(99,avg.nPct))}%;background:${RC};display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0 2px;box-sizing:border-box;"><span style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;">기존 ${100-avg.nPct}%</span></div>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div style="display:flex;align-items:center;gap:5px;">
-          <span style="width:8px;height:8px;border-radius:50%;background:${NC};display:inline-block;"></span>
-          <span style="font-size:13px;font-weight:700;color:${NC};">신규 ${avg.nPct}%</span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:5px;padding:4px 8px;background:#E8F4FB;border-radius:6px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:${NC};flex-shrink:0;"></span>
+          <span style="font-size:12px;font-weight:700;color:${NC};">신규 ${avg.nPct}%</span>
         </div>
-        <div style="display:flex;align-items:center;gap:5px;">
-          <span style="font-size:13px;color:#555;">기존 ${100-avg.nPct}%</span>
-          <span style="width:8px;height:8px;border-radius:50%;background:${RC};display:inline-block;"></span>
+        <div style="display:flex;align-items:center;gap:5px;padding:4px 8px;background:#F5F0FA;border-radius:6px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:${RC};flex-shrink:0;"></span>
+          <span style="font-size:12px;font-weight:700;color:${RC};">기존 ${100-avg.nPct}%</span>
         </div>
       </div>
       ${momBadge(avg.nPct,prevAvg?prevAvg.nPct:null)?`<div style="margin-top:8px;text-align:center;">${momBadge(avg.nPct,prevAvg?prevAvg.nPct:null)}</div>`:''}
