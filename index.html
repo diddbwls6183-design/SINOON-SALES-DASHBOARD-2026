@@ -7135,8 +7135,9 @@ function renderTabScm(){
 
 async function mtInitTab(){
   Object.keys(MANTOVA.months).forEach(function(m){MT_STATE.expandedMonths[m]=false;MT_STATE.selected[m]=new Set();});
-  MT_STATE.selected['8월']=new Set(MANTOVA.months['8월'].weeks);
-  MT_STATE.expandedMonths['8월']=true;
+  var _latestMon=Object.keys(MANTOVA.months).pop();
+  MT_STATE.selected[_latestMon]=new Set(MANTOVA.months[_latestMon].weeks);
+  MT_STATE.expandedMonths[_latestMon]=true;
   for(var m of Object.keys(MANTOVA.months))MT_STATE.rates[m]=await mtGetRate(m);
   try{var fr=await fetch(MT_FB_URL+'.json');if(fr.ok){var fd=await fr.json();if(fd)MT_FB_MEETINGS=fd;}}catch(e){}
   mtRenderFilterPanel();mtUpdateFilterLabel();mtRenderSalesTable();mtRenderTop20();mtRenderMeeting();
