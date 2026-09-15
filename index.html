@@ -2064,7 +2064,7 @@ function s0GetData(ch){
     sel.forEach(m=>{
       const v26=D.monthly26[m]?D.monthly26[m][ch]||{}:{};
       s26+=(v26.s||0)-(v26.r||0);
-      if(hasMon(m)){s25+=m25s(m,ch);tgt+=D.targets[ch]?D.targets[ch][m]||0:0;}
+      if(hasMon(m)){s25+=_isIncompleteMon(m)?_yoy_same_period(m,ch):m25s(m,ch);tgt+=D.targets[ch]?D.targets[ch][m]||0:0;}
     });
   } else if(g==='주차별'){
     const sel=s0.selWeeks.length?s0.selWeeks:D.month_to_weeks[s0.wkMon]||[];
