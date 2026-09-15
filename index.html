@@ -7182,7 +7182,7 @@ function mtRenderSalesTable(){
   var thS='padding:9px 12px;text-align:center;font-size:12px;font-weight:700;background:#2d2926;color:#fff;white-space:nowrap;';
   var tdS='padding:8px 12px;text-align:right;font-size:13px;white-space:nowrap;border-bottom:1px solid #f5f5f5;';
   var pm='',html='<table style="width:100%;border-collapse:collapse;min-width:500px;"><thead><tr><th style="'+thS+'text-align:left;">채널</th>';
-  cols.forEach(function(c){var ml=c.month!==pm?'<div style="font-size:10px;opacity:.7;">'+c.month+'</div>':'';pm=c.month;html+='<th style="'+thS+'">'+ml+c.week+'</th>';});
+  cols.forEach(function(c){var ml=c.month!==pm?'<div style="font-size:10px;opacity:.7;">'+c.month+'</div>':'<div style="font-size:10px;opacity:.7;visibility:hidden;">'+c.month+'</div>';pm=c.month;html+='<th style="'+thS+'">'+ml+c.week+'</th>';});
   html+='<th style="'+thS+'">합계</th></tr></thead><tbody>';
   CH.forEach(function(ch){var rt=0,rh='',hd=false;cols.forEach(function(c){var wi=MANTOVA.months[c.month].weeks.indexOf(c.week),v=(MANTOVA.months[c.month].channels[ch]||[])[wi]||0;if(v>0)hd=true;rt+=v;rh+='<td style="'+tdS+'">'+mtFV(v,c.rate)+'</td>';});if(!hd)return;var ar=cols.reduce(function(a,c){return a+(MT_STATE.rates[c.month]||195);},0)/cols.length;html+='<tr><td style="padding:8px 14px;font-size:13px;font-weight:700;border-bottom:1px solid #f5f5f5;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+(CC[ch]||'#999')+';margin-right:6px;"></span>'+ch+'</td>'+rh+'<td style="'+tdS+'font-weight:700;">'+mtFV(rt,ar)+'</td></tr>';});
   html+='<tr style="background:#f9f9f9;"><td style="padding:9px 14px;font-size:13px;font-weight:800;border-top:2px solid #2d2926;">합계</td>';
