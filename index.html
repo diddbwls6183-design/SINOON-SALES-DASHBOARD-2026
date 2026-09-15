@@ -7180,7 +7180,7 @@ function mtRenderSalesTable(){
   if(!cols.length){el.innerHTML='<div style="text-align:center;color:#aaa;padding:30px;">기간을 선택하세요.</div>';return;}
   var CH=['티몰','샤오홍슈','도우인'],CC={'티몰':'#ff6900','샤오홍슈':'#ff2d55','도우인':'#333'};
   var thS='padding:9px 12px;text-align:center;font-size:12px;font-weight:700;background:#2d2926;color:#fff;white-space:nowrap;';
-  var tdS='padding:8px 12px;text-align:right;font-size:13px;white-space:nowrap;border-bottom:1px solid #f5f5f5;';
+  var tdS='padding:8px 12px;text-align:center;font-size:13px;white-space:nowrap;border-bottom:1px solid #f5f5f5;';
   var pm='',html='<table style="width:100%;border-collapse:collapse;min-width:500px;"><thead><tr><th style="'+thS+'text-align:left;">채널</th>';
   cols.forEach(function(c){var ml=c.month!==pm?'<div style="font-size:10px;opacity:.7;">'+c.month+'</div>':'<div style="font-size:10px;opacity:.7;visibility:hidden;">'+c.month+'</div>';pm=c.month;html+='<th style="'+thS+'">'+ml+c.week+'</th>';});
   html+='<th style="'+thS+'">합계</th></tr></thead><tbody>';
