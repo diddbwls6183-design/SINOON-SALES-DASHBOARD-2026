@@ -6464,6 +6464,25 @@ function mktHandleDragover(e){
 function mktHandleDragleave(e){
   e.currentTarget.style.outline='';
 }
+function mktCompressImg(file,cb){
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var img=new Image();
+    img.onload=function(){
+      var MAX=1200;
+      var w=img.width,h=img.height;
+      if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
+      if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+      var canvas=document.createElement('canvas');
+      canvas.width=w;canvas.height=h;
+      var ctx=canvas.getContext('2d');
+      ctx.drawImage(img,0,0,w,h);
+      cb(canvas.toDataURL('image/jpeg',0.75));
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
 function mktHandleDrop(e,el){
   e.preventDefault();
   el.style.outline='';
@@ -6474,15 +6493,13 @@ function mktHandleDrop(e,el){
   if(files&&files.length){
     Array.from(files).forEach(function(file){
       if(!file.type.startsWith('image/'))return;
-      var reader=new FileReader();
-      reader.onload=function(ev){
+      mktCompressImg(file,function(dataUrl){
         el.focus();
-        var html='<img src="'+ev.target.result+'" style="max-width:100%;height:auto;border-radius:6px;margin:6px 0;display:block;box-shadow:0 2px 8px #0001;">';
+        var html='<img src="'+dataUrl+'" style="max-width:100%;height:auto;border-radius:6px;margin:6px 0;display:block;box-shadow:0 2px 8px #0001;">';
         document.execCommand('insertHTML',false,html);
         if(el.id==='mkt-daily-report-area')mktSaveDailyReport();
         else if(el.id==='mkt-review-area')mktSaveReview();
-      };
-      reader.readAsDataURL(file);
+      });
     });
     return;
   }
@@ -6491,15 +6508,13 @@ function mktHandleDrop(e,el){
     Array.from(items).forEach(function(item){
       if(item.kind==='file'&&item.type.startsWith('image/')){
         var file=item.getAsFile();
-        var reader=new FileReader();
-        reader.onload=function(ev){
+        mktCompressImg(file,function(dataUrl){
           el.focus();
-          var html='<img src="'+ev.target.result+'" style="max-width:100%;height:auto;border-radius:6px;margin:6px 0;display:block;box-shadow:0 2px 8px #0001;">';
+          var html='<img src="'+dataUrl+'" style="max-width:100%;height:auto;border-radius:6px;margin:6px 0;display:block;box-shadow:0 2px 8px #0001;">';
           document.execCommand('insertHTML',false,html);
           if(el.id==='mkt-daily-report-area')mktSaveDailyReport();
           else if(el.id==='mkt-review-area')mktSaveReview();
-        };
-        reader.readAsDataURL(file);
+        });
       }
     });
   }
