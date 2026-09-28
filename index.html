@@ -445,11 +445,12 @@ function jsonbinSave(){
 // 가져온 데이터를 localStorage + 화면에 적용
 function _jbApplyData(d){
   JB_KEYS.forEach(function(k){if(d[k])localStorage.setItem(k,d[k]);});
-  // 열너비·행높이 메모리 변수 갱신 후 테이블 즉시 반영
+  // 열너비·행높이 메모리 변수 갱신 (칸 수 불일치 시에는 무시 - s4ApplyResizeSizes에서 검증)
   try{
-    localStorage.removeItem('sinoon_s4_col_w');
-    localStorage.removeItem('sinoon_s4_row_h');
-    s4ColWidths={};s4RowHeights={};
+    var cw=localStorage.getItem('sinoon_s4_col_w');
+    var rh=localStorage.getItem('sinoon_s4_row_h');
+    if(cw)s4ColWidths=JSON.parse(cw);
+    if(rh)s4RowHeights=JSON.parse(rh);
   }catch(e){}
   try{s4LoadFullPromo();}catch(e){}
   try{mktLoad();}catch(e){}
@@ -484,11 +485,12 @@ function jsonbinLoad(callback){
     if(d&&typeof d==='object'){
       JB_KEYS.forEach(function(k){if(d[k])localStorage.setItem(k,d[k]);});
       _fbLastHash=_fbGetHash();
-      // 열너비·행높이 메모리 변수 갱신
+      // 열너비·행높이 메모리 변수 갱신 (칸 수 불일치 시에는 무시 - s4ApplyResizeSizes에서 검증)
       try{
-        localStorage.removeItem('sinoon_s4_col_w');
-        localStorage.removeItem('sinoon_s4_row_h');
-        s4ColWidths={};s4RowHeights={};
+        var cw=localStorage.getItem('sinoon_s4_col_w');
+        var rh=localStorage.getItem('sinoon_s4_row_h');
+        if(cw)s4ColWidths=JSON.parse(cw);
+        if(rh)s4RowHeights=JSON.parse(rh);
       }catch(e){}
     }
     if(callback)callback();
@@ -5813,17 +5815,22 @@ var s4ColWidths={},s4RowHeights={};
 function s4ApplyResizeSizes(){
   document.querySelectorAll('table.s4-resizable').forEach(function(tbl){
     var id=tbl.id;
-    // 열 너비 적용
+    // 열 너비 적용 (저장된 칸 수와 실제 테이블 칸 수가 다르면 무시 - 구조 변경 후 공백 방지)
+    var headThs=tbl.querySelectorAll('thead th');
     if(s4ColWidths[id]&&s4ColWidths[id].length){
-      tbl.style.tableLayout='fixed';
-      var cg=tbl.querySelector('colgroup');
-      if(!cg){cg=document.createElement('colgroup');tbl.insertBefore(cg,tbl.firstChild);}
-      cg.innerHTML='';
-      s4ColWidths[id].forEach(function(w){
-        var col=document.createElement('col');
-        if(w)col.style.width=w+'px';
-        cg.appendChild(col);
-      });
+      if(headThs.length&&s4ColWidths[id].length!==headThs.length){
+        delete s4ColWidths[id];
+      }else{
+        tbl.style.tableLayout='fixed';
+        var cg=tbl.querySelector('colgroup');
+        if(!cg){cg=document.createElement('colgroup');tbl.insertBefore(cg,tbl.firstChild);}
+        cg.innerHTML='';
+        s4ColWidths[id].forEach(function(w){
+          var col=document.createElement('col');
+          if(w)col.style.width=w+'px';
+          cg.appendChild(col);
+        });
+      }
     }
     // 행 높이 적용
     if(s4RowHeights[id]){
