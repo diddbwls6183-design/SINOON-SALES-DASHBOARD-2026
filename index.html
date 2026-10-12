@@ -7069,10 +7069,33 @@ const MT_TOP20_DB = {
     {rank:18, cat:'TOPS',    desc:'S/S T-Shirts',    price:329,  qty:6},
     {rank:19, cat:'TOPS',    desc:'Cardigan',        price:1459, qty:6},
     {rank:20, cat:'TOPS',    desc:'Cardigan',        price:699,  qty:6}
+  ],
+  '20260928-20261004': [
+    {rank:1, code:'SN2G2DD008CR', cat:'BOTTOMS', desc:'Dress', price:1099, qty:7},
+    {rank:2, code:'SN2G1TW001', cat:'TOPS', desc:'Pullover Sweatshirt', price:529, qty:6},
+    {rank:3, code:'SN2G1TT003', cat:'TOPS', desc:'L/S T-shirt', price:419, qty:5},
+    {rank:4, code:'SN2E3KK004MG', cat:'TOPS', desc:'Knit Top', price:779, qty:4},
+    {rank:5, code:'SN2D1AH002CY', cat:'ACC', desc:'Hat', price:259, qty:2},
+    {rank:6, code:'SN2G1TT001', cat:'TOPS', desc:'L/S T-shirt', price:399, qty:2},
+    {rank:7, code:'SN2F3TT004', cat:'TOPS', desc:'L/S T-shirt', price:399, qty:2},
+    {rank:8, code:'SN2G1BP002', cat:'BOTTOMS', desc:'Sweatpants', price:659, qty:2},
+    {rank:9, code:'SN2E3TS002SK', cat:'TOPS', desc:'L/S Shirt', price:959, qty:2},
+    {rank:10, code:'SN2G2BS002', cat:'BOTTOMS', desc:'Skirt', price:729, qty:2},
+    {rank:11, code:'SN2F3TT001BL', cat:'TOPS', desc:'L/S T-shirt', price:419, qty:2},
+    {rank:12, code:'SN2G1KK002', cat:'TOPS', desc:'Knit Top', price:899, qty:2},
+    {rank:13, code:'SN2G1BS001', cat:'BOTTOMS', desc:'Skirt', price:999, qty:2},
+    {rank:14, code:'SN2G2KK030', cat:'TOPS', desc:'Knit Top', price:899, qty:2},
+    {rank:15, code:'SN2F4OJ001', cat:'JACKETS', desc:'Coat', price:1999, qty:2},
+    {rank:16, code:'SN2F3TT005', cat:'TOPS', desc:'L/S T-shirt', price:419, qty:1},
+    {rank:17, code:'SN2F3KK002', cat:'TOPS', desc:'Knit Top', price:759, qty:1},
+    {rank:18, code:'SN2G1BS001', cat:'BOTTOMS', desc:'Skirt', price:999, qty:1},
+    {rank:19, code:'SN2E3KC002LC', cat:'TOPS', desc:'Knit Cardigan', price:959, qty:1},
+    {rank:20, code:'SN2G1BM002', cat:'BOTTOMS', desc:'Skirt', price:1099, qty:1}
   ]
 };
-var MT_TOP20_MONTH_MAP = {'8월':'20260821-20260827','9월':'20260907-20260913'};
+var MT_TOP20_MONTH_MAP = {'8월':'20260821-20260827','9월':'20260907-20260913','10월':'20260928-20261004'};
 var MT_TOP20_IMGS = 'images/best20_w37.png';
+var MT_TOP20_IMG_MAP = {'20260821-20260827':'images/best20_w34.png','20260907-20260913':'images/best20_w37.png','20260928-20261004':'images/best20_w40.png'}; // 기간별 BEST20 이미지 (미지정 기간은 MT_TOP20_IMGS 사용)
 const MT_MEETINGS_DEFAULT = {'20260831': `SINOON × MANTOVA
 만토바 주간회의록
 회의명 만토바(MANTOVA) 주간회의
@@ -7512,7 +7535,7 @@ function mtRenderTop20(){
   for(var i=sm.length-1;i>=0;i--){if(MT_TOP20_MONTH_MAP[sm[i]]){k=MT_TOP20_MONTH_MAP[sm[i]];break;}}
   if(!k||!MT_TOP20_IMGS){el.innerHTML='<div style="text-align:center;padding:40px;color:#aaa;">해당 기간의 BEST 20 데이터가 없습니다.</div>';return;}
   var lbl=k.replace(/(\d{4})(\d{2})(\d{2})-(\d{4})(\d{2})(\d{2})/,'$1.$2.$3-$5.$6');
-  el.innerHTML='<div style="font-size:12px;color:#888;margin-bottom:12px;">DATA '+lbl+'</div><img src="'+MT_TOP20_IMGS+'" style="width:100%;border-radius:10px;border:1px solid #eee;" />';
+  el.innerHTML='<div style="font-size:12px;color:#888;margin-bottom:12px;">DATA '+lbl+'</div><img src="'+(MT_TOP20_IMG_MAP[k]||MT_TOP20_IMGS)+'" style="width:100%;border-radius:10px;border:1px solid #eee;" />';
 }
 function mtRenderMeeting(){
   var btnEl=document.getElementById('mt-meeting-week-btns');if(!btnEl)return;
