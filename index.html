@@ -427,14 +427,141 @@ function _fbGetHash(){
 function _jbPutAll(onOk,onErr){
   var d={};
   JB_KEYS.forEach(function(k){var v=localStorage.getItem(k);if(v)d[k]=v;});
+  // 브라우저 저장 공간이 가득 찼을 때는 화면 메모리의 최신 내용을 그대로 클라우드에 올림
+  if(window._mktMem){try{
+    if(typeof MKT_REVIEW!=='undefined'&&MKT_REVIEW)d['sinoon_mkt_review']=JSON.stringify(MKT_REVIEW);
+    if(typeof MKT_DAILY_REPORT!=='undefined'&&MKT_DAILY_REPORT)d['sinoon_mkt_daily_report']=JSON.stringify(MKT_DAILY_REPORT);
+  }catch(e){}}
+  // PUT 대신 PATCH: 보낸 항목만 갱신하고, 같은 경로의 다른 데이터(만토바 회의록 등)는 건드리지 않음
   fetch(FB_URL+'?t='+Date.now(),{
-    method:'PUT',
+    method:'PATCH',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify(d)
   }).then(function(r){
     if(r.ok){_fbLastHash=_fbGetHash();if(onOk)onOk();}
     else{if(onErr)onErr(r.status);}
   }).catch(function(e){if(onErr)onErr(e);});
+}
+
+
+// ── 이미지 분리 저장 ─────────────────────────────────────────
+// 본문(글·숫자)은 지금처럼 저장하고, 붙여넣은 이미지는 Firebase /sinoon_img 에 따로 보관한다.
+// 본문에는 <img data-iid="ID"> 참조만 남아 브라우저 저장 공간(5MB)을 거의 쓰지 않는다.
+var IMG_FB_BASE='https://sinoon-dashboard-default-rtdb.asia-southeast1.firebasedatabase.app/sinoon_img/';
+var IMG_BK_BASE='https://sinoon-dashboard-default-rtdb.asia-southeast1.firebasedatabase.app/sinoon_backup/';
+var _imgCache={},_imgUp={},_imgBusy={},_mktResaveTimer=null,_mktMigrating=false,_imgFailShown=false;
+function _imgHash(s){
+  var h1=0xdeadbeef,h2=0x41c6ce57;
+  for(var i=0;i<s.length;i++){var c=s.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677);}
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return (h2>>>0).toString(36)+(h1>>>0).toString(36)+'_'+s.length.toString(36);
+}
+function mktToast(msg,bg,ms){
+  var t=document.getElementById('mkt-save-toast');
+  if(!t)return;
+  t.textContent=msg;t.style.background=bg||'#5a6a7a';t.style.opacity='1';t.style.display='';
+  clearTimeout(t._h);
+  t._h=setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.style.display='none';},400);},ms||3500);
+}
+function _imgUpload(id){
+  if(_imgUp[id]===true||_imgBusy[id])return;
+  _imgBusy[id]=true;
+  fetch(IMG_FB_BASE+id+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({d:_imgCache[id],t:Date.now()})})
+  .then(function(r){
+    _imgBusy[id]=false;
+    if(r.ok){_imgUp[id]=true;_mktScheduleResave();}
+    else{
+      console.warn('이미지 클라우드 보관 실패',r.status);
+      if(!_imgFailShown){_imgFailShown=true;mktToast('⚠️ 이미지를 클라우드에 보관하지 못했습니다 ('+r.status+'). 담당자에게 알려주세요.','#c0392b',6000);}
+    }
+  }).catch(function(e){_imgBusy[id]=false;console.warn('이미지 업로드 오류',e);});
+}
+// 본문 HTML 안의 base64 이미지를 참조(data-iid)로 바꾼다. 클라우드 보관이 확인된 이미지만 바꾸고, 아니면 원본을 그대로 둔다.
+function mktPackHtml(html){
+  if(!html||typeof html!=='string'||html.indexOf('data:image')<0)return html;
+  return html.replace(/<img\b[^>]*>/gi,function(tag){
+    var m=tag.match(/\ssrc="(data:image\/[^"]+)"/i);
+    if(!m)return tag;
+    var url=m[1],id=_imgHash(url);
+    _imgCache[id]=url;
+    if(_imgUp[id]===true){
+      var t2=tag.replace(m[0],'').replace(/\sdata-iid="[^"]*"/i,'');
+      return t2.replace(/^<img/i,'<img data-iid="'+id+'"');
+    }
+    _imgUpload(id);
+    return tag;
+  });
+}
+function mktHydrateImgs(root){
+  if(!root)return;
+  root.querySelectorAll('img[data-iid]').forEach(function(img){
+    var s=img.getAttribute('src');
+    if(s&&s.indexOf('data:')===0)return;
+    var id=img.getAttribute('data-iid');
+    if(_imgCache[id]){img.src=_imgCache[id];return;}
+    img.alt='이미지 불러오는 중...';
+    fetch(IMG_FB_BASE+id+'.json').then(function(r){return r.json();}).then(function(o){
+      if(o&&o.d){_imgCache[id]=o.d;_imgUp[id]=true;img.src=o.d;img.alt='';}
+      else img.alt='이미지를 불러오지 못했습니다';
+    }).catch(function(){img.alt='이미지를 불러오지 못했습니다';});
+  });
+}
+function _mktScheduleResave(){clearTimeout(_mktResaveTimer);_mktResaveTimer=setTimeout(mktResavePacked,1200);}
+function mktResavePacked(){
+  var any=false;
+  [MKT_REVIEW,MKT_DAILY_REPORT].forEach(function(o){
+    if(!o)return;
+    Object.keys(o).forEach(function(m){
+      var v=o[m];
+      if(typeof v==='string'&&v.indexOf('data:image')>=0){var p=mktPackHtml(v);if(p!==v){o[m]=p;any=true;}}
+    });
+  });
+  if(!any)return;
+  var lsOk=true;
+  try{localStorage.setItem('sinoon_mkt_review',JSON.stringify(MKT_REVIEW));localStorage.setItem('sinoon_mkt_daily_report',JSON.stringify(MKT_DAILY_REPORT));}catch(e){lsOk=false;}
+  window._mktMem=!lsOk;
+  _jbPutAll(function(){_mktMigrating=false;},function(e){console.warn('Firebase 동기화 오류:',e);});
+}
+// 이미 base64로 저장돼 있던 기존 이미지를 1회 자동 이전 (이전 전에 원본 문자열을 sinoon_backup 에 백업)
+function mktMigrateLegacy(){
+  if(_mktMigrating)return;
+  var has=false;
+  [MKT_REVIEW,MKT_DAILY_REPORT].forEach(function(o){if(o)Object.keys(o).forEach(function(m){if(typeof o[m]==='string'&&o[m].indexOf('data:image')>=0)has=true;});});
+  if(!has)return;
+  _mktMigrating=true;
+  setTimeout(function(){_mktMigrating=false;},90000);
+  var bk={t:new Date().toISOString(),review:JSON.stringify(MKT_REVIEW||{}),daily:JSON.stringify(MKT_DAILY_REPORT||{})};
+  var bkUrl=IMG_BK_BASE+'legacy_20261021.json';
+  fetch(bkUrl+'?shallow=true').then(function(r){return r.json();}).then(function(ex){
+    if(ex)return true;
+    return fetch(bkUrl,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(bk)}).then(function(r){return r.ok;});
+  }).then(function(ok){
+    if(!ok){console.warn('백업 실패 - 이미지 이전 중단');return;}
+    [MKT_REVIEW,MKT_DAILY_REPORT].forEach(function(o){if(o)Object.keys(o).forEach(function(m){mktPackHtml(o[m]);});});
+  }).catch(function(e){_mktMigrating=false;console.warn('이미지 이전 오류',e);});
+}
+function mktHandlePaste(e,el){
+  if(!mktUnlocked)return;
+  var items=(e.clipboardData||{}).items;
+  if(!items)return;
+  var imgs=[],hasText=false;
+  for(var i=0;i<items.length;i++){
+    if(items[i].kind==='file'&&items[i].type.indexOf('image/')===0)imgs.push(items[i].getAsFile());
+    else if(items[i].type==='text/html'||items[i].type==='text/plain')hasText=true;
+  }
+  if(!imgs.length||hasText)return;
+  e.preventDefault();
+  imgs.forEach(function(file){
+    if(!file)return;
+    mktCompressImg(file,function(dataUrl){
+      el.focus();
+      var html='<img src="'+dataUrl+'" style="max-width:100%;height:auto;border-radius:6px;margin:6px 0;display:block;box-shadow:0 2px 8px #0001;">';
+      document.execCommand('insertHTML',false,html);
+      if(el.id==='mkt-daily-report-area')mktSaveDailyReport();
+      else if(el.id==='mkt-review-area')mktSaveReview();
+    });
+  });
 }
 
 function jsonbinSave(){
@@ -444,7 +571,7 @@ function jsonbinSave(){
 
 // 가져온 데이터를 localStorage + 화면에 적용
 function _jbApplyData(d){
-  JB_KEYS.forEach(function(k){if(d[k])localStorage.setItem(k,d[k]);});
+  JB_KEYS.forEach(function(k){if(d[k]){try{localStorage.setItem(k,d[k]);}catch(e){}}});
   // 열너비·행높이 메모리 변수 갱신 (칸 수 불일치 시에는 무시 - s4ApplyResizeSizes에서 검증)
   try{
     var cw=localStorage.getItem('sinoon_s4_col_w');
@@ -483,7 +610,7 @@ function jsonbinLoad(callback){
   .then(function(r){return r.json();})
   .then(function(d){
     if(d&&typeof d==='object'){
-      JB_KEYS.forEach(function(k){if(d[k])localStorage.setItem(k,d[k]);});
+      JB_KEYS.forEach(function(k){if(d[k]){try{localStorage.setItem(k,d[k]);}catch(e){}}});
       _fbLastHash=_fbGetHash();
       // 열너비·행높이 메모리 변수 갱신 (칸 수 불일치 시에는 무시 - s4ApplyResizeSizes에서 검증)
       try{
@@ -6145,6 +6272,7 @@ function mktLoad(){
     if(mm)MKT_MD_MEMO=JSON.parse(mm);
     var dt=localStorage.getItem('sinoon_mkt_daily_table');
     if(dt)MKT_DAILY_TABLE=JSON.parse(dt);
+    try{mktMigrateLegacy();}catch(e2){}
   }catch(e){
     MKT_BUDGET=JSON.parse(JSON.stringify(MKT_DEFAULT_BUDGET));
     MKT_WEEKLY=JSON.parse(JSON.stringify(MKT_DEFAULT_WEEKLY));
@@ -6156,21 +6284,18 @@ function mktSaveAll(){
   // DOM에서 최신 내용 먼저 수집
   mktSaveReview();
   mktSaveDailyReport();
-  // localStorage 저장
-  localStorage.setItem('sinoon_mkt_budget',JSON.stringify(MKT_BUDGET));
-  localStorage.setItem('sinoon_mkt_spend',JSON.stringify(MKT_SPEND));
-  localStorage.setItem('sinoon_mkt_target',JSON.stringify(MKT_TARGET));
-  localStorage.setItem('sinoon_mkt_spend_total',JSON.stringify(MKT_SPEND_TOTAL));
-  localStorage.setItem('sinoon_mkt_weekly',JSON.stringify(MKT_WEEKLY));
-  localStorage.setItem('sinoon_mkt_review',JSON.stringify(MKT_REVIEW));
-  localStorage.setItem('sinoon_mkt_daily_report',JSON.stringify(MKT_DAILY_REPORT));
-  localStorage.setItem('sinoon_mkt_daily_table',JSON.stringify(MKT_DAILY_TABLE));
+  // localStorage 저장 (공간이 가득 차도 멈추지 않고 클라우드 저장까지 진행)
+  var _lsOk=true;
+  [['sinoon_mkt_budget',MKT_BUDGET],['sinoon_mkt_spend',MKT_SPEND],['sinoon_mkt_target',MKT_TARGET],['sinoon_mkt_spend_total',MKT_SPEND_TOTAL],['sinoon_mkt_weekly',MKT_WEEKLY],['sinoon_mkt_review',MKT_REVIEW],['sinoon_mkt_daily_report',MKT_DAILY_REPORT],['sinoon_mkt_daily_table',MKT_DAILY_TABLE]].forEach(function(p){
+    try{localStorage.setItem(p[0],JSON.stringify(p[1]));}catch(e){_lsOk=false;}
+  });
+  window._mktMem=!_lsOk;
   // 토스트: 저장 중 표시
   var t=document.getElementById('mkt-save-toast');
   if(t){t.textContent='⏳ 클라우드 동기화 중...';t.style.background='#5a6a7a';t.style.opacity='1';t.style.display='';}
   // GitHub 클라우드 동기화
   _jbPutAll(function(){
-    if(t){t.textContent='✅ 저장 완료 (전직원 동기화됨)';t.style.background='#2d6a4f';
+    if(t){t.textContent=_lsOk?'✅ 저장 완료 (전직원 동기화됨)':'✅ 클라우드에 저장 완료 (이 브라우저 저장 공간은 가득 참)';t.style.background=_lsOk?'#2d6a4f':'#b9770e';
       t.style.opacity='1';
       setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.style.display='none';t.textContent='✅ 저장 완료 (전직원 동기화됨)';t.style.background='#2d6a4f';},400);},2500);}
   },function(e){
@@ -6346,7 +6471,7 @@ function mktAutoSave(el){
     if(!MKT_WEEKLY[el.dataset.mon][el.dataset.wk])MKT_WEEKLY[el.dataset.mon][el.dataset.wk]={};
     MKT_WEEKLY[el.dataset.mon][el.dataset.wk][el.dataset.key]=v;
   }else if(type==='review'){
-    if(!MKT_REVIEW)MKT_REVIEW={};MKT_REVIEW[el.dataset.mon]=el.innerHTML;
+    if(!MKT_REVIEW)MKT_REVIEW={};MKT_REVIEW[el.dataset.mon]=mktPackHtml(el.innerHTML);
   }
 }
 
@@ -6434,15 +6559,15 @@ function mktSaveReview(){
   var el=document.getElementById('mkt-review-area');
   if(!el)return;
   if(!MKT_REVIEW)MKT_REVIEW={};
-  MKT_REVIEW[mktMon]=el.innerHTML;
-  try{localStorage.setItem('sinoon_mkt_review',JSON.stringify(MKT_REVIEW));}catch(e){}
+  MKT_REVIEW[mktMon]=mktPackHtml(el.innerHTML);
+  try{localStorage.setItem('sinoon_mkt_review',JSON.stringify(MKT_REVIEW));window._mktMem=false;}catch(e){window._mktMem=true;mktToast('⚠️ 브라우저 저장 공간이 가득 찼습니다. 💾 저장 버튼을 눌러 클라우드에 저장해 주세요.','#c0392b',6000);}
 }
 function mktSaveDailyReport(){
   var el=document.getElementById('mkt-daily-report-area');
   if(!el)return;
   if(!MKT_DAILY_REPORT)MKT_DAILY_REPORT={};
-  MKT_DAILY_REPORT[mktMon]=el.innerHTML;
-  try{localStorage.setItem('sinoon_mkt_daily_report',JSON.stringify(MKT_DAILY_REPORT));}catch(e){}
+  MKT_DAILY_REPORT[mktMon]=mktPackHtml(el.innerHTML);
+  try{localStorage.setItem('sinoon_mkt_daily_report',JSON.stringify(MKT_DAILY_REPORT));window._mktMem=false;}catch(e){window._mktMem=true;mktToast('⚠️ 브라우저 저장 공간이 가득 찼습니다. 💾 저장 버튼을 눌러 클라우드에 저장해 주세요.','#c0392b',6000);}
 }
 function mktSaveMdMemo(){
   var el=document.getElementById('mkt-md-memo-area');
@@ -6771,7 +6896,7 @@ function renderTabMkt(){
     +'<div style="font-size:15px;font-weight:700;color:#111;">📋 '+mktMon+' 일일리포트</div>'
     +'</div>'
     +'<div id="mkt-daily-report-area" contenteditable="'+(mktUnlocked?'true':'false')+'"'
-    +' onblur="mktSaveDailyReport()" ondrop="mktHandleDrop(event,this)" ondragover="event.preventDefault()"'
+    +' onblur="mktSaveDailyReport()" onpaste="mktHandlePaste(event,this)" ondrop="mktHandleDrop(event,this)" ondragover="event.preventDefault()"'
     +' style="'+dropZoneStyle+'background:#fff;">'
     +dailyReportContent+'</div></div>'
     +'<div style="margin-top:16px;">'
@@ -6779,9 +6904,10 @@ function renderTabMkt(){
     +'<div style="font-size:15px;font-weight:700;color:#111;">📸 채널별 효율 좋은 소재</div>'
     +'</div>'
     +'<div id="mkt-review-area" contenteditable="'+(mktUnlocked?'true':'false')+'"'
-    +' onblur="mktSaveReview()" style="min-height:180px;padding:12px;border:1px solid #e0ddd8;border-radius:6px;font-size:13px;line-height:1.7;outline:none;white-space:pre-wrap;overflow-wrap:break-word;background:#fff;">'
+    +' onblur="mktSaveReview()" onpaste="mktHandlePaste(event,this)" ondrop="mktHandleDrop(event,this)" ondragover="event.preventDefault()" style="min-height:180px;padding:12px;border:1px solid #e0ddd8;border-radius:6px;font-size:13px;line-height:1.7;outline:none;white-space:pre-wrap;overflow-wrap:break-word;background:#fff;">'
     +reviewContent+'</div></div>'
     +'</div>';
+  try{setTimeout(function(){mktHydrateImgs(document.getElementById('tab5')||el);},0);}catch(e){}
 }
 
 
